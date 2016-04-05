@@ -1,5 +1,6 @@
 'use strict';
 
+const files = require("./NScripts/files.js");
 const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
@@ -15,7 +16,7 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
-	mainWindow = new BrowserWindow({width:800, height:600});
+	mainWindow = new BrowserWindow({width:600, height:660});
 	mainWindow.loadURL("file://"+__dirname+"/mainPage.html")
 
 	console.log(mainWindow.getSize());
@@ -25,19 +26,65 @@ app.on('ready', function() {
 		mainWindow = null;
 	});
 });
+app.on("before-quit", function() {
+	files.saveData("./tasks", tasks);
+})
 
-
-ipc.on("getTask", function(event, taskName) {
-	const _task = new Task(taskName);
-	event.returnValue = _task;
-	console.log(_task);
+ipc.on("getTasks", function(event) {
+	event.returnValue = tasks;
+})
+ipc.on("getTask", function(event, taskIndex) {
+	// const _task = new Task(taskName);
+	if(taskIndex <= tasks.length)
+		event.returnValue = tasks[taskIndex];
+	else
+		event.returnValue = null;
 });
 
-function Task(taskName) {
-	var name = taskName;
+ipc.on("newTask", function(event, name, icon) {
+	const task = new Task(name, icon, tasks.length);
+	tasks.push(task);
+	event.returnValue = task;
+})
 
-	
+ipc.on("changeName", function(event, index, name) {
+	tasks[index].name = name;
+})
+ipc.on("changeMemo", function(event, index, memo) {
+	tasks[index].memo = memo;
+})
+
+ipc.on("saveDataTest", function(event) {
+	files.saveData("./tasks", tasks);
+})
+
+ipc.on("loadDataTest", function(event) {
+	const loadedData = files.loadData("./tasks", tasks);
+	tasks = JSON.parse(loadedData);
+	event.returnValue = loadedData
+})
+
+try {
+	const loadedData = files.loadData("./tasks", tasks);
+	tasks = JSON.parse(loadedData);
+} catch(e) {
+	tasks = []
+}
+
+if(tasks.length == 0)
+	tasks.push(new Task("뽀모도로", "./Resources/glyphicons/png/glyphicons-1-glass.png", tasks.length))
+console.log(tasks.length)
+
+function Task(taskName, icon, index) {
+	var name = taskName;
+	var icon = icon;
+	var index = index;
+	var memo = null;
+
 	return {
-		name : name
+		name : name,
+		icon : icon,
+		index : index,
+		memo : memo
 	};
 }

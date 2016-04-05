@@ -1,0 +1,164 @@
+html ,body, .full-height {
+	height:100%;
+	overflow:hidden;
+}
+.row > div {
+	border:1px solid blue;
+}
+
+#ppomoHeader {
+	width:100%;
+	height:50px;
+}
+#ppomoListOuter {
+	height:553px;
+	padding-left:10px;
+	padding-right:0px;
+	/*width:100%;*/
+	overflow:hidden;
+}
+
+#ppomoList {
+	position:absolute;
+
+	/*601 - 48 = */
+	width:100%;
+	height:100%;
+	/*right:-17px;*/
+	overflow-y:scroll;
+}
+
+#ppomoListContainer {
+	width:100%;
+}
+
+#ppomoContentFooter {
+	height:10px;
+}
+
+#newTask {
+	width:130px;
+	height:28px;
+
+	/*border:1px solid black;*/
+	border-radius:5px;
+}
+#ppomoDetail {
+	height:100%;
+}
+#ppomoDetailHeader {
+	margin-top:20px;
+	height:60px;
+}
+#ppomoDetailHeader > h1 {
+	display:inline;
+	width:100%;
+}
+#ppomoDetailContent {
+	height:80%;
+	overflow-y:scroll;
+	/*border:1px solid black;*/
+}
+
+#dDayContainer {
+	margin-top:-10px;
+}
+#dDayHeader {
+	position:relative;
+	display:inline-block;
+	font-size:13px;
+	vertical-align:text-top;
+}
+#dDayContents {
+	position:relative;
+	display:inline-block;
+	font-size:40px;
+	vertical-align: middle;
+}
+#dDayFooter {
+	position:relative;
+	display:inline-block;
+	font-size:15px;
+	vertical-align: bottom;
+}
+#deadLineUnSet {
+	position:relative;
+	/*margin-top:57px;*/
+	height:51px;
+	width:100%;
+}
+#deadLineUnSet>#dDayHeader {
+	position:absolute;
+	width:100%;
+	bottom:-7px;
+}
+#deadLineSet {
+
+}
+
+#ppomoRepeatContainer {
+
+}
+.repeatContainer {
+	margin:auto 3px;
+	/*border:1px solid black;*/
+
+	display:inline-block;
+}
+
+.detailContainers {
+	margin-top:30px;
+}
+
+#memoTextArea {
+	width:100%;
+	resize: none;
+}
+
+.ppomoIconContainer {
+	padding-left:10px;
+}
+.ppomoIcon {
+	width:50px;
+	height:50px;
+
+	border-radius:20px;
+	/*border:1px solid black;*/
+}
+.ppomoIcon-small {
+	width:30px;
+	height:30px;
+
+	border-radius:8px;
+
+	margin-bottom:11px;
+}
+.ppomoListContainer {
+	display:table;
+
+	width:100%;
+	height:80px;
+	border:1px solid black;
+
+	margin-top:10px;
+	cursor:pointer;
+}
+.ppomoName {
+	font-family:sans-serif;
+	font-size:20px;
+	font-weight:bold;
+}
+.middle {
+	display: table-cell;
+	vertical-align:middle;
+	/*top:50%;*/
+}
+
+.noDrag {
+	user-drag: none;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-drag: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+}
