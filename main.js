@@ -16,7 +16,10 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
-	mainWindow = new BrowserWindow({width:600, height:660});
+	mainWindow = new BrowserWindow({
+		width:600, height:660,
+		icon:"./Resources/icon256.png"
+	});
 	mainWindow.loadURL("file://"+__dirname+"/mainPage.html")
 
 	console.log(mainWindow.getSize());
