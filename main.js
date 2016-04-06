@@ -46,6 +46,13 @@ ipc.on("newTask", function(event, name, icon) {
 	tasks.push(task);
 	event.returnValue = task;
 })
+ipc.on("newChildTask", function(event, name, icon, parent) {
+	const task = new Task(name, icon, tasks.length);
+	task.parent = parent;
+
+	tasks.push(task);
+	event.returnValue = task;
+})
 
 ipc.on("changeName", function(event, index, name) {
 	tasks[index].name = name;
@@ -66,10 +73,34 @@ ipc.on("loadDataTest", function(event) {
 function loadData() {
 	const loadedData = files.loadData("./tasks")
 
+	console.log(loadedData)
 	if(loadedData == []) {
 		saveData();
 	} else {
-		tasks = loadedData;
+		// create loadedDAta to task class
+		const parseFunction = function(task) {
+			const _task = new Task(task.name, task.icon, task.index)
+			_task.parent = task.parent;
+			_task.memo = task.memo;
+			_task.children = task.children;
+			// console.log(_task)
+			// console.log(task)
+
+			// for(const _index in task.children) {
+			// 	console.log(_index)
+			// 	console.log(task.children[_index])
+			// 	_task.children.push(parseFunction(task.children[_index]))
+			// }
+
+			return _task;
+		}
+		for(const _index in loadedData) {
+			console.log(loadedData[_index])
+			console.log(loadedData[_index].children)
+			tasks.push(parseFunction(loadedData[_index]))
+		}
+
+		// tasks = loadedData;
 	}
 }
 function saveData() {
@@ -87,11 +118,15 @@ function Task(taskName, icon, index) {
 	var icon = icon;
 	var index = index;
 	var memo = null;
+	var children = [];
+	var parent = null;
 
 	return {
 		name : name,
 		icon : icon,
 		index : index,
-		memo : memo
+		memo : memo,
+		children : children,
+		parent : parent
 	};
 }

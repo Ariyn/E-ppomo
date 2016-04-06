@@ -1,6 +1,11 @@
+document.onmousemove = mouseMove;
+document.onmouseup   = mouseUp;
+var dragObject  = null;
+var mouseOffset = null;
 
 var selectedTask = null;
 var testChangeDeadLine = false;
+
 function clickHandler() {
 	const index = $(this).attr("taskindex");
 	const task = getTask(index)
@@ -21,6 +26,9 @@ $(".ppomoListContainer").click(clickHandler)
 
 $("#newTask").click(function() {
 	addNewTask("new Task", "./Resources/glyphicons/png/glyphicons-1-glass.png");
+})
+$("#newChildTask").click(function() {
+	addNewChildTask("new child Task", "./Resources/glyphicons/png/glyphicons-1-glass.png", selectedTask.index);
 })
 
 $("#ppomoDetailHeader>h1").click(function() {
@@ -43,7 +51,12 @@ $("#ppomoDetailHeader>h1").click(function() {
 
 			console.log(selectedTask);
 			console.log(oldName);
-			changeContainerName(".ppomoListContainer[taskIndex='"+selectedTask.index+"']", selectedTask)
+
+			if(selectedTask.parent == null)
+				className = "ppomoListContainer"
+			else
+				className = "ppomoListContainerChild"
+			changeContainerName("."+className+"[taskIndex='"+selectedTask.index+"']", selectedTask)
 		}
 	}
 	$("#taskNameInput")
@@ -62,69 +75,109 @@ $(document).ready(function() {
 
 	printPpomo();
 	$(".ppomoListContainer").first().click();
-
-	console.log(interact)
-	interact('.dropzone').dropzone({
-		// only accept elements matching this CSS selector
-		accept: '.draggable',
-		// Require a 75% element overlap for a drop to be possible
-		overlap: 0.75,
-
-		// listen for drop related events:
-
-		ondropactivate: function (event) {
-		// add active dropzone feedback
-		event.target.classList.add('drop-active');
-		},
-		ondragenter: function (event) {
-		var draggableElement = event.relatedTarget,
-		dropzoneElement = event.target;
-
-		// feedback the possibility of a drop
-		dropzoneElement.classList.add('drop-target');
-		draggableElement.classList.add('can-drop');
-		draggableElement.textContent = 'Dragged in';
-		},
-		ondragleave: function (event) {
-		// remove the drop feedback style
-		event.target.classList.remove('drop-target');
-		event.relatedTarget.classList.remove('can-drop');
-		event.relatedTarget.textContent = 'Dragged out';
-		},
-		ondrop: function (event) {
-		event.relatedTarget.textContent = 'Dropped';
-		},
-		ondropdeactivate: function (event) {
-		// remove active dropzone feedback
-		event.target.classList.remove('drop-active');
-		event.target.classList.remove('drop-target');
-		}
-	});
 })
 
 function printPpomo() {
 	const tasks = getTasks();
 	for(const t in tasks) {
 		const _task = tasks[t];
-		addNewTaskHtml(_task)
+		_printPppomo(_task)
 	}
 }
 
+function _printPppomo(task) {
+	console.log(task)
+	addNewTaskHtml(task)
+	// for(var i in task.children) {
+	// 	_printPppomo(task.children[i])
+	// }
+}
+
+function addNewChildTask(taskName, iconPath, parent) {
+	const newTask = ipc.sendSync("newChildTask", taskName, iconPath, parent)
+	addNewTaskHtml(newTask)
+}
 function addNewTask(taskName, iconNumber) {
 	const newTask = ipc.sendSync("newTask", taskName, iconNumber)
 	addNewTaskHtml(newTask)
 }
 function addNewTaskHtml(newTask) {
 	console.log(newTask);
-	var string = "<div class=\"ppomoListContainer noDrag draggable drag-drop\" taskIndex=\""+newTask.index+"\">";
+	className = "ppomoListContainer"
+	if(newTask.parent != null)
+		className = "ppomoListContainerChild"
+
+	var string = "<div class=\""+className+" noDrag draggable\" taskIndex=\""+newTask.index+"\">";
 	string += "<span class=\"middle ppomoIconContainer\">";
 	string += "<img class=\"ppomoIcon\" src=\""+newTask.icon+"\" alt=\"\">";
 	string += "</span>";
 	string += "<span class=\"ppomoName middle\">"+newTask.name+"</span>";
 	string += "</div>";
 
-	$("#ppomoContentList").append($(string).click(clickHandler));
+	$("#ppomoContentList").append(
+		$(string).
+			click(clickHandler).
+			mousedown(function(event) {
+				dragObject = this;
+				mouseOffset = getMouseOffset(this, event);
+				// console.log(mouseOffset)
+			})
+	);
 }
+
+function mouseCoords(ev){
+	if(ev.pageX || ev.pageY){
+		return {x:ev.pageX, y:ev.pageY};
+	}
+	return {
+		x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+		y:ev.clientY + document.body.scrollTop  - document.body.clientTop
+	};
+}
+
+function getMouseOffset(target, ev){
+	ev = ev || window.event;
+	var docPos    = getPosition(target);
+	var mousePos  = mouseCoords(ev);
+	return {x:mousePos.x - docPos.x, y:mousePos.y - docPos.y};
+}
+function getPosition(e){
+	var left = 0;
+	var top  = 0;
+	while (e.offsetParent){
+		left += e.offsetLeft;
+		top  += e.offsetTop;
+		e     = e.offsetParent;
+	}
+	left += e.offsetLeft;
+	top  += e.offsetTop;
+	return {x:left, y:top};
+}
+function mouseMove(ev){
+	ev           = ev || window.event;
+	var mousePos = mouseCoords(ev);
+
+	if(dragObject){
+		$(dragObject)
+			.css("position","absolute")
+			.css("top", mousePos.y - mouseOffset.y)
+			.css("left",mousePos.x - mouseOffset.x)
+		// dragObject.style.position = 'absolute';
+		// dragObject.style.top      = mousePos.y - mouseOffset.y;
+		// dragObject.style.left     = mousePos.x - mouseOffset.x;
+
+		console.log(dragObject.style)
+		return false;
+	}
+}
+function mouseUp(){
+	$(dragObject)
+		.css("position","relative")
+		.css("top", 0)
+		.css("left",0)
+	dragObject = null;
+}
+
 
 function changeDetail() {
 	const task = selectedTask;

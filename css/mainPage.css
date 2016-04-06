@@ -143,6 +143,18 @@ html ,body, .full-height {
 	margin-top:10px;
 	cursor:pointer;
 }
+.ppomoListContainerChild {
+	display:table;
+
+	width:80%;
+	height:80px;
+	border:1px solid black;
+
+	float:right;
+	
+	margin-top:10px;
+	cursor:pointer;
+}
 .ppomoName {
 	font-family:sans-serif;
 	font-size:20px;
