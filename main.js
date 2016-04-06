@@ -55,21 +55,28 @@ ipc.on("changeMemo", function(event, index, memo) {
 })
 
 ipc.on("saveDataTest", function(event) {
-	files.saveData("./tasks", tasks);
+	saveData()
 })
 
 ipc.on("loadDataTest", function(event) {
-	const loadedData = files.loadData("./tasks", tasks);
-	tasks = JSON.parse(loadedData);
-	event.returnValue = loadedData
+	loadData();
+	event.returnValue = tasks;
 })
 
-try {
-	const loadedData = files.loadData("./tasks", tasks);
-	tasks = JSON.parse(loadedData);
-} catch(e) {
-	tasks = []
+function loadData() {
+	const loadedData = files.loadData("./tasks")
+
+	if(loadedData == []) {
+		saveData();
+	} else {
+		tasks = loadedData;
+	}
 }
+function saveData() {
+	files.saveData("./tasks", tasks);
+}
+
+loadData();
 
 if(tasks.length == 0)
 	tasks.push(new Task("뽀모도로", "./Resources/glyphicons/png/glyphicons-1-glass.png", tasks.length))

@@ -16,7 +16,15 @@ function write(path, string) {
 }
 
 function read(path) {
-	return fs.readFileSync(path, "utf-8")
+	var tasks = null;
+
+	try {
+		tasks = JSON.parse(fs.readFileSync(path, "utf-8"));
+	} catch(e) {
+		tasks = []
+	}
+	
+	return tasks;
 }
 
 function saveData(path, data) {
