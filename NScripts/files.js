@@ -23,13 +23,17 @@ function read(path) {
 	} catch(e) {
 		tasks = []
 	}
-	
+
 	return tasks;
 }
 
-function saveData(path, data) {
-	const jsonData = JSON.stringify(data);
+function saveData(path, tasks, newTaskIndex) {
+	const jsonData = JSON.stringify({
+		"tasks":tasks,
+		"newTaskIndex":newTaskIndex
+	});
 
+	console.log(newTaskIndex)
 	write(path, jsonData);
 }
 

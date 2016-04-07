@@ -38,7 +38,11 @@ $("#ppomoDetailHeader>h1").click(function() {
 			console.log(event)
 			$(this).focusout()
 		} else if(event.type != "keypress"){
-			const name = $(this).attr("type","hidden").val();
+			var name = $(this).attr("type","hidden").val();
+
+			if(name == "") {
+				name = $("#ppomoDetailHeader>h1").html();
+			}
 
 			$("#ppomoDetailHeader>h1")
 				.css("display","inline")
@@ -72,34 +76,53 @@ $("#ppomoDetailHeader>h1").click(function() {
 })
 
 $(document).ready(function() {
-
+	clearPppomo();
 	printPpomo();
 	$(".ppomoListContainer").first().click();
 })
+
+function clearPppomo() {
+	$("#ppomoContentList").empty();
+}
 
 function printPpomo() {
 	const tasks = getTasks();
 	for(const t in tasks) {
 		const _task = tasks[t];
-		_printPppomo(_task)
+		console.log(t)
+		console.log(tasks[t])
+
+		if(_task.parent == null)
+			_printPppomo(_task)
 	}
 }
 
 function _printPppomo(task) {
 	console.log(task)
 	addNewTaskHtml(task)
-	// for(var i in task.children) {
-	// 	_printPppomo(task.children[i])
-	// }
+
+	for(var i in task.children) {
+		const index = task.children[i];
+		console.log(task.children)
+
+		const _cTask = ipc.sendSync("getTask", index);
+		console.log(index)
+		_printPppomo(_cTask)
+	}
 }
 
 function addNewChildTask(taskName, iconPath, parent) {
 	const newTask = ipc.sendSync("newChildTask", taskName, iconPath, parent)
-	addNewTaskHtml(newTask)
+	console.log(newTask)
+	clearPppomo();
+	printPpomo();
+	// addNewTaskHtml(newTask)
 }
 function addNewTask(taskName, iconNumber) {
 	const newTask = ipc.sendSync("newTask", taskName, iconNumber)
-	addNewTaskHtml(newTask)
+	clearPppomo();
+	printPpomo();
+	// addNewTaskHtml(newTask)
 }
 function addNewTaskHtml(newTask) {
 	console.log(newTask);
@@ -171,6 +194,8 @@ function mouseMove(ev){
 	}
 }
 function mouseUp(){
+
+	console.log(dragObject.style)
 	$(dragObject)
 		.css("position","relative")
 		.css("top", 0)
@@ -255,23 +280,41 @@ $("#changeDeadline").click(function() {
 	}
 })
 $("#memoTextArea").focusout(function(event) {
-		const memo = $(this).val();
+	const memo = $(this).val();
 
-		selectedTask.memo = memo;
+	selectedTask.memo = memo;
 
-		ipc.send("changeMemo", selectedTask.index, memo);
+	ipc.send("changeMemo", selectedTask.index, memo);
 }).change(function(event) {
-		const memo = $(this).val();
+	const memo = $(this).val();
 
-		selectedTask.memo = memo;
-		console.log(memo)
+	selectedTask.memo = memo;
+	console.log(memo)
 
-		ipc.send("changeMemo", selectedTask.index, memo);
+	ipc.send("changeMemo", selectedTask.index, memo);
 }).keyup(function(event) {
-		const memo = $(this).val();
+	const memo = $(this).val();
 
-		selectedTask.memo = memo;
-		console.log(memo)
+	selectedTask.memo = memo;
+	console.log(memo)
 
-		ipc.send("changeMemo", selectedTask.index, memo);
+	ipc.send("changeMemo", selectedTask.index, memo);
+})
+
+$("#completeButton").click(function() {
+	console.log("done!")
+})
+
+$("#removeButton").click(function() {
+	const index = selectedTask.index
+
+	if(selectedTask.parent != null) {
+		// const parent = ipc.send("getTask", parentIndex);
+		$(".ppomoListContainer[taskIndex='"+selectedTask.index+"']", selectedTask.parent).click();
+	}
+	console.log(selectedTask)
+	ipc.send("delete", index)
+
+	clearPppomo()
+	printPpomo()
 })
