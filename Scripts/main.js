@@ -1,5 +1,5 @@
-document.onmousemove = mouseMove;
-document.onmouseup   = mouseUp;
+// document.onmousemove = mouseMove;
+// document.onmouseup   = mouseUp;
 var dragObject  = null;
 var mouseOffset = null;
 
@@ -130,7 +130,7 @@ function addNewTaskHtml(newTask) {
 	if(newTask.parent != null)
 		className = "ppomoListContainerChild"
 
-	var string = "<div class=\""+className+" noDrag draggable\" taskIndex=\""+newTask.index+"\">";
+	var string = "<div class=\""+className+" noDrag draggable\" taskIndex=\""+newTask.index+"\" draggable=\"true\">";
 	string += "<span class=\"middle ppomoIconContainer\">";
 	string += "<img class=\"ppomoIcon\" src=\""+newTask.icon+"\" alt=\"\">";
 	string += "</span>";
@@ -139,12 +139,13 @@ function addNewTaskHtml(newTask) {
 
 	$("#ppomoContentList").append(
 		$(string).
-			click(clickHandler).
-			mousedown(function(event) {
-				dragObject = this;
-				mouseOffset = getMouseOffset(this, event);
-				// console.log(mouseOffset)
-			})
+			click(clickHandler)
+			.draggable()
+			// .mousedown(function(event) {
+			// 	dragObject = this;
+			// 	mouseOffset = getMouseOffset(this, event);
+			// 	console.log(mouseOffset)
+			// })
 	);
 }
 
@@ -154,7 +155,7 @@ function mouseCoords(ev){
 	}
 	return {
 		x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
-		y:ev.clientY + document.body.scrollTop  - document.body.clientTop
+		y:ev.clientY + document.body.scrollTop - document.body.clientTop
 	};
 }
 
@@ -162,6 +163,9 @@ function getMouseOffset(target, ev){
 	ev = ev || window.event;
 	var docPos    = getPosition(target);
 	var mousePos  = mouseCoords(ev);
+
+	console.log(docPos)
+	console.log(mousePos)
 	return {x:mousePos.x - docPos.x, y:mousePos.y - docPos.y};
 }
 function getPosition(e){
@@ -178,13 +182,20 @@ function getPosition(e){
 }
 function mouseMove(ev){
 	ev           = ev || window.event;
-	var mousePos = mouseCoords(ev);
+	var mousePos = getMouseOffset(dragObject, ev);
+	// mouseCoords(ev);
 
 	if(dragObject){
+		// .css("top", mousePos.y - mouseOffset.y)
+		// .css("left",mousePos.x - mouseOffset.x)
 		$(dragObject)
 			.css("position","absolute")
-			.css("top", mousePos.y - mouseOffset.y)
-			.css("left",mousePos.x - mouseOffset.x)
+			.css("top", mousePos.y-mouseOffset.y)
+			.css("left",mousePos.x-mouseOffset.x)
+
+		console.log(mousePos.x+", "+mouseOffset.x)
+		console.log(mousePos.y+", "+mouseOffset.y)
+
 		// dragObject.style.position = 'absolute';
 		// dragObject.style.top      = mousePos.y - mouseOffset.y;
 		// dragObject.style.left     = mousePos.x - mouseOffset.x;
@@ -194,8 +205,6 @@ function mouseMove(ev){
 	}
 }
 function mouseUp(){
-
-	console.log(dragObject.style)
 	$(dragObject)
 		.css("position","relative")
 		.css("top", 0)
@@ -290,6 +299,7 @@ $("#memoTextArea").focusout(function(event) {
 
 	selectedTask.memo = memo;
 	console.log(memo)
+
 
 	ipc.send("changeMemo", selectedTask.index, memo);
 }).keyup(function(event) {
