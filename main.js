@@ -7,6 +7,7 @@ const BrowserWindow = electron.BrowserWindow;
 const ipc = electron.ipcMain;
 
 var mainWindow = null;
+var timerWindow = null;
 
 // TODO: change this to dictionary and make index as key.
 // assign new index to new tasks which doesn't conflict.
@@ -91,7 +92,13 @@ ipc.on("delete", function(event, index) {
 	deleteTask(index);
 })
 
+ipc.on("openTimer", function (event, selectedTask) {
+	timerWindow = new BrowserWindow({width:300, height:300, frame:false})
 
+	timerWindow.loadURL("file://"+__dirname+"/html/timer.html")
+
+
+})
 // TODO: change this as recursive
 // remove every child which has removed parent
 function deleteTask(taskIndex) {

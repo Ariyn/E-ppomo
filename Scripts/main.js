@@ -328,3 +328,7 @@ $("#removeButton").click(function() {
 	clearPppomo()
 	printPpomo()
 })
+
+$("#timerButton").click(function() {
+	ipc.send("openTimer", selectedTask)
+})
