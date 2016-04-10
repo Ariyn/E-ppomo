@@ -5,7 +5,7 @@
 body {
   background: #222;
   margin: auto;
-  width: 300px;
+  width: 280px;
 }
 
 .arc-text {
@@ -15,7 +15,6 @@ body {
 .arc-center {
   fill: none;
 }
-
 #credit {
   position: absolute;
   font: 10px sans-serif;
@@ -39,7 +38,7 @@ console.log(d3);
 var width = 280,
     height = 280,
     radius = Math.min(width, height) / 1.9,
-    spacing = .09;
+    spacing = .2;
 
 var formatSecond = d3.time.format("%-S seconds"),
     formatMinute = d3.time.format("%-M minutes"),
@@ -65,6 +64,11 @@ var arcCenter = d3.svg.arc()
     .innerRadius(function(d) { return (d.index + spacing / 2) * radius; })
     .outerRadius(function(d) { return (d.index + spacing / 2) * radius; });
 
+// var circle = d3.svg.arc()
+// 	.startAngle(0)
+// 	.endAngle(360)
+// 	.innerRadius()
+
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -81,6 +85,14 @@ field.append("path")
 field.append("path")
     .attr("id", function(d, i) { return "arc-center-" + i; })
     .attr("class", "arc-center");
+
+field.append("circle")
+    .attr("id", "circle-center")
+    .attr("class", "ppomo-circle-center")
+	.attr("cy",0)
+	.attr("cx",0)
+	.attr("r",30)
+	.style("fill","#33cc8c")
 
 field.append("text")
     .attr("dy", ".35em")
@@ -135,13 +147,14 @@ function arcTween(arc) {
 function fields() {
   var now = new Date;
   return [
-    {index: .7, text: formatSecond(now), value: now.getSeconds() / 60},
-    {index: .6, text: formatMinute(now), value: now.getMinutes() / 60},
-    {index: .5, text: formatHour(now),   value: now.getHours() / 24},
-    {index: .3, text: formatDay(now),    value: now.getDay() / 7},
-    {index: .2, text: formatDate(now),   value: (now.getDate() - 1) / (32 - new Date(now.getYear(), now.getMonth(), 32).getDate())},
-    {index: .1, text: formatMonth(now),  value: now.getMonth() / 12}
+    {index: .6, text: formatSecond(now), value: now.getSeconds() / 60},
+    {index: .3, text: formatMinute(now), value: now.getMinutes() / 60}
   ];
 }
+//
+// {index: .5, text: formatHour(now),   value: now.getHours() / 24},
+// {index: .3, text: formatDay(now),    value: now.getDay() / 7},
+// {index: .2, text: formatDate(now),   value: (now.getDate() - 1) / (32 - new Date(now.getYear(), now.getMonth(), 32).getDate())},
+// {index: .1, text: formatMonth(now),  value: now.getMonth() / 12}
 
 </script>
