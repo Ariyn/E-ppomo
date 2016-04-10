@@ -8,6 +8,8 @@ const ipc = electron.ipcMain;
 
 var mainWindow = null;
 var timerWindow = null;
+var selectedTask = null;
+var runningTimer = null;
 
 // TODO: change this to dictionary and make index as key.
 // assign new index to new tasks which doesn't conflict.
@@ -123,11 +125,36 @@ ipc.on("moveTask", function(event, targetIndex, newParentIndex) {
 	event.returnValue = true;
 })
 
-ipc.on("openTimer", function (event, selectedTask) {
-	timerWindow = new BrowserWindow({width:280, height:290, frame:false})
-
+ipc.on("openTimer", function (event, _selectedTask) {
+	selectedTask = _selectedTask;
+	timerWindow = new BrowserWindow({
+		width:280, height:290, frame:false,
+		resizable:false, transparent:true
+	})
 	timerWindow.loadURL("file://"+__dirname+"/html/timer.html")
+
+	if(runningTimer) {
+		timerWindow.webContents.on("did-finish-load", function(evemt) {
+			timerWindow.webContents.send("setTimer", runningTimer);
+		})
+	}
 })
+ipc.on("startTimer", function(event, timer) {
+	runningTimer = timer;
+})
+ipc.on("closeTimer", function(event, timer) {
+	runningTimer = timer;
+	timerWindow.close()
+	timerWindow.destroy()
+	timerWindow = null;
+})
+ipc.on("endTimer", function(event, success) {
+	runningTimer["success"] = success;
+	console.log(runningTimer)
+	selectedTask.ppomos.push(runningTimer)
+	runningTimer = null;
+})
+
 // TODO: change this as recursive
 // remove every child which has removed parent
 function deleteTask(taskIndex) {
@@ -149,6 +176,14 @@ function deleteTask(taskIndex) {
 			const childIndex = parent.children.indexOf(taskIndex)
 			console.log(childIndex)
 			parent.children.splice(childIndex, 1)
+		}
+
+		if(target.children.length != 0) {
+			for(const i in target.children) {
+				const _childTask = target.children[i];
+
+				popTask(_childTask.index,1);
+			}
 		}
 	}
 }
@@ -235,6 +270,7 @@ function Task(taskName, icon, index) {
 	var memo = null;
 	var children = [];
 	var parent = null;
+	var ppomos = [];
 
 	return {
 		name : name,
@@ -242,6 +278,7 @@ function Task(taskName, icon, index) {
 		index : index,
 		memo : memo,
 		children : children,
-		parent : parent
+		parent : parent,
+		ppomos : ppomos
 	};
 }
