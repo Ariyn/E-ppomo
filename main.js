@@ -51,9 +51,16 @@ function createNewTask(name, icon, parent) {
 	const task = new Task(name, icon, newTaskIndex);
 	task.parent = parent;
 
+	console.log(parent);
+	console.log(task);
 	if(parent!= null){
-		const _parent= findTask(parent)
+		var _parent= findTask(parent)
+		if(_parent.parent != null)
+			_parent = findTask(_parent.parent)
+
+		console.log(_parent);
 		_parent.children.push(task.index)
+		console.log(task);
 	}
 	tasks.push(task);
 
@@ -92,12 +99,34 @@ ipc.on("delete", function(event, index) {
 	deleteTask(index);
 })
 
+ipc.on("moveTask", function(event, targetIndex, newParentIndex) {
+	const target = findTask(targetIndex);
+	const newParent = findTask(newParentIndex);
+
+	if(target.parent != null) {
+		const parent = findTask(target.parent);
+
+		console.log("splicing")
+		const childIndex = parent.children.indexOf(targetIndex);
+		console.log(childIndex)
+		console.log(parent.children)
+
+		parent.children.splice(childIndex, 1)
+
+		console.log(parent, childIndex)
+	}
+	target.parent = newParent.index;
+	newParent.children.push(target.index);
+
+	console.log(newParent)
+
+	event.returnValue = true;
+})
+
 ipc.on("openTimer", function (event, selectedTask) {
-	timerWindow = new BrowserWindow({width:300, height:300, frame:false})
+	timerWindow = new BrowserWindow({width:280, height:290, frame:false})
 
 	timerWindow.loadURL("file://"+__dirname+"/html/timer.html")
-
-
 })
 // TODO: change this as recursive
 // remove every child which has removed parent
@@ -156,6 +185,9 @@ function loadData() {
 	const loadedData = datas["tasks"]
 	newTaskIndex = datas["newTaskIndex"]
 
+	if(newTaskIndex == null)
+		newTaskIndex = 0;
+
 	if(loadedData == []) {
 		saveData();
 	} else if (tasks.length == 0) {
@@ -183,14 +215,18 @@ function loadData() {
 }
 
 function saveData() {
+	console.log(newTaskIndex)
 	files.saveData("./tasks", tasks, newTaskIndex);
+	// localStorage.saveData("tasks", tasks);
+	// localStorage.saveData("taskIndex", newTaskIndex);
 }
 loadData();
 console.log(newTaskIndex)
 console.log(tasks)
 
-if(tasks.length == 0)
-	tasks.push(new Task("뽀모도로", "./Resources/glyphicons/png/glyphicons-1-glass.png", tasks.length))
+if(tasks.length == 0) {
+	const _taskd = createNewTask("뽀모도로", "./Resources/glyphicons/png/glyphicons-1-glass.png", null);
+}
 
 function Task(taskName, icon, index) {
 	var name = taskName;

@@ -1,21 +1,28 @@
-// document.onmousemove = mouseMove;
-// document.onmouseup   = mouseUp;
-var dragObject  = null;
-var mouseOffset = null;
-
 var selectedTask = null;
 var testChangeDeadLine = false;
 
+var isMovingTask = false;
+
 function clickHandler() {
 	const index = $(this).attr("taskindex");
-	const task = getTask(index)
+	const task = getTask(index);
 
-	console.log(task)
-	console.log(index)
+	if(isMovingTask == false) {
+		if(selectedTask != null) {
+			$(".ppomoListContainer[taskindex="+selectedTask.index+"]")
+				.attr("selected", false)
+		}
+		$(this).attr("selected", true);
 
-	selectedTask = task;
+		console.log(task)
+		console.log(index)
 
-	changeDetail(task);
+		selectedTask = task;
+
+		changeDetail(task);
+	} else {
+
+	}
 }
 
 $("img").on("dragstart", function(event) {
@@ -116,19 +123,24 @@ function addNewChildTask(taskName, iconPath, parent) {
 	console.log(newTask)
 	clearPppomo();
 	printPpomo();
+
+	$(".ppomoListContainer[taskIndex="+newTask.index+"]").click()
 	// addNewTaskHtml(newTask)
 }
 function addNewTask(taskName, iconNumber) {
 	const newTask = ipc.sendSync("newTask", taskName, iconNumber)
 	clearPppomo();
 	printPpomo();
+
+	$(".ppomoListContainer[taskIndex="+newTask.index+"]").click()
 	// addNewTaskHtml(newTask)
 }
 function addNewTaskHtml(newTask) {
 	console.log(newTask);
 	className = "ppomoListContainer"
+
 	if(newTask.parent != null)
-		className = "ppomoListContainerChild"
+		className += " ppomoListContainerChild"
 
 	var string = "<div class=\""+className+" noDrag draggable\" taskIndex=\""+newTask.index+"\" draggable=\"true\">";
 	string += "<span class=\"middle ppomoIconContainer\">";
@@ -138,80 +150,14 @@ function addNewTaskHtml(newTask) {
 	string += "</div>";
 
 	$("#ppomoContentList").append(
-		$(string).
-			click(clickHandler)
-			.draggable()
-			// .mousedown(function(event) {
-			// 	dragObject = this;
-			// 	mouseOffset = getMouseOffset(this, event);
-			// 	console.log(mouseOffset)
-			// })
+		$(string)
+			.click(clickHandler)
+			.mouseover(function() {
+
+			})
+			// .draggable()
 	);
 }
-
-function mouseCoords(ev){
-	if(ev.pageX || ev.pageY){
-		return {x:ev.pageX, y:ev.pageY};
-	}
-	return {
-		x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
-		y:ev.clientY + document.body.scrollTop - document.body.clientTop
-	};
-}
-
-function getMouseOffset(target, ev){
-	ev = ev || window.event;
-	var docPos    = getPosition(target);
-	var mousePos  = mouseCoords(ev);
-
-	console.log(docPos)
-	console.log(mousePos)
-	return {x:mousePos.x - docPos.x, y:mousePos.y - docPos.y};
-}
-function getPosition(e){
-	var left = 0;
-	var top  = 0;
-	while (e.offsetParent){
-		left += e.offsetLeft;
-		top  += e.offsetTop;
-		e     = e.offsetParent;
-	}
-	left += e.offsetLeft;
-	top  += e.offsetTop;
-	return {x:left, y:top};
-}
-function mouseMove(ev){
-	ev           = ev || window.event;
-	var mousePos = getMouseOffset(dragObject, ev);
-	// mouseCoords(ev);
-
-	if(dragObject){
-		// .css("top", mousePos.y - mouseOffset.y)
-		// .css("left",mousePos.x - mouseOffset.x)
-		$(dragObject)
-			.css("position","absolute")
-			.css("top", mousePos.y-mouseOffset.y)
-			.css("left",mousePos.x-mouseOffset.x)
-
-		console.log(mousePos.x+", "+mouseOffset.x)
-		console.log(mousePos.y+", "+mouseOffset.y)
-
-		// dragObject.style.position = 'absolute';
-		// dragObject.style.top      = mousePos.y - mouseOffset.y;
-		// dragObject.style.left     = mousePos.x - mouseOffset.x;
-
-		console.log(dragObject.style)
-		return false;
-	}
-}
-function mouseUp(){
-	$(dragObject)
-		.css("position","relative")
-		.css("top", 0)
-		.css("left",0)
-	dragObject = null;
-}
-
 
 function changeDetail() {
 	const task = selectedTask;
@@ -327,6 +273,50 @@ $("#removeButton").click(function() {
 
 	clearPppomo()
 	printPpomo()
+})
+
+$("#moveButton").click(function() {
+	$(".ppomoListContainer[selected!=selected]")
+		.css("background-color","#5C6C70")
+		.css("z-index",5)
+		.mouseover(function() {
+			$(this).css("background-color","#A7C5CC")
+		})
+		.mouseout(function() {
+			$(this).css("background-color","#5C6C70")
+		})
+		.click(function() {
+			// delete all this things
+			// and change selected task to this's child
+			// and parent can't click own child
+			const index = $(this).attr("taskindex")
+			ipc.sendSync("moveTask", selectedTask.index, index)
+
+			isMovingTask = false;
+			clearPppomo()
+			printPpomo()
+
+			$("#blinder")
+				.css("display","none")
+				.css("visibility","hidden")
+				.css("z-index",-1)
+
+			$("#ppomoListOuter")
+				.css("background-color","white")
+		})
+
+	$(".ppomoListContainer[selected=selected]")
+		.css("background-color", "#A7C5CC")
+
+	$("#blinder")
+		.css("display","block")
+		.css("visibility","visible")
+		.css("z-index",2)
+
+	$("#ppomoListOuter")
+		.css("background-color","rgba(0,0,0,0.4)")
+
+	isMovingTask = true;
 })
 
 $("#timerButton").click(function() {

@@ -6,6 +6,34 @@ html ,body, .full-height {
 	border:1px solid blue;
 }
 
+#blinder {
+	z-index: -1;
+	display:none;
+	visibility:hidden;
+
+	position:absolute;
+	left:0px;
+	top:0px;
+
+	width:100%;
+	height:100%;
+}
+.detailCover {
+	background-color:rgba(0,0,0,0.4);
+}
+#ppomoBlinder {
+	height:100%;
+	z-index: 2;
+	position:relative;
+}
+#headerBlinder {
+	width:100$;
+	height:50px;
+}
+#detailBlinder {
+	height:100%;
+}
+
 #ppomoHeader {
 	width:200%;
 	height:50px;
@@ -107,6 +135,7 @@ html ,body, .full-height {
 }
 #ppomoDeleteContainer {
 	/*width:99%;*/
+	margin-bottom: 10px;
 }
 
 .repeatContainer {
@@ -145,7 +174,7 @@ html ,body, .full-height {
 }
 .ppomoListContainer {
 	display:table;
-
+	position: relative;
 	background-color:#8EA7AD;
 
 	width:100%;
@@ -193,4 +222,8 @@ html ,body, .full-height {
 	-webkit-user-drag: none;
 	-webkit-user-select: none;
 	-ms-user-select: none;
+}
+
+.ppomoBTN {
+	margin-bottom:10px;
 }
