@@ -167,6 +167,8 @@ function changeDetail() {
 	$("#ppomoIcon").attr("src", task.icon);
 	$("#memoTextArea").val(task.memo);
 
+	document.getElementById("ppomoDetailContent").scrollTop = 0;
+
 	if(task.deatline) {
 		$("#deadLineUnSet")
 			.css("display","none")

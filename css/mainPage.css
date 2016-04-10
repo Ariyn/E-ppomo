@@ -3,7 +3,7 @@ html ,body, .full-height {
 	overflow:hidden;
 }
 .row > div {
-	border:1px solid blue;
+	/*border:1px solid blue;*/
 }
 
 #blinder {
@@ -35,9 +35,9 @@ html ,body, .full-height {
 }
 
 #ppomoHeader {
-	width:200%;
+	/*width:200%;*/
 	height:50px;
-	overflow-x:scroll;
+	/*overflow-x:scroll;*/
 	overflow-y:hidden;
 }
 #ppomoListOuter {
@@ -68,11 +68,12 @@ html ,body, .full-height {
 	height:10px;
 }
 
-#newTask {
-	width:130px;
-	height:28px;
+#newTask, #changeDeadline, #timerButton {
+	/*width:130px;*/
+	height:100%;
 
 	/*border:1px solid black;*/
+	border:none;
 	border-radius:5px;
 }
 #ppomoDetail {
