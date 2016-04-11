@@ -6,6 +6,9 @@ const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const ipc = electron.ipcMain;
+const Tray = electron.Tray;
+const Menu = electron.Menu;
+const Path = require("path")
 
 var mainWindow = null;
 var timerWindow = null;
@@ -17,31 +20,33 @@ var runningTimer = null;
 var tasks = [];
 var newTaskIndex = 0;
 
+var trayApp = null;
+
 app.on('window-all-closed', function() {
-	if(process.platform != 'darwin')
-		app.quit();
+	// if(process.platform != 'darwin')
+		// app.quit();
 });
 
 app.on('ready', function() {
 	// ls.init();
+	openMainWindow();
 
-	mainWindow = new BrowserWindow({
-		width:600, height:660,
-		icon:"./Resources/icon256.png"
-	});
-	mainWindow.loadURL("file://"+__dirname+"/mainPage.html")
-
-	console.log(mainWindow.getSize());
-	// mainWindow.setSize(size)
-
-	mainWindow.on('closed', function() {
-		mainWindow = null;
-	});
+	trayApp = new Tray(Path.join(__dirname,"Resources/icon256.png"))
+	var contextMenu = Menu.buildFromTemplate([
+		{label:"Tasks", click:function() {
+			openMainWindow()
+		}},
+		{label:"Quit", click:function() {
+			app.quit();
+		}},
+	])
+	trayApp.setToolTip("Ppomodoro")
+	trayApp.setContextMenu(contextMenu)
 });
-app.on("before-quit", function() {
-	saveData();
-	// files.saveData("./tasks", tasks);
-})
+// app.on("before-quit", function() {
+// 	saveData();
+// 	// files.saveData("./tasks", tasks);
+// })
 
 ipc.on("getTasks", function(event) {
 	event.returnValue = tasks;
@@ -144,6 +149,7 @@ ipc.on("openTimer", function (event, _selectedTask) {
 })
 ipc.on("startTimer", function(event, timer) {
 	runningTimer = timer;
+	runningTimer["task"] = selectedTask;
 })
 ipc.on("closeTimer", function(event, timer) {
 	runningTimer = timer;
@@ -154,10 +160,21 @@ ipc.on("closeTimer", function(event, timer) {
 ipc.on("endTimer", function(event, success) {
 	runningTimer["success"] = success;
 	console.log(runningTimer)
-	selectedTask.ppomos.push(runningTimer)
+	runningTimer["task"].ppomos.push(runningTimer)
 	runningTimer = null;
 })
+function openMainWindow() {
+	mainWindow = new BrowserWindow({
+		width:600, height:660,
+		icon:"./Resources/icon256.png"
+	});
+	mainWindow.loadURL("file://"+__dirname+"/mainPage.html")
 
+	mainWindow.on('closed', function() {
+		saveData();
+		mainWindow = null;
+	});
+}
 // TODO: change this as recursive
 // remove every child which has removed parent
 function deleteTask(taskIndex) {
@@ -222,6 +239,7 @@ function loadData() {
 	const datas = files.loadData("./tasks")
 	const loadedData = datas["tasks"]
 	newTaskIndex = datas["newTaskIndex"]
+	runningTimer = datas["runningtimer"]
 
 	if(newTaskIndex == null)
 		newTaskIndex = 0;
@@ -254,7 +272,8 @@ function loadData() {
 
 function saveData() {
 	console.log(newTaskIndex)
-	files.saveData("./tasks", tasks, newTaskIndex);
+	if(tasks != null && newTaskIndex != null)
+		files.saveData("./tasks", tasks, newTaskIndex, runningTimer);
 	// localStorage.saveData("tasks", tasks);
 	// localStorage.saveData("taskIndex", newTaskIndex);
 }

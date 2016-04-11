@@ -27,10 +27,11 @@ function read(path) {
 	return tasks;
 }
 
-function saveData(path, tasks, newTaskIndex) {
+function saveData(path, tasks, newTaskIndex, runningTimer) {
 	const jsonData = JSON.stringify({
 		"tasks":tasks,
-		"newTaskIndex":newTaskIndex
+		"newTaskIndex":newTaskIndex,
+		"runningTimer":runningTimer
 	});
 
 	console.log(newTaskIndex)
