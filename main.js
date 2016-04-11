@@ -1,5 +1,6 @@
 'use strict';
 
+const ls = require("./NScript/LocalStorage.js")
 const files = require("./NScripts/files.js");
 const electron = require('electron');
 const app = electron.app;
@@ -22,6 +23,8 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
+	// ls.init();
+
 	mainWindow = new BrowserWindow({
 		width:600, height:660,
 		icon:"./Resources/icon256.png"
