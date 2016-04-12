@@ -1,6 +1,4 @@
-'use strict';
-
-const ls = require("./NScript/LocalStorage.js")
+// const ls = require("./NScript/LocalStorage.js")
 const files = require("./NScripts/files.js");
 const electron = require('electron');
 const app = electron.app;
@@ -15,6 +13,9 @@ var timerWindow = null;
 var selectedTask = null;
 var runningTimer = null;
 
+
+// TODO: 동기부여
+// API들 이용해 문가 할 수 있도록
 // TODO: change this to dictionary and make index as key.
 // assign new index to new tasks which doesn't conflict.
 var tasks = [];
@@ -22,6 +23,9 @@ var newTaskIndex = 0;
 
 var trayApp = null;
 
+if(!module) {
+// module start
+console.log("inside here!")
 app.on('window-all-closed', function() {
 	// if(process.platform != 'darwin')
 		// app.quit();
@@ -56,28 +60,6 @@ ipc.on("getTask", function(event, taskIndex) {
 	const retVal = findTask(taskIndex)
 	event.returnValue = retVal;
 });
-
-function createNewTask(name, icon, parent) {
-	const task = new Task(name, icon, newTaskIndex);
-	task.parent = parent;
-
-	console.log(parent);
-	console.log(task);
-	if(parent!= null){
-		var _parent= findTask(parent)
-		if(_parent.parent != null)
-			_parent = findTask(_parent.parent)
-
-		console.log(_parent);
-		_parent.children.push(task.index)
-		console.log(task);
-	}
-	tasks.push(task);
-
-	newTaskIndex+=1;
-
-	return task
-}
 ipc.on("newTask", function(event, name, icon) {
 
 	event.returnValue = createNewTask(name, icon, null);
@@ -113,7 +95,7 @@ ipc.on("moveTask", function(event, targetIndex, newParentIndex) {
 	const target = findTask(targetIndex);
 	const newParent = findTask(newParentIndex);
 
-	if(target.parent != null) {
+	if(target.parent !== null) {
 		const parent = findTask(target.parent);
 
 		console.log("splicing")
@@ -149,7 +131,7 @@ ipc.on("openTimer", function (event, _selectedTask) {
 })
 ipc.on("startTimer", function(event, timer) {
 	runningTimer = timer;
-	runningTimer["task"] = selectedTask;
+	runningTimer.task = selectedTask;
 })
 ipc.on("closeTimer", function(event, timer) {
 	runningTimer = timer;
@@ -158,11 +140,41 @@ ipc.on("closeTimer", function(event, timer) {
 	timerWindow = null;
 })
 ipc.on("endTimer", function(event, success) {
-	runningTimer["success"] = success;
+	runningTimer.success = success;
 	console.log(runningTimer)
-	runningTimer["task"].ppomos.push(runningTimer)
+	runningTimer.task.ppomos.push(runningTimer)
 	runningTimer = null;
 })
+
+loadData();
+if(tasks.length === 0) {
+	const _taskd = createNewTask("뽀모도로", "./Resources/glyphicons/png/glyphicons-1-glass.png", null);
+}
+
+}// module end
+
+
+function createNewTask(name, icon, parent) {
+	const task = new Task(name, icon, newTaskIndex);
+	task.parent = parent;
+
+	// console.log(parent);
+	// console.log(task);
+	if(parent !== null){
+		var _parent= findTask(parent)
+		if(_parent.parent !== null)
+			_parent = findTask(_parent.parent)
+
+		// console.log(_parent);
+		_parent.children.push(task.index)
+		// console.log(task);
+	}
+	tasks.push(task);
+
+	newTaskIndex+=1;
+
+	return task
+}
 function openMainWindow() {
 	mainWindow = new BrowserWindow({
 		width:600, height:660,
@@ -177,33 +189,29 @@ function openMainWindow() {
 }
 // TODO: change this as recursive
 // remove every child which has removed parent
+
 function deleteTask(taskIndex) {
-	const _task = findTask(taskIndex);
-	console.log(_task)
+	const target = findTask(taskIndex);
+	console.log(target)
 
-	if(_task != null) {
-		const target = popTask(_task.index, 1)[0]
-		console.log(_task)
-		console.log(target)
-
-		console.log(target.parent)
-		if(target.parent != null) {
-			const parent = findTask(target.parent)
-
-			console.log(parent)
-			console.log(parent.children)
-
-			const childIndex = parent.children.indexOf(taskIndex)
-			console.log(childIndex)
-			parent.children.splice(childIndex, 1)
+	if(target !== null) {
+		if(target.children.length !== 0) {
+			for(const i in target.children) {
+				deleteTask(target.children[i])
+				// popTask(_childTask.index,1);
+			}
 		}
 
-		if(target.children.length != 0) {
-			for(const i in target.children) {
-				const _childTask = target.children[i];
+		popTask(target.index)
 
-				popTask(_childTask.index,1);
-			}
+		console.log(target.parent)
+		if(target.parent !== null) {
+			const parent = findTask(target.parent)
+			console.log("parent", parent, target.parent)
+			popByValue(parent.children, taskIndex);
+
+			// const childIndex = parent.children.indexOf(taskIndex)
+			// parent.children.splice(childIndex, 1)
 		}
 	}
 }
@@ -221,32 +229,42 @@ function findTask(taskIndex) {
 
 	return retVal;
 }
-function popTask(taskIndex, size) {
-	var retVal = null;
+
+
+function popByValue(list, value) {
+	var retVal = [null];
+
+	const childIndex = list.children.indexOf(value)
+	if(childIndex != -1)
+		retVal = list.children.splice(childIndex, 1);
+
+	return retVal[0];
+}
+function popTask(taskIndex) {
+	var retVal = [null];
 
 	for(const i in tasks) {
-		const _task = tasks[i];
-		if(_task.index == taskIndex) {
-			retVal = tasks.splice(i, size)
+		if(tasks[i].index == taskIndex) {
+			retVal = tasks.splice(i, 1)
 			break;
 		}
 	}
 
-	return retVal;
+	return retVal[0];
 }
 
 function loadData() {
 	const datas = files.loadData("./tasks")
-	const loadedData = datas["tasks"]
-	newTaskIndex = datas["newTaskIndex"]
-	runningTimer = datas["runningtimer"]
+	const loadedData = datas.tasks
+	newTaskIndex = datas.newTaskIndex
+	runningTimer = datas.runningtimer
 
-	if(newTaskIndex == null)
+	if(newTaskIndex === null)
 		newTaskIndex = 0;
 
 	if(loadedData == []) {
 		saveData();
-	} else if (tasks.length == 0) {
+	} else if (tasks.length === 0) {
 		// create loadedDAta to task class
 		const parseFunction = function(task) {
 			const _task = new Task(task.name, task.icon, task.index)
@@ -272,23 +290,19 @@ function loadData() {
 
 function saveData() {
 	console.log(newTaskIndex)
-	if(tasks != null && newTaskIndex != null)
+	if(tasks !== null && newTaskIndex !== null)
 		files.saveData("./tasks", tasks, newTaskIndex, runningTimer);
 	// localStorage.saveData("tasks", tasks);
 	// localStorage.saveData("taskIndex", newTaskIndex);
 }
-loadData();
+
 console.log(newTaskIndex)
 console.log(tasks)
 
-if(tasks.length == 0) {
-	const _taskd = createNewTask("뽀모도로", "./Resources/glyphicons/png/glyphicons-1-glass.png", null);
-}
-
-function Task(taskName, icon, index) {
+function Task(taskName, _icon, _index) {
 	var name = taskName;
-	var icon = icon;
-	var index = index;
+	var icon = _icon;
+	var index = _index;
 	var memo = null;
 	var children = [];
 	var parent = null;
@@ -303,4 +317,11 @@ function Task(taskName, icon, index) {
 		parent : parent,
 		ppomos : ppomos
 	};
+}
+
+
+module.exports = {
+	deleteTask:deleteTask,
+	tasks:tasks,
+	createNewTask:createNewTask
 }

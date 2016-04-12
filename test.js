@@ -1,34 +1,16 @@
-'use strict';
+const main = require("main.js")
 
-const ls = require("./NScripts/LocalStorage.js")
-const electron = require("electron");
-const app = electron.app;
+QUnit.test( "hello test", function( assert ) {
+  assert.ok( 1 == "1", "Passed!" );
+});
 
-app.on("ready", function() {
-	ls.init();
-
-	ls.onLoad(function(event) {
-		ls.saveData("sample", "1234567")
-		ls.saveData("sample1", 1234567)
-		ls.saveData("sample2", {
-			"aaa":1,
-			"bbb":1
-		})
-		ls.loadData("sample", function(data) {
-			console.log(data)
-		})
-		const sample1 = ls.loadData("sample1", function(data) {
-			console.log(data)
-		})
-		const sample2 = ls.loadData("sample2", function(data) {
-			console.log(data)
-		})
-
-		// console.log(sample1)
-		// console.log(sample2)
-	})
-	// app.quit()
-})
-
-// 동기부여
-// API들 이용해 문가 할 수 있도록
+// main.createNewTask("parent1","testste", null)
+// main.createNewTask("parent2","testste", null)
+// main.createNewTask("child1","testste", 0)
+// main.createNewTask("child2","testste", 0)
+// main.createNewTask("child3","testste", 1)
+//
+// console.log("test", main.tasks)
+//
+// main.deleteTask(0)
+// console.log("test", main.tasks)
