@@ -1,0 +1,40 @@
+{   
+    "ra":"--nolazy",
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Launch",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceRoot}\\test.js",
+			"stopOnEntry": false,
+			"args": [],
+			"cwd": "${workspaceRoot}",
+			"preLaunchTask": "C:\\Users\\ariyn\\Documents\\E-ppomo\\run.bat",
+			"runtimeExecutable": "C:\\Users\\ariyn\\Documents\\electron\\electron.exe",
+			"runtimeArgs": [
+				
+			],
+			"env": {
+				"NODE_ENV": "development",
+                "COINS_ENV": "development",
+                "ATOM_SHELL_INTERNAL_RUN_AS_NODE":"0"
+			},
+			"externalConsole": false,
+			"sourceMaps": false,
+			"outDir": null
+		},
+		{
+			"name": "Attach",
+			"type": "node",
+			"request": "attach",
+			"port": 8855,
+			"address": "localhost",
+			"restart": false,
+			"sourceMaps": false,
+			"outDir": null,
+			"localRoot": "${workspaceRoot}",
+			"remoteRoot": null
+		}
+	]
+}

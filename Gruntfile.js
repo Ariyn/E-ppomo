@@ -2,20 +2,48 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		jshint: {
-			all: ['test.js', 'main.js'],
+			all: ['src/test.js', 'src/main.js'],
 			options: {
 				jshintrc:".jshintrc"
 			}
 		},
-		qunit: {
-			all:["html/test.html"]
+		electron: {
+			osxBuild: {
+				options: {
+					name: 'ppomodoro',
+					dir: 'app',
+					out: 'dist',
+					version: '0.25.3',
+					platform: 'darwin',
+					arch: 'x64'
+				}
+			},
+			"win-x64": {
+				options: {
+					name: 'ppomodoro',
+					dir:"C:\\Users\\ariyn\\Documents\\E-ppomo",
+					platform:"win32",
+					arch:"x64",
+					version:"0.37.3"
+				}
+			}
+		},
+		'create-windows-installer': {
+			x64: {
+				appDirectory: 'C:\\Users\\ariyn\\Documents\\E-ppomo',
+				authors: 'Mutopia',
+				description:"ppomodoro app",
+				exe: 'myapp.exe'
+			},
 		}
 	});
 	grunt.registerTask('check', ["jshint"]);
-	grunt.registerTask('test', ["qunit"]);
+	// grunt.registerTask('build-64', ["jshint", "create-windows-installer:x64"]);
+	// grunt.registerTask('build-64', ["jshint", "electron:win-x64"]);
 
 	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-contrib-qunit');
+	grunt.loadNpmTasks('grunt-electron-installer')
+	grunt.loadNpmTasks('grunt-electron')
 }
 // grunt.initConfig({
 //     pkg: grunt.file.readJSON('package.json'),

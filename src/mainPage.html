@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ppomodoro</title>
+
+		<script type="text/javascript" src="./Scripts/jquery-2.2.2.min.js"></script>
+
+		<script >
+			window.$ = window.jQuery = window.jquery = require('./Scripts/jquery-2.2.2.min');
+			window.ipc = require('electron').ipcRenderer;
+		</script>
+		<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+		<link rel="stylesheet" href="./css/bootstrap.readable.css">
+
+		<link rel="stylesheet" href="./css/mainPage.css">
+	</head>
+
+	<body>
+		<div class="container full-height">
+			<div class="row full-height">
+				<div id="ppomoHeader">
+					<button id="newTask" class="btn btn-primary">
+						new task
+					</button>
+					<!-- <button id="changeDeadline" class="btn btn-primary">
+						changeDeadline
+					</button> -->
+					<button id="timerButton" class="btn btn-primary">
+						timer
+					</button>
+					<!-- <button id="loadData" class="btn btn-primary">
+						loadData
+					</button>
+					<button id="saveData" class="btn btn-primary">
+						saveData
+					</button> -->
+				</div>
+				<div id="ppomoListOuter" class="col-sm-4 col-xs-5">
+					<div id="ppomoList">
+						<div id="ppomoContentHeader"></div>
+
+						<div id="ppomoContentList" class="dropzone">
+						</div>
+						<div id="ppomoContentFooter"></div>
+					</div>
+				</div>
+
+				<div id="ppomoDetail" class="col-sm-8 col-xs-7">
+					<div id="ppomoDetailHeader" class="noDrag">
+						<span><img src="./Resources/glyphicons/png/glyphicons-6-car.png" alt="" class="ppomoIcon-small" id="ppomoIcon"></span>
+						<h1>뽀모도로!</h1>
+						<input type="hidden" id="taskNameInput"></input>
+					</div>
+					<div id="ppomoDetailContent">
+						<div id="dDayContainer" class="container">
+							<span id="deadLineSet">
+								<div id="dDayHeader">
+									until your deadline
+								</div>
+								<div id="dDayContents">
+									12
+								</div>
+								<div id="dDayFooter">
+									days left
+								</div>
+							</span>
+							<span id="deadLineUnSet">
+								<div id="dDayHeader">
+									<!-- this task doesn't have deadline -->
+									마감일자 설정되지 않음
+								</div>
+							</span>
+						</div>
+
+						<div id="ppomoSuccessCountContainer" class="detailContainers">
+							0번 뽀모도로에 성공함
+						</div>
+
+						<div id="ppomoNotiContainer" class="detailContainers">
+							기본 알림 없음
+						</div>
+
+						<div id="ppomoRepeatContainer" class="detailContainers container">
+							<div>반복</div>
+							<!-- , Mon, Tue, Wed, Thu, Fri, Sat -->
+							<div class="repeatContainer">
+								<div>Sun</div>
+								<div>0</div>
+							</div>
+							<div class="repeatContainer">
+								<div>Mon</div>
+								<div>0</div>
+							</div>
+							<div class="repeatContainer">
+								<div>Tue</div>
+								<div>0</div>
+							</div>
+							<div class="repeatContainer">
+								<div>Wed</div>
+								<div>0</div>
+							</div>
+							<div class="repeatContainer">
+								<div>Thu</div>
+								<div>0</div>
+							</div>
+							<div class="repeatContainer">
+								<div>Fri</div>
+								<div>0</div>
+							</div>
+							<div class="repeatContainer">
+								<div>Sat</div>
+								<div>0</div>
+							</div>
+						</div>
+						<div id="ppomoMemoContainer" class="detailContainers">
+							<textarea id="memoTextArea" name="memo" rows="8" cols="40"></textarea>
+						</div>
+
+						<div id="ppomoDeleteContainer" class="detailContainers row">
+							<button type="button" id="completeButton" class="ppomoBTN btn btn-success col-xs-12">완료</button>
+							<button type="button" id="moveButton" class="ppomoBTN btn  col-xs-12">위치 이동</button>
+							<button type="button" id="removeButton" class="ppomoBTN btn btn-danger col-xs-12">삭제</button>
+						</div>
+					</div>
+					<div id="ppomoDetailFooter">
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="blinder">
+			<div id="headerBlinder" class="detailCover"></div>
+			<div id="ppomoBlinder" class="col-sm-4 col-xs-5"></div>
+			<div id="detailBlinder" class="detailCover col-sm-8 col-xs-7"></div>
+		</div>
+		<script src="./Scripts/main.js" charset="utf-8"></script>
+	</body>
+</html>
