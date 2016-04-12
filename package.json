@@ -1,7 +1,7 @@
 {
   "name": "ppomodoro",
   "version": "0.0.1",
-  "main": "test.js",
+  "main": "tests/vis.js",
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-contrib-jshint": "^1.0.0",
