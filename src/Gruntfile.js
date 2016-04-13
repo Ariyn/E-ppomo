@@ -38,12 +38,15 @@ module.exports = function(grunt) {
 		}
 	});
 	grunt.registerTask('check', ["jshint"]);
+	grunt.registerTask('run', ["jshint", "batch"]);
 	// grunt.registerTask('build-64', ["jshint", "create-windows-installer:x64"]);
 	// grunt.registerTask('build-64', ["jshint", "electron:win-x64"]);
 
 	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-electron-installer')
-	grunt.loadNpmTasks('grunt-electron')
+	// grunt.loadNpmTasks('grunt-batch');
+	// grunt.loadNpmTasks('grunt-contrib-commands');
+	// grunt.loadNpmTasks('grunt-electron-installer')
+	// grunt.loadNpmTasks('grunt-electron')
 }
 // grunt.initConfig({
 //     pkg: grunt.file.readJSON('package.json'),
