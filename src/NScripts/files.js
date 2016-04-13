@@ -3,7 +3,7 @@
 const fs = require("fs");
 
 function write(path, string, callback) {
-	fs.writeFile(path, string, 'utf8', function(err, data) {
+	fs.writeFileSync(path, string, 'utf8', function(err, data) {
 	    if(err) {
 	        // 파일 쓰기 실패
 	        console.log(err);

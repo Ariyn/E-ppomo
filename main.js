@@ -8,11 +8,8 @@ const Tray = electron.Tray;
 const Menu = electron.Menu;
 const Path = require("path")
 
-console.log("running")
-// TODO: change windows to dictionary
 var mainWindow = null;
 var timerWindow = null;
-var visualWindow = null;
 var selectedTask = null;
 var runningTimer = null;
 
@@ -26,6 +23,7 @@ var newTaskIndex = 0;
 
 var trayApp = null;
 
+// console.log(module)
 
 // MODULE: start
 // if(!module) {
@@ -58,10 +56,10 @@ app.on('ready', function() {
 
 ipc.on("getTasks", function(event, type) {
 	var retVal = null;
-	console.log("type", type)
+	console.log(type)
 	if(type == "d3") {
 		retVal = parseNode(tasks)
-	} else if(type === undefined)
+	} else if(type === null)
 		retVal = tasks;
 
 	event.returnValue = retVal;
@@ -156,13 +154,14 @@ ipc.on("endTimer", function(event, success) {
 	runningTimer.task.ppomos.push(runningTimer)
 	runningTimer = null;
 })
-ipc.on("openVisualizer", function(event, task) {
-	visualWindow = new BrowserWindow({
-		width:600, height:660
-	})
-	visualWindow.loadURL("file::/"+__dirname+"/html/taskVisualizer.html")
-})
-// }// module end
+
+loadData();
+if(tasks.length === 0) {
+	const _taskd = createNewTask("뽀모도로", "./Resources/glyphicons/png/glyphicons-1-glass.png", null);
+}
+
+// }
+// MODULE: end
 
 
 function createNewTask(name, icon, parent) {
@@ -173,6 +172,8 @@ function createNewTask(name, icon, parent) {
 	// console.log(task);
 	if(parent !== null){
 		var _parent= findTask(parent)
+		console.log("name ", name, " parent ",_parent);
+
 		// if(_parent.parent !== null)
 		// 	_parent = findTask(_parent.parent)
 
@@ -191,7 +192,7 @@ function openMainWindow() {
 		width:600, height:660,
 		icon:"./Resources/icon256.png"
 	});
-	mainWindow.loadURL("file://"+__dirname+"/html/mainPage.html")
+	mainWindow.loadURL("file://"+__dirname+"/mainPage.html")
 
 	mainWindow.on('closed', function() {
 		saveData();
@@ -199,6 +200,8 @@ function openMainWindow() {
 	});
 }
 
+// TODO: change this as recursive
+// remove every child which has removed parent
 function deleteTask(taskIndex) {
 	const target = findTask(taskIndex);
 	// console.log(target)
@@ -208,8 +211,9 @@ function deleteTask(taskIndex) {
 
 	while(target.children.length !== 0) {
 	// for(const i in target.children) {
-		console.log("removing recursive "+target.children)
+		// console.log("removing recursive "+target.children)
 		deleteTask(target.children[0])
+		// popTask(_childTask.index,1);
 	}
 
 	popTask(target.index)
@@ -224,10 +228,11 @@ function deleteTask(taskIndex) {
 		// parent.children.splice(childIndex, 1)
 	}
 }
+
 function findTask(taskIndex) {
 	var retVal = null;
 
-	for(const i in tasks) {
+	for(var i in tasks) {
 		const _task = tasks[i];
 		if(_task.index == taskIndex) {
 			retVal = _task;
@@ -251,7 +256,7 @@ function popByValue(list, value) {
 function popTask(taskIndex) {
 	var retVal = [null];
 
-	for(const i in tasks) {
+	for(var i in tasks) {
 		if(tasks[i].index == taskIndex) {
 			retVal = tasks.splice(i, 1)
 			break;
@@ -261,41 +266,18 @@ function popTask(taskIndex) {
 	return retVal[0];
 }
 
-function saveData(callback) {
-	console.log(newTaskIndex)
-	if(tasks !== null && newTaskIndex !== null)
-		files.saveData("./tasks", tasks, newTaskIndex, runningTimer, callback);
-	// localStorage.saveData("tasks", tasks);
-	// localStorage.saveData("taskIndex", newTaskIndex);
-}
-
-
 function loadData() {
-	var datas = files.loadData("./tasks")
-	console.log("loaded Data = ", datas)
-
-	if(datas.constructor === Array && datas.length == 0) {
-		const _taskd = createNewTask("뽀모도로", "../Resources/glyphicons/png/glyphicons-1-glass.png", null);
-
-		console.log("init task file")
-		console.log(_taskd, newTaskIndex, tasks)
-
-		saveData(loadData);
-		datas = files.loadData("./tasks")
-	}
-
-	console.log("inside loading")
-	console.log(datas)
-
+	const datas = files.loadData("./tasks")
 	const loadedData = datas.tasks
-
 	newTaskIndex = datas.newTaskIndex
 	runningTimer = datas.runningtimer
 
 	if(newTaskIndex === null)
 		newTaskIndex = 0;
 
-	if (tasks.length === 0) {
+	if(loadedData == []) {
+		saveData();
+	} else if (tasks.length === 0) {
 		// create loadedDAta to task class
 		const parseFunction = function(task) {
 			const _task = new Task(task.name, task.icon, task.index)
@@ -313,11 +295,20 @@ function loadData() {
 
 			return _task;
 		}
-		for(const _index in loadedData) {
+		for(var _index in loadedData) {
 			tasks.push(parseFunction(loadedData[_index]))
 		}
 	}
 }
+
+function saveData() {
+	console.log(newTaskIndex)
+	if(tasks !== null && newTaskIndex !== null)
+		files.saveData("./tasks", tasks, newTaskIndex, runningTimer);
+	// localStorage.saveData("tasks", tasks);
+	// localStorage.saveData("taskIndex", newTaskIndex);
+}
+
 /*
 obj = {
 	children:[obj],
@@ -329,7 +320,6 @@ obj = {
 	y:0,
 	y0:0
 }*/
-
 function parseNode(tasks, depth) {
 	var lists = []
 	if(depth === null)
@@ -350,11 +340,8 @@ function parseNode(tasks, depth) {
 	return lists;
 }
 
-console.log("new Task index", newTaskIndex)
-console.log("tasks", tasks)
-loadData();
-console.log("new Task index", newTaskIndex)
-console.log("tasks", tasks)
+console.log(newTaskIndex)
+console.log(tasks)
 
 function Task(taskName, _icon, _index) {
 	var name = taskName;

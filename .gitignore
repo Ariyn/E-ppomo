@@ -8,3 +8,5 @@ node_modules/*
 ppomodoro-win32-x64/
 src/Resources/glyphicons-social/
 src/Resources/glyphicons/
+google-key
+src/node_modules/

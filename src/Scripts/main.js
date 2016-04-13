@@ -199,26 +199,20 @@ function changeContainerName(target, task) {
 }
 
 function getTask(taskIndex) {
-	return ipc.sendSync("getTask", taskIndex);
+	const tasks = ipc.sendSync("getTask", taskIndex);
+	console.log(tasks)
+	return tasks;
 }
 function getTasks() {
-	return ipc.sendSync("getTasks");
+	const tasks = ipc.sendSync("getTasks");
+	console.log(tasks)
+	return tasks;
 }
 
 function getIcon(number) {
 	return "1-glass";
 }
 
-
-$("#loadData").click(function() {
-	console.log("here")
-	const data = ipc.sendSync("loadDataTest")
-	console.log(data);
-})
-$("#saveData").click(function() {
-	console.log("here")
-	ipc.send("saveDataTest")
-})
 $("#changeDeadline").click(function() {
 	testChangeDeadLine = !testChangeDeadLine;
 	if(testChangeDeadLine) {
