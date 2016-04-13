@@ -1,12 +1,12 @@
 {
   "name": "ppomodoro",
   "version": "0.0.1",
-  "main": "./tests/vis.js",
+  "main": "test/vis.js",
   "devDependencies": {
     "google-auth-library": "^0.9.7",
     "googleapis": "^4.0.0",
     "grunt-batch": "^0.2.4",
     "grunt-contrib-commands": "^0.1.6",
     "grunt-contrib-jshint": "^1.0.0"
-  }
+	}
 }
