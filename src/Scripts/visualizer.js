@@ -1,25 +1,3 @@
-var margin = {top: 30, right: 20, bottom: 30, left: 20},
-	width = 120,
-	// $(document).width() - margin.left - margin.right,
-	barHeight = 40,
-	barWidth = width * .8;
-
-var i = 0,
-	duration = 20,
-	root;
-
-var tree = d3.layout.tree()
-	.nodeSize([0, 20]);
-
-var diagonal = d3.svg.diagonal()
-	.projection(function(d) { return [d.y, d.x]; });
-
-var svg = d3.select("body").append("svg")
-	.attr("width", width + margin.left + margin.right+40)
-	.append("g")
-	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
 // obj = {
 // 	children:[obj],
 // 	depth:0,
@@ -48,7 +26,7 @@ function getTasks() {
 }
 
 function update(source) {
-
+	console.log(svg)
 	// Compute the flattened node list. TODO use d3.layout.hierarchy.
 	var nodes = tree.nodes(root)
 	nodes = nodes.splice(1, nodes.length);
@@ -66,7 +44,7 @@ function update(source) {
 
 	// Compute the "layout".
 	nodes.forEach(function(n, i) {
-		n.x = i * barHeight;
+		n.x = i * (barHeight+barMarginBottom);
 	});
 
 	// Update the nodes…
@@ -74,36 +52,66 @@ function update(source) {
 		.data(nodes, function(d) { return d.id || (d.id = ++i); });
 
 	var nodeEnter = node.enter().append("g")
-		.attr("class", "node noDrag")
+		.attr("class", "node noDrag ppomoNode")
 		.attr("depth", function(d){
 			// console.log(source)
 			// console.log(d)
 			return d.depth
 		})
 		.attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-		.style("opacity", 1e-6);
+		.style("opacity", 1e-6)
+		.on("mouseover", function(d){
+			d3.select(this).select("rect").style("fill", "#A1B2C2")
+		})
+		.on("mouseout", function(d){
+			d3.select(this).select("rect").style("fill", color)
+		})
 
 	// Enter any new nodes at the parent's previous position.
-	nodeEnter.append("rect")
+	nodeEnter
+		.append("rect")
 		.attr("y", -barHeight / 2)
 		.attr("height", barHeight)
 		.attr("width", barWidth)
 		.style("fill", color)
-		// .on("click", click);
-		.on("click", function() {
-			console.log($(this).parent()[0].__data__)
-		});
+		.attr("class", "ppomoListRect")
+		// .on("click", function() {
+		// 	console.log($(this).parent()[0].__data__)
+		// });
 
 	nodeEnter.append("text")
 		.attr("dy", 3.5)
 		.attr("dx", 5.5)
-		.text(function(d) { return d.name; });
+		.text(function(d) { return d.name; })
+		.attr("transform", "translate(20, 0)")
+		.attr("class", "ppomoListText")
 
+	nodeEnter.append("svg:image")
+		.attr("dy", 3.5)
+		.attr("dx", 2.0)
+		.attr("xlink:href", function(d) {
+			return d._children ? "../Resources/glyphicons/png/glyphicons-433-plus.png" : d.children ? "../Resources/glyphicons/png/glyphicons-434-minus.png" : "";
+		})
+		.attr("width","10")
+		.attr("height","10")
+		.attr("transform","translate(5,-5)")
+		.on("click", click)
+		.style("cursor","pointer")
+		// ../Resources/glyphicons/png/glyphicons-6-car.png
 	// Transition nodes to their new position.
 	nodeEnter.transition()
 		.duration(duration)
 		.attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
 		.style("opacity", 1);
+
+	svg.selectAll("image")
+		.attr("xlink:href", function(d) {
+
+			const retVal =  d._children ? "../Resources/glyphicons/png/glyphicons-433-plus.png" : d.children ? "../Resources/glyphicons/png/glyphicons-434-minus.png" : "";
+
+			console.log(retVal)
+			return retVal;
+		});
 
 	node.transition()
 		.duration(duration)
@@ -118,6 +126,9 @@ function update(source) {
 		.attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
 		.style("opacity", 1e-6)
 		.remove();
+
+// TODO:
+// change blue color to greenish color
 
 	// Update the links…
 	// var link = svg.selectAll("path.link")
@@ -168,7 +179,10 @@ function click(d) {
 }
 
 function color(d) {
-	return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
+	// #FD4481
+	// #60B2E5
+	// #3182bd
+	return d._children ? "#60B2E5" : d.children ? "#c6dbef" : "#fd8d3c";
 }
 
 $(document).ready(function() {

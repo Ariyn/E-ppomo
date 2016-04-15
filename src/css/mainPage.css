@@ -228,3 +228,13 @@ html ,body, .full-height {
 .ppomoBTN {
 	margin-bottom:10px;
 }
+.ppomoNode {
+	vertical-align:top;
+	margin-bottom:30px;
+}
+.ppomoListText {
+	cursor:context-menu;
+}
+.ppomoListRect:hover {
+	background-color:#A1B2C2;
+}

@@ -1,7 +1,7 @@
 {
   "name": "ppomodoro",
   "version": "0.0.1",
-  "main": "tests/vis.js",
+  "main": "main.js",
   "devDependencies": {
     "google-auth-library": "^0.9.7",
     "googleapis": "^4.0.0"

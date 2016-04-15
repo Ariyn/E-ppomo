@@ -1,3 +1,21 @@
+var margin = {top: 30, right: 20, bottom: 30, left: -20},
+	width = 200,
+	// $(document).width() - margin.left - margin.right,
+	barHeight = 80,
+	barWidth = width * .8,
+	barMarginBottom = 10;
+
+var i = 0,
+	duration = 20,
+	root;
+
+var tree = d3.layout.tree()
+	.nodeSize([0, 20]);
+
+var diagonal = d3.svg.diagonal()
+	.projection(function(d) { return [d.y, d.x]; });
+var svg = null;
+
 var selectedTask = null;
 var testChangeDeadLine = false;
 
@@ -83,16 +101,27 @@ $("#ppomoDetailHeader>h1").click(function() {
 })
 
 $(document).ready(function() {
+	svg = d3.select("#ppomoContentList").append("svg")
+		.attr("width", width + margin.left + margin.right+40)
+		.append("g")
+		.attr("class", "mainG")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 	clearPppomo();
 	printPpomo();
 	$(".ppomoListContainer").first().click();
 })
 
 function clearPppomo() {
-	$("#ppomoContentList").empty();
+	$("#ppomoContentList>svg>.mainG").empty();
 }
 
 function printPpomo() {
+	const d3StyleData = ipc.sendSync("getTasks", "d3")
+	update(root = d3StyleData);
+}
+
+function printPpomo2() {
 	const tasks = getTasks();
 	for(const t in tasks) {
 		const _task = tasks[t];

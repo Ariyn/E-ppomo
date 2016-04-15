@@ -49,6 +49,27 @@
 		window.d3 = require('../Scripts/d3.v3.min.js');
 		const ipc = require("electron").ipcRenderer;
 		console.log(d3);
+
+		var margin = {top: 30, right: 20, bottom: 30, left: 20},
+			width = 120,
+			// $(document).width() - margin.left - margin.right,
+			barHeight = 40,
+			barWidth = width * .8;
+
+		var i = 0,
+			duration = 20,
+			root;
+
+		var tree = d3.layout.tree()
+			.nodeSize([0, 20]);
+
+		var diagonal = d3.svg.diagonal()
+			.projection(function(d) { return [d.y, d.x]; });
+
+		var svg = d3.select("body").append("svg")
+			.attr("width", width + margin.left + margin.right+40)
+			.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 	</script>
 
 	<script src="../Scripts/visualizer.js" charset="utf-8"></script>
