@@ -215,8 +215,10 @@ function _parseNode(target) {
 		if(_target !== null) {
 			lists.push({
 				children:_parseNode(_target.children),
-				name : _target.name
+				name : _target.name,
+				index: _target.index
 			})
+			console.log(_target)
 		}
 	}
 

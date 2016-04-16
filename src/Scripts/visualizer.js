@@ -28,6 +28,7 @@ function getTasks() {
 function update(source) {
 	console.log(svg)
 	// Compute the flattened node list. TODO use d3.layout.hierarchy.
+	console.log(root)
 	var nodes = tree.nodes(root)
 	nodes = nodes.splice(1, nodes.length);
 	console.log(nodes)
@@ -52,13 +53,17 @@ function update(source) {
 		.data(nodes, function(d) { return d.id || (d.id = ++i); });
 
 	var nodeEnter = node.enter().append("g")
-		.attr("class", "node noDrag ppomoNode")
+		.attr("class", "node noDrag ppomoNode ppomoListContainer")
 		.attr("depth", function(d){
 			// console.log(source)
 			// console.log(d)
 			return d.depth
 		})
 		.attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+		.attr("taskindex", function(d) {
+			console.log(d)
+			return d.index;
+		})
 		.style("opacity", 1e-6)
 		.on("mouseover", function(d){
 			d3.select(this).select("rect").style("fill", "#A1B2C2")

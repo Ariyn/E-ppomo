@@ -233,7 +233,7 @@ html ,body, .full-height {
 	margin-bottom:30px;
 }
 .ppomoListText {
-	cursor:context-menu;
+	cursor:default;
 }
 .ppomoListRect:hover {
 	background-color:#A1B2C2;
