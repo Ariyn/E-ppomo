@@ -32,6 +32,8 @@ function clickHandler() {
 		}
 		$(this).attr("selected", true);
 
+		console.log($(this))
+
 		console.log(task)
 		console.log(index)
 
@@ -118,7 +120,15 @@ function clearPppomo() {
 
 function printPpomo() {
 	const d3StyleData = ipc.sendSync("getTasks", "d3")
+	console.log(d3StyleData)
 	update(root = d3StyleData);
+
+
+	$(".ppomoListContainer")
+		.click(clickHandler)
+		.mouseover(function() {
+
+		});
 }
 
 function printPpomo2() {
