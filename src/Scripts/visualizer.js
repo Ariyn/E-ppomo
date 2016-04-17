@@ -26,12 +26,12 @@ function getTasks() {
 }
 
 function update(source) {
-	console.log(svg)
+	// console.log(svg)
 	// Compute the flattened node list. TODO use d3.layout.hierarchy.
-	console.log(root)
+	// console.log(root)
 	var nodes = tree.nodes(root)
 	nodes = nodes.splice(1, nodes.length);
-	console.log(nodes)
+	// console.log(nodes)
 
 	var height = Math.max(500, nodes.length * barHeight + margin.top + margin.bottom);
 
@@ -61,7 +61,7 @@ function update(source) {
 		})
 		.attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
 		.attr("taskindex", function(d) {
-			console.log(d)
+			// console.log(d)
 			return d.index;
 		})
 		.style("opacity", 1e-6)
@@ -87,7 +87,7 @@ function update(source) {
 	nodeEnter.append("text")
 		.attr("dy", 3.5)
 		.attr("dx", 5.5)
-		.text(function(d) { return d.name; })
+		.text(function(d) { return d.index +" "+d.name; })
 		.attr("transform", "translate(20, 0)")
 		.attr("class", "ppomoListText")
 

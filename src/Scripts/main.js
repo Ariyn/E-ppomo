@@ -25,6 +25,7 @@ function clickHandler() {
 	const index = $(this).attr("taskindex");
 	const task = getTask(index);
 
+	console.log("clicked", index)
 	if(isMovingTask == false) {
 		if(selectedTask != null) {
 			$(".ppomoListContainer[taskindex="+selectedTask.index+"]")
@@ -32,10 +33,10 @@ function clickHandler() {
 		}
 		$(this).attr("selected", true);
 
-		console.log($(this))
+		// console.log($(this))
 
 		console.log(task)
-		console.log(index)
+		// console.log(index)
 
 		selectedTask = task;
 
@@ -87,7 +88,10 @@ $("#ppomoDetailHeader>h1").click(function() {
 				className = "ppomoListContainer"
 			else
 				className = "ppomoListContainerChild"
-			changeContainerName("."+className+"[taskIndex='"+selectedTask.index+"']", selectedTask)
+			// changeContainerName("."+className+"[taskIndex='"+selectedTask.index+"']", selectedTask)
+
+			clearPppomo()
+			printPpomo()
 		}
 	}
 	$("#taskNameInput")
@@ -127,7 +131,7 @@ function printPpomo() {
 	$(".ppomoListContainer")
 		.click(clickHandler)
 		.mouseover(function() {
-
+			console.log("over")
 		});
 }
 
@@ -201,7 +205,7 @@ function addNewTaskHtml(newTask) {
 
 function changeDetail() {
 	const task = selectedTask;
-	console.log(task)
+	// console.log(task)
 
 	$("#ppomoDetailHeader>h1").html(task.name);
 	$("#ppomoIcon").attr("src", task.icon);
@@ -224,6 +228,9 @@ function changeDetail() {
 			.css("display","inline-block")
 			.css("visibility","visible")
 	}
+
+	$("#ppomoSuccessCountSpan").html(task.ppomos.length)
+	console.log(task.ppomos)
 }
 
 // <div class="ppomoListContainer" taskName="testTask">
@@ -252,24 +259,7 @@ function getIcon(number) {
 	return "1-glass";
 }
 
-$("#changeDeadline").click(function() {
-	testChangeDeadLine = !testChangeDeadLine;
-	if(testChangeDeadLine) {
-		$("#deadLineUnSet")
-			.css("display","none")
-			.css("visibility","hidden")
-		$("#deadLineSet")
-			.css("display","inline-block")
-			.css("visibility","visible")
-	} else {
-		$("#deadLineSet")
-			.css("display","none")
-			.css("visibility","hidden")
-		$("#deadLineUnSet")
-			.css("display","inline-block")
-			.css("visibility","visible")
-	}
-})
+
 $("#memoTextArea").focusout(function(event) {
 	const memo = $(this).val();
 
@@ -312,6 +302,8 @@ $("#removeButton").click(function() {
 })
 
 $("#moveButton").click(function() {
+	$("svg")
+		.css("z-index", 4)
 	$(".ppomoListContainer[selected!=selected]")
 		.css("background-color","#5C6C70")
 		.css("z-index",5)
@@ -356,7 +348,7 @@ $("#moveButton").click(function() {
 })
 
 $("#timerButton").click(function() {
-	ipc.send("openTimer", selectedTask)
+	ipc.send("openTimer", selectedTask.index)
 })
 $("#visualizer").click(function() {
 	ipc.send("openVisualizer", selectedTask)

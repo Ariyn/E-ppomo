@@ -6,6 +6,10 @@ html ,body, .full-height {
 	/*border:1px solid blue;*/
 }
 
+svg {
+	position:relative;
+}
+
 #blinder {
 	z-index: -1;
 	display:none;
