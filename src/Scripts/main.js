@@ -1,4 +1,4 @@
-var margin = {top: 30, right: 20, bottom: 30, left: -20},
+var margin = {top: 30, right: 20, bottom: 80, left: -20},
 	width = 200,
 	// $(document).width() - margin.left - margin.right,
 	barHeight = 80,

@@ -1,14 +1,3 @@
-// obj = {
-// 	children:[obj],
-// 	depth:0,
-// 	id:0,
-// 	name:"name",
-// 	x:0,
-// 	x0:0,
-// 	y:0,
-// 	y0:0
-// }
-
 
 function getTasks() {
 	// d3.json("../Resources/flare.json", function(error, flare) {
@@ -66,7 +55,9 @@ function update(source) {
 		})
 		.style("opacity", 1e-6)
 		.on("mouseover", function(d){
-			d3.select(this).select("rect").style("fill", "#A1B2C2")
+			d3.select(this).select("rect").style("fill", function(d) {
+				return color(d, "over")
+			})
 		})
 		.on("mouseout", function(d){
 			d3.select(this).select("rect").style("fill", color)
@@ -183,11 +174,15 @@ function click(d) {
 	update(d);
 }
 
-function color(d) {
+function color(d, type) {
 	// #FD4481
 	// #60B2E5
 	// #3182bd
-	return d._children ? "#60B2E5" : d.children ? "#c6dbef" : "#fd8d3c";
+	if(type == "over") {
+		return d._children ? "#000" : d.children ? "#3ca555" : "#E34132";
+	} else {
+		return d._children ? "#000" : d.children ? "#97C1A1" : "#E04951";
+	}
 }
 
 $(document).ready(function() {

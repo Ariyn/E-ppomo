@@ -8,6 +8,7 @@ const Tray = electron.Tray;
 const Menu = electron.Menu;
 const Path = require("path")
 const TaskManager = require("./NScripts/tasks");
+const PpomoManager = require("./NScripts/ppomodoro.js")
 
 console.log("running")
 // TODO: change windows to dictionary
@@ -38,10 +39,13 @@ function openMainWindow() {
 
 function saveData(callback) {
 	// console.log(TaskManager.newTaskIndex)
-	if(TaskManager.getTask !== null && TaskManager.getTaskIndex() !== null)
-		files.saveData("./tasks", TaskManager.getTask(), TaskManager.getTaskIndex(), callback);
-	// localStorage.saveData("TaskManager.tasks", TaskManager.tasks);
-	// localStorage.saveData("taskIndex", newTaskIndex);
+	// if(TaskManager.getTask !== null && TaskManager.getTaskIndex() !== null)
+	files.setDataPath("./tasks")
+	files.saveData({
+		tasks:TaskManager.getTask(),
+		newTaskIndex:TaskManager.getTaskIndex(),
+		ppomos:PpomoManager.getSaveDatas()
+	}, callback);
 }
 
 
@@ -56,14 +60,12 @@ function loadData() {
 		return 0;
 	}
 
-	const loadedData = datas.tasks
-
-	TaskManager.setTaskIndex(datas.newTaskIndex)
 	if(datas.ppomos !== null && datas.ppomos !== undefined) {
-		ppomos = datas.ppomos
-		// console.log("loading ppomos", datas.ppomos)
+		PpomoManager.setSavedDatas(datas.ppomos);
 	}
 
+	const loadedData = datas.tasks
+	TaskManager.setTaskIndex(datas.newTaskIndex)
 	if(TaskManager.getTaskIndex() === null)
 		TaskManager.setTaskIndex(0);
 
@@ -75,6 +77,7 @@ function loadData() {
 			_task.parent = task.parent;
 			_task.memo = task.memo;
 			_task.children = task.children;
+			_task.ppomos = task.ppomos;
 			// console.log(_task.createdDate)
 			// console.log(task)
 
@@ -203,7 +206,8 @@ ipc.on("openTimer", function (event, _selectedTaskIndex) {
 	})
 	timerWindow.loadURL("file://"+__dirname+"/html/timer.html")
 
-	
+	const data = PpomoManager.createNewPpomo(_selectedTaskIndex)
+
 	console.log("data", data)
 	timerWindow.webContents.on("did-finish-load", function(evemt) {
 		console.log("data", data)
@@ -214,34 +218,24 @@ ipc.on("startTimer", function(event, timer) {
 
 })
 ipc.on("closeTimer", function(event, timer) {
-	console.log("here?")
-	console.log(runningTimer)
-	console.log(TaskManager.getTask())
-	// runningTimer = timer;
-
+	PpomoManager.updateCurrentPpomo(timer)
 	timerWindow.close()
 	timerWindow.destroy()
 
 	timerWindow = null;
 })
 ipc.on("endTimer", function(event, timer, success) {
-	const runningTimer = findPpomodoro(timer.index)
-	const _task = TaskManager.findTask(runningTimer.index)
+	// const runningTimer = findPpomodoro(timer.index)
+	const _task = TaskManager.findTask(PpomoManager.getCurrentPpomo()["taskIndex"]);
+	// TaskManager.findTask(runningTimer.index)
 	console.log(_task)
 
-	// runningTimer = timer;
-	//  new runningTimer(timer = timer)
-	runningTimer.success = success;
-	// runningTimer.task = runningTimer.task.index;
-	_task.ppomos.push(runningTimer.index)
+	PpomoManager.updateCurrentPpomo(timer)
+	const currentPpomo = PpomoManager.endCurrentPpomo(success)
 
-	runningTimer = {
-		start : null,
-		state : null,
-		task : null
-	};
+	_task.ppomos.push(currentPpomo.index)
 
-	console.log(runningTimer)
+	console.log(_task)
 })
 ipc.on("openVisualizer", function(event, task) {
 	visualWindow = new BrowserWindow({
@@ -254,10 +248,14 @@ ipc.on("setDeadline", function(event, taskIndex, deadline) {
 	const task = TaskManager.findTask(taskIndex);
 	taskSetDeadline(task, deadline)
 })
+
+ipc.on("getCurrentPpomo", function(event) {
+	event.returnValue = PpomoManager.getCurrentPpomo();
+})
+ipc.on("getPpomo", function(event, ppomoIndex) {
+	event.returnValue = PpomoManager.findPpomodoro(ppomoIndex);
+})
 loadData();
-} else {
-	// console.log(require.main)
-	loadData();
 }
 
 // setFlags == means which ipc handlers

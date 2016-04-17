@@ -2,5 +2,11 @@
 	"esversion": 6,
 	"asi":true,
 	"browser":true,
-	"devel":true
+	"devel":true,
+	"globals": {
+		"module":false,
+		"$":false,
+		"__dirname":false,
+		"require":false
+	}
 }

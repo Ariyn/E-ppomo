@@ -1,34 +1,60 @@
 var ppomos = [];
-var presentPpomo = null;
+var currentPpomo = null;
+var ppomoIndex = 0;
 
-function ppomodoro(_task, _start, _state) {
+function ppomodoro(_ppomoIndex, _taskIndex, _start, _state) {
 	if(_start === undefined)
 		_start = null;
 	if(_state === undefined)
 		_state = 0;
 
-	var task = _task;
-	var taskIndex = task.index
+	var taskIndex = _taskIndex;
 	var start = _start;
 	var state = _state;
+	var index = _ppomoIndex;
+	var success = false;
 
 	return {
-		task : task,
 		taskIndex:taskIndex,
-		state : state,
-		start : start,
+		index : index,
+		getState : function() {
+			return state;
+		},
+		setState : function(val) {
+			state = val;
+		},
+		getStart : function() {
+			return start;
+		},
+		setStart : function(val) {
+			start = val;
+		},
+		getSuccess : function() {
+			return success;
+		},
+		setSuccess : function(val) {
+			success = val;
+		},
 		NOT_START:0,
 		START:1,
 		PAUSE:2,
 		END:3,
 
-		getSaveData: function() {
+		getSaveDatas: function() {
 			return {
-				task:task,
+				index:index,
+				taskIndex:taskIndex,
 				state:state,
 				start:start,
-				taskIndex:taskIndex
+				success:success
 			}
+		},
+		setSavedDatas : function(_index, _taskIndex, _state, _start, _success) {
+			index = _index;
+			taskIndex = _taskIndex;
+			state = _state;
+			start = _start;
+			success = _success;
 		}
 	}
 }
@@ -46,37 +72,85 @@ function findPpomodoro(index) {
 
 	return retVal;
 }
-function newPpomodoro(task) {
-	presentPpomo = new ppomodoro(task);
+function newPpomodoro(_taskIndex) {
+	currentPpomo = new ppomodoro(ppomoIndex, _taskIndex);
+	ppomos.push(currentPpomo)
+	ppomoIndex += 1
+
+	return currentPpomo;
 }
 
 function startPpomodoro(taskIndex) {
 
 }
 
-function getPresentTimer(taskIndex) {
-	var data = runningTimer;
-	console.log("runningTimer", runningTimer)
-	if(runningTimer["task"] === null && runningTimer["state"] === null) {
-		runningTimer["task"] = findTask(_selectedTaskIndex);
-	}
-
-	if(runningTimer["task"].index == _selectedTaskIndex) {
-		data["wrongTask"] = false;
-	} else {
-		// clicked other task while task's timer is running
-		data["wrongTask"] = true;
-	}
-}
-
 module.exports = {
 	newPpomodoro:newPpomodoro,
 	ppomodoro : ppomodoro,
 	findPpomodoro:findPpomodoro,
-	getPppomos : functon() {
+	getPpomos : function() {
 		return ppomos;
 	},
-	getPresentPpomo: function() {
-		return presentPpomo;
+	createNewPpomo:function(selectedTask) {
+		if(currentPpomo === null) {
+			newPpomodoro(selectedTask)
+		}
+
+		return currentPpomo.getSaveDatas();
+	},
+	getCurrentPpomo : function() {
+		return currentPpomo.getSaveDatas();
+	},
+	updateCurrentPpomo: function(updatedPpomo) {
+		if(currentPpomo !== null) {
+			currentPpomo.setStart(updatedPpomo["start"])
+			currentPpomo.setState(updatedPpomo["state"])
+		}
+	},
+	endCurrentPpomo: function(success) {
+		currentPpomo.setSuccess(success)
+
+		const cp = currentPpomo;
+
+		currentPpomo = null;
+		return cp
+	},
+	getSaveDatas : function() {
+		// load these into json at here
+		console.log("saving ppomos")
+
+		var newPpomoList = []
+		for(const i in ppomos) {
+			const _ppomo = ppomos[i];
+			// console.log(_ppomo, _ppomo.getSaveDatas())
+			newPpomoList.push(_ppomo.getSaveDatas())
+		}
+		const cp = currentPpomo !== null ? JSON.stringify(currentPpomo.getSaveDatas()):null;
+
+		return {
+			currentPpomo : cp,
+			ppomoIndex : ppomoIndex,
+			ppomos : newPpomoList
+			// ppomos : JSON.stringify(newPpomoList)
+		}
+	},
+	setSavedDatas : function(ppomoData) {
+		// parse these json into data at here
+		// currentPpomo, ppomoIndex, ppomos
+		// ppomodoro(_task, _start, _state)
+		// loadSaveData : function(_index, _taskIndex, _state, _start, _success)
+
+		currentPpomo = ppomoData["currentPpomo"];
+		ppomoIndex = Number(ppomoData["ppomoIndex"]);
+
+		const _NewPpomos = ppomoData["ppomos"];
+		// const _NewPpomos = JSON.parse(ppomoData["ppomos"]);
+		for(const i in _NewPpomos) {
+			const _ppomo = _NewPpomos[i];
+			const _NewPpomo = new ppomodoro();
+			_NewPpomo.setSavedDatas(_ppomo["index"], _ppomo["taskIndex"], _ppomo["state"], _ppomo["start"], _ppomo["success"])
+
+			ppomos.push(_NewPpomo)
+		}
 	}
 }

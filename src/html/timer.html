@@ -79,7 +79,8 @@ console.log(d3);
 var timer = {
 	"minute":0,
 	"second":0,
-	"start":null
+	"start":null,
+	"state":0
 }
 var continous = false;
 var nextTimeout = null;
@@ -249,7 +250,9 @@ $("body")
 		.css("left",140-25+$("svg").offset().left)
 		.css("top",140-25+$("svg").offset().top)
 		.click(function() {
-			timer["start"] = new Date();
+			if(timer["start"] === null)
+				timer["start"] = new Date();
+
 			continous = !continous;
 			if(continous) {
 				$(this)
@@ -257,6 +260,7 @@ $("body")
 					.addClass("ppomo-circle-center-pause")
 				ipc.send("startTimer", timer)
 				tick();
+				timer["state"] = 1;
 			} else {
 				clearTimeout(nextTimeout)
 
@@ -268,6 +272,7 @@ $("body")
 					.html("start")
 					.removeClass("ppomo-circle-center-pause")
 				ipc.send("pauseTimer", timer)
+				timer["state"] = 2;
 			}
 		})
 )
