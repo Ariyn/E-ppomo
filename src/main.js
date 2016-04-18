@@ -19,8 +19,6 @@ var ipcOnList = [];
 
 // TODO: 동기부여
 // API들 이용해 문가 할 수 있도록
-// TODO: change this to dictionary and make index as key.
-// assign new index to new tasks which doesn't conflict.
 
 var trayApp = null;
 
@@ -236,6 +234,7 @@ ipc.on("endTimer", function(event, timer, success) {
 	_task.ppomos.push(currentPpomo.index)
 
 	console.log(_task)
+	mainWindow.webContents.send("refresh")
 })
 ipc.on("openVisualizer", function(event, task) {
 	visualWindow = new BrowserWindow({
@@ -250,10 +249,10 @@ ipc.on("setDeadline", function(event, taskIndex, deadline) {
 })
 
 ipc.on("getCurrentPpomo", function(event) {
-	event.returnValue = PpomoManager.getCurrentPpomo();
+	event.returnValue = PpomoManager.getCurrentPpomo().getSaveDatas();
 })
 ipc.on("getPpomo", function(event, ppomoIndex) {
-	event.returnValue = PpomoManager.findPpomodoro(ppomoIndex);
+	event.returnValue = PpomoManager.findPpomodoro(ppomoIndex).getSaveDatas();
 })
 loadData();
 }

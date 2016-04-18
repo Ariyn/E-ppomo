@@ -13,10 +13,10 @@
 			window.d3 = require('../Scripts/d3.v3.min.js');
 		</script>
 
-		<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+		<script src="../Scripts/jquery-ui.1.11.4.js"></script>
 		<script src="../Scripts/visualizer.js"></script>
 
-		<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+		<link rel="stylesheet" href="../css/jquery-ui.1.11.4.min.css">
 		<link rel="stylesheet" href="../css/bootstrap.readable.css">
 
 		<link rel="stylesheet" href="../css/mainPage.css">
@@ -62,7 +62,7 @@
 						<input type="hidden" id="taskNameInput"></input>
 					</div>
 					<div id="ppomoDetailContent">
-						<div id="dDayContainer" class="container">
+						<div id="dDayContainer" class="detailContainers">
 							<span id="deadLineSet">
 								<div id="dDayHeader">
 									until your deadline
@@ -83,7 +83,7 @@
 						</div>
 
 						<div id="ppomoSuccessCountContainer" class="detailContainers">
-							<span id="ppomoSuccessCountSpan">0</span>번 뽀모도로에 성공함
+							<!-- <span id="ppomoSuccessCountSpan">0</span>번 뽀모도로에 성공함 -->
 						</div>
 
 						<div id="ppomoNotiContainer" class="detailContainers">
@@ -143,6 +143,7 @@
 			<div id="ppomoBlinder" class="col-sm-4 col-xs-5"></div>
 			<div id="detailBlinder" class="detailCover col-sm-8 col-xs-7"></div>
 		</div>
+		<div id="infoPanel"></div>
 		<script src="../Scripts/main.js" charset="utf-8"></script>
 	</body>
 </html>

@@ -49,9 +49,7 @@ function ppomodoro(_ppomoIndex, _taskIndex, _start, _state) {
 				success:success
 			}
 		},
-		setSavedDatas : function(_index, _taskIndex, _state, _start, _success) {
-			index = _index;
-			taskIndex = _taskIndex;
+		setSavedDatas : function(_state, _start, _success) {
 			state = _state;
 			start = _start;
 			success = _success;
@@ -64,6 +62,7 @@ function findPpomodoro(index) {
 
 	for(const i in ppomos) {
 		const ppomodoro = ppomos[i];
+		// console.log(ppomodoro.index)
 		if(ppomodoro.index == index) {
 			retVal = ppomodoro;
 			break;
@@ -147,8 +146,8 @@ module.exports = {
 		// const _NewPpomos = JSON.parse(ppomoData["ppomos"]);
 		for(const i in _NewPpomos) {
 			const _ppomo = _NewPpomos[i];
-			const _NewPpomo = new ppomodoro();
-			_NewPpomo.setSavedDatas(_ppomo["index"], _ppomo["taskIndex"], _ppomo["state"], _ppomo["start"], _ppomo["success"])
+			const _NewPpomo = new ppomodoro(_ppomo["index"], _ppomo["taskIndex"]);
+			_NewPpomo.setSavedDatas( _ppomo["state"], _ppomo["start"], _ppomo["success"])
 
 			ppomos.push(_NewPpomo)
 		}
