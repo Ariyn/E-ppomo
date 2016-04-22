@@ -1,5 +1,6 @@
 // const ls = require("./NScript/LocalStorage.js")
 const files = require("./NScripts/files.js");
+const google = require("./NScripts/google-api.js");
 const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
@@ -274,6 +275,7 @@ app.on('ready', function() {
 	])
 	trayApp.setToolTip("Ppomodoro")
 	trayApp.setContextMenu(contextMenu)
+	google.EventEmitter.emit("app-ready")
 });
 app.on('window-all-closed', function() {
 	// if(process.platform != 'darwin')
@@ -390,6 +392,51 @@ ipc.on("openVisualizer", function(event, task) {
 	})
 	visualWindow.loadURL("file::/"+__dirname+"/html/taskVisualizer.html")
 })
+
+ipc.on("sync", function(event, type) {
+	console.log(type)
+	if(type == "google-calendar") {
+		google.EventEmitter.once("authDone", function() {
+			const auth = google.getAuth();
+			var calendar = google.calendar;
+
+			calendar.calendarList.list({
+				auth: auth,
+				minAccessRole:"owner"
+			}, function(err, response) {
+				var hasPORT = false;
+				if (err) {
+					console.log('The API returned an error: ' + err);
+					return;
+				}
+				var calendars = response.items;
+				if (calendars.length === 0) {
+					console.log('No upcoming events found.');
+				} else {
+					for (var i = 0; i < calendars.length; i++) {
+						var calendar = calendars[i];
+						console.log(calendar["id"], calendar["summary"])
+						if("port" == calendar["summary"]) {
+							hasPORT = true;
+						}
+					}
+
+					if(! hasPORT) {
+						google.createPORTCalendar({
+								type:"default"
+							}, function(object) {
+							console.log(object["summary"]+" has been made.\n\tid="+object["id"]);
+						})
+					} else {
+
+					}
+				}
+			});
+		})
+		google.authFlow();
+	}
+})
+
 loadData();
 } else {
 	// console.log(require.main)

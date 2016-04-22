@@ -314,7 +314,8 @@ $("#removeButton").click(function() {
 $("#moveButton").click(function() {
 	$(".ppomoListContainer[selected!=selected]")
 		.css("background-color","#5C6C70")
-		.css("z-index",5)
+		.css("z-index",6)
+		.css("cursor","pointer")
 		.mouseover(function() {
 			$(this).css("background-color","#A7C5CC")
 		})
@@ -325,6 +326,7 @@ $("#moveButton").click(function() {
 			// delete all this things
 			// and change selected task to this's child
 			// and parent can't click own child
+			console.log("clicked!")
 			const index = $(this).attr("taskindex")
 			ipc.sendSync("moveTask", selectedTask.index, index)
 
@@ -332,7 +334,7 @@ $("#moveButton").click(function() {
 			clearPppomo()
 			printPpomo()
 
-			$("#blinder")
+			$(".detailCover")
 				.css("display","none")
 				.css("visibility","hidden")
 				.css("z-index",-1)
@@ -343,8 +345,9 @@ $("#moveButton").click(function() {
 
 	$(".ppomoListContainer[selected=selected]")
 		.css("background-color", "#A7C5CC")
+		// .css("z-index",6)
 
-	$("#blinder")
+	$(".detailCover")
 		.css("display","block")
 		.css("visibility","visible")
 		.css("z-index",2)
@@ -360,4 +363,8 @@ $("#timerButton").click(function() {
 })
 $("#visualizer").click(function() {
 	ipc.send("openVisualizer", selectedTask)
+})
+
+$("#googleSync").click(function() {
+	ipc.send("sync", "google-calendar")
 })

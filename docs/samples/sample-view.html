@@ -1,25 +1,23 @@
-<!DOCTYPE html>
-<html>
-	<head>
+<html><head>
 		<meta charset="utf-8">
 		<title>ppomodoro</title>
 
-		<script type="text/javascript" src="../Scripts/jquery-2.2.2.min.js"></script>
-		<script src="../Scripts/d3.v3.min.js"></script>
+		<script type="text/javascript" src="../../src/Scripts/jquery-2.2.2.min.js"></script>
+		<script src="../../src/Scripts/d3.v3.min.js"></script>
 
-		<script >
+		<script>
 			window.$ = window.jQuery = window.jquery = require('../Scripts/jquery-2.2.2.min');
 			window.ipc = require('electron').ipcRenderer;
 			window.d3 = require('../Scripts/d3.v3.min.js');
 		</script>
 
 		<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-		<script src="../Scripts/visualizer.js"></script>
+		<script src="../../src/Scripts/visualizer.js"></script>
 
 		<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-		<link rel="stylesheet" href="../css/bootstrap.readable.css">
+		<link rel="stylesheet" href="../../src/css/bootstrap.readable.css">
 
-		<link rel="stylesheet" href="../css/mainPage.css">
+		<link rel="stylesheet" href="../../src/css/mainPage.css">
 	</head>
 
 	<body>
@@ -45,25 +43,27 @@
 						saveData
 					</button> -->
 				</div>
-				<div id="ppomoListOuter" class="col-sm-4 col-xs-5">
+				<div id="ppomoListOuter" class="col-sm-4 col-xs-5" style="background-color: rgba(0, 0, 0, 0.4);">
 					<div id="ppomoList">
 						<div id="ppomoContentHeader"></div>
 
 						<div id="ppomoContentList" class="dropzone">
-						</div>
+						<svg width="240" height="500" style="
+    z-index: 4;
+"><g class="mainG" transform="translate(-20,30)" style="z-index: 4;position: absolute;left: 0;top: -30px;"><g class="node noDrag ppomoNode ppomoListContainer" depth="1" transform="translate(20,0)" taskindex="0" style="opacity: 1; z-index: 6; background-color: rgb(92, 108, 112);"><rect y="-40" height="80" width="160" class="ppomoListRect" style="fill: rgb(198, 219, 239);"></rect><text dy="3.5" dx="5.5" transform="translate(20, 0)" class="ppomoListText">뽀모도로</text><image dy="3.5" dx="2" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../Resources/glyphicons/png/glyphicons-434-minus.png" width="10" height="10" transform="translate(5,-5)" style="cursor: pointer;"></image></g><g class="node noDrag ppomoNode ppomoListContainer" depth="2" transform="translate(40,90)" taskindex="1" style="opacity: 1; background-color: rgb(167, 197, 204);" selected="selected"><rect y="-40" height="80" width="160" class="ppomoListRect" style="fill: rgb(253, 141, 60);"></rect><text dy="3.5" dx="5.5" transform="translate(20, 0)" class="ppomoListText">new Task</text><image dy="3.5" dx="2" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="" width="10" height="10" transform="translate(5,-5)" style="cursor: pointer;"></image></g></g></svg></div>
 						<div id="ppomoContentFooter"></div>
 					</div>
 				</div>
 
 				<div id="ppomoDetail" class="col-sm-8 col-xs-7">
 					<div id="ppomoDetailHeader" class="noDrag">
-						<span><img src="../Resources/glyphicons/png/glyphicons-6-car.png" alt="" class="ppomoIcon-small" id="ppomoIcon"></span>
-						<h1>뽀모도로!</h1>
-						<input type="hidden" id="taskNameInput"></input>
+						<span><img src="../Resources/glyphicons/png/glyphicons-1-glass.png" alt="" class="ppomoIcon-small" id="ppomoIcon"></span>
+						<h1>new Task</h1>
+						<input type="hidden" id="taskNameInput">
 					</div>
 					<div id="ppomoDetailContent">
 						<div id="dDayContainer" class="container">
-							<span id="deadLineSet">
+							<span id="deadLineSet" style="display: none; visibility: hidden;">
 								<div id="dDayHeader">
 									until your deadline
 								</div>
@@ -74,7 +74,7 @@
 									days left
 								</div>
 							</span>
-							<span id="deadLineUnSet">
+							<span id="deadLineUnSet" style="display: inline-block; visibility: visible;">
 								<div id="dDayHeader">
 									<!-- this task doesn't have deadline -->
 									마감일자 설정되지 않음
@@ -138,11 +138,12 @@
 				</div>
 			</div>
 		</div>
-		<div id="blinder">
+		<div id="blinder" style="display: block; visibility: visible; z-index: 2;">
 			<div id="headerBlinder" class="detailCover"></div>
 			<div id="ppomoBlinder" class="col-sm-4 col-xs-5"></div>
 			<div id="detailBlinder" class="detailCover col-sm-8 col-xs-7"></div>
 		</div>
 		<script src="../Scripts/main.js" charset="utf-8"></script>
-	</body>
-</html>
+
+
+</body></html>
