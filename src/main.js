@@ -55,7 +55,22 @@ function openMainWindow() {
 		width:600, height:660,
 		icon:"./Resources/icon256.png"
 	});
+	//
 	mainWindow.loadURL("file://"+__dirname+"/html/mainPage.html")
+
+	mainWindow.on('closed', function() {
+		saveData();
+		mainWindow = null;
+	});
+}
+function openLandingPage() {
+	mainWindow = new BrowserWindow({
+		width:430, height:660,
+		icon:"./Resources/icon256.png",
+		// resizable:false
+	});
+	// mainPage.html
+	mainWindow.loadURL("file://"+__dirname+"/html/landing.html")
 
 	mainWindow.on('closed', function() {
 		saveData();
@@ -263,7 +278,8 @@ console.log("direct")
 
 app.on('ready', function() {
 	// ls.init();
-	openMainWindow();
+	// openMainWindow();
+	openLandingPage();
 
 	trayApp = new Tray(Path.join(__dirname,"Resources/icon256.png"))
 	var contextMenu = Menu.buildFromTemplate([
