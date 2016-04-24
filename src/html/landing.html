@@ -10,8 +10,40 @@
 		<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
 
+		<script >
+			window.$ = window.jQuery = window.jquery = require('../Scripts/jquery-2.2.2.min');
+			window.ipc = require('electron').ipcRenderer;
+		</script>
+		
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 	</head>
 	<body>
+		<div id="myModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Login</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="ID">ID</label>
+							<input type="text" class="form-control" id="id" placeholder="ID">
+						</div>
+						<div class="form-group">
+							<label for="password">Password</label>
+							<input type="password" class="form-control" id="password" placeholder="password">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" id="loginButton" class="btn btn-primary" data-dismiss="modal">Login</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+
+			</div>
+		</div>
 		<div id="header">
 			<div id="headerText" class="pure-menu-heading">PORT</div>
 		</div>
@@ -22,11 +54,11 @@
 					당신의 프로젝트를</br>언제나 제시간에 맞추기 위해
 				</p>
 				<p>
-					<a href="#" class="account-button pure-button pure-button-primary"> <span class="jua-small">PORT 계정 만들기</span></a>
+					<a href="#" id="portLogin" class="account-button pure-button pure-button-primary"> <span class="jua-small">PORT 계정으로 시작하기</span></a>
 				</p>
-				<p>
+				<!-- <p>
 					<a href="#" class="account-button pure-button pure-button-primary"> <span class="jua-small">google 계정으로 시작하기</span></a>
-				</p>
+				</p> -->
 			</div>
 		</div>
 		<div class="content-wrapper">
@@ -90,8 +122,8 @@
 				<div class="infoText">all rights reserved to Hwang Min-Uk<himnowxz@gmail.com></div>
 			</div>
 		</div>
+		
 
-
-		<script src="../Scripts/landing.html" charset="utf-8"></script>
+		<script src="../Scripts/landing.js" charset="utf-8"></script>
 	</body>
 </html>

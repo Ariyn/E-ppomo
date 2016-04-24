@@ -8,6 +8,7 @@
     "googleapis": "^4.0.0"
   },
   "dependencies": {
-    "node-mysql": "^0.4.2"
+    "node-mysql": "^0.4.2",
+    "node-rest-client": "^1.8.0"
   }
 }

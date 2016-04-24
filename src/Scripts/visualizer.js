@@ -27,6 +27,7 @@ function getTasks() {
 
 function update(source) {
 	console.log(svg)
+	console.log("updating!!!!")
 	// Compute the flattened node list. TODO use d3.layout.hierarchy.
 	console.log(root)
 	var nodes = tree.nodes(root)

@@ -20,6 +20,13 @@ var selectedTask = null;
 var testChangeDeadLine = false;
 
 var isMovingTask = false;
+var user = {};
+
+ipc.on("setUserData", function(event, user) {
+	user = user;
+	console.log(user)
+})
+
 
 function clickHandler() {
 	const index = $(this).attr("taskindex");
@@ -120,7 +127,7 @@ function clearPppomo() {
 
 function printPpomo() {
 	const d3StyleData = ipc.sendSync("getTasks", "d3")
-	console.log(d3StyleData)
+	console.log("d3StyleData", d3StyleData)
 	update(root = d3StyleData);
 
 
@@ -367,4 +374,11 @@ $("#visualizer").click(function() {
 
 $("#googleSync").click(function() {
 	ipc.send("sync", "google-calendar")
+})
+$("#portLogin").click(function() {
+	console.log("click!")
+	ipc.send("port-login", "hmu5092", "pw4port")
+})
+$("#portLoginOut").click(function() {
+	ipc.send("port-logout", user["pid"])	
 })

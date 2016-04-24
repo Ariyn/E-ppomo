@@ -1,7 +1,7 @@
 // const ls = require("./NScript/LocalStorage.js")
 const files = require("./NScripts/files.js");
 const google = require("./NScripts/google-api.js");
-const port = require("./NScripts/port-api.js");
+const portAPI = require("./NScripts/port-api.js");
 const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
@@ -18,6 +18,7 @@ var visualWindow = null;
 var selectedTask = null;
 var runningTimer = null;
 
+var user = {};
 var ipcOnList = [];
 
 // TODO: 동기부여
@@ -50,7 +51,13 @@ function createNewTask(name, icon, parent) {
 
 	return task
 }
+
 function openMainWindow() {
+
+	if(mainWindow != null) {
+		mainWindow.hide()
+		mainWindow.destroy()
+	}
 	mainWindow = new BrowserWindow({
 		width:600, height:660,
 		icon:"./Resources/icon256.png"
@@ -58,12 +65,22 @@ function openMainWindow() {
 	//
 	mainWindow.loadURL("file://"+__dirname+"/html/mainPage.html")
 
+	mainWindow.webContents.on("did-finish-load", function() {
+		mainWindow.webContents.send("setUserData", user)
+	})
 	mainWindow.on('closed', function() {
 		saveData();
+		// saveDataPort();
+
 		mainWindow = null;
 	});
 }
 function openLandingPage() {
+	if(mainWindow != null) {
+		mainWindow.hide()
+		mainWindow.destroy()
+	}
+
 	mainWindow = new BrowserWindow({
 		width:430, height:660,
 		icon:"./Resources/icon256.png",
@@ -73,7 +90,6 @@ function openLandingPage() {
 	mainWindow.loadURL("file://"+__dirname+"/html/landing.html")
 
 	mainWindow.on('closed', function() {
-		saveData();
 		mainWindow = null;
 	});
 }
@@ -141,12 +157,36 @@ function popTask(taskIndex) {
 
 function saveData(callback) {
 	console.log(newTaskIndex)
-	if(tasks !== null && newTaskIndex !== null)
+	if(tasks !== null && newTaskIndex !== null)		
 		files.saveData("./tasks", tasks, newTaskIndex, runningTimer, callback);
 	// localStorage.saveData("tasks", tasks);
 	// localStorage.saveData("taskIndex", newTaskIndex);
 }
+function saveDataPort() {
+	portAPI.apiPost({
+		type:"saveData",
+		user:user["pid"],
+		tasks:JSON.stringify(tasks),
+		taskIndex:newTaskIndex,
+		timer:runningTimer
+	})
+}
+function parseTask(task) {
+	const _task = new Task(task.name, task.icon, task.index)
+	_task.parent = task.parent;
+	_task.memo = task.memo;
+	_task.children = task.children;
+	// console.log(_task)
+	// console.log(task)
 
+	// for(const _index in task.children) {
+	// 	console.log(_index)
+	// 	console.log(task.children[_index])
+	// 	_task.children.push(parseFunction(task.children[_index]))
+	// }
+
+	return _task;
+}
 
 function loadData() {
 	var datas = files.loadData("./tasks")
@@ -168,24 +208,8 @@ function loadData() {
 
 	if (tasks.length === 0) {
 		// create loadedDAta to task class
-		const parseFunction = function(task) {
-			const _task = new Task(task.name, task.icon, task.index)
-			_task.parent = task.parent;
-			_task.memo = task.memo;
-			_task.children = task.children;
-			// console.log(_task)
-			// console.log(task)
-
-			// for(const _index in task.children) {
-			// 	console.log(_index)
-			// 	console.log(task.children[_index])
-			// 	_task.children.push(parseFunction(task.children[_index]))
-			// }
-
-			return _task;
-		}
 		for(const _index in loadedData) {
-			tasks.push(parseFunction(loadedData[_index]))
+			tasks.push(parseTask(loadedData[_index]))
 		}
 	}
 }
@@ -206,7 +230,7 @@ function parseNode() {
 
 	for(const i in tasks) {
 		if(tasks[i].parent === null) {
-			lists.push(i)
+			lists.push(tasks[i]["index"])
 		}
 	}
 
@@ -229,6 +253,7 @@ function _parseNode(target) {
 		// const _target = target.children[i];
 		const _target = findTask(target[i]);
 
+		// console.log(target, target[i])
 		if(_target !== null) {
 			lists.push({
 				children:_parseNode(_target.children),
@@ -298,6 +323,7 @@ app.on('window-all-closed', function() {
 	// if(process.platform != 'darwin')
 		// app.quit();
 });
+
 // app.on("before-quit", function() {
 // 	saveData();
 // 	// files.saveData("./tasks", tasks);
@@ -312,15 +338,21 @@ ipc.on("getTasks", function(event, type) {
 		retVal = tasks;
 
 	event.returnValue = retVal;
-})
+});
 ipc.on("getTask", function(event, taskIndex) {
 	// const _task = new Task(taskName);
 	const retVal = findTask(taskIndex)
 	event.returnValue = retVal;
 });
 ipc.on("newTask", function(event, name, icon) {
+	var d = createNewTask(name, icon, null);
 
-	event.returnValue = createNewTask(name, icon, null);
+	portAPI.apiPost({
+		type:"newTask",
+		user:user["pid"],
+		task:JSON.stringify(d)
+	})
+	event.returnValue = d;
 })
 ipc.on("newChildTask", function(event, name, icon, parent) {
 	event.returnValue = createNewTask(name, icon, parent);
@@ -329,10 +361,23 @@ ipc.on("newChildTask", function(event, name, icon, parent) {
 ipc.on("changeName", function(event, index, name) {
 	const task = findTask(index)
 	task.name = name;
+	portAPI.apiPost({
+		type:"changeName",
+		user:user["pid"],
+		index:index,
+		name:name
+	})
 })
 ipc.on("changeMemo", function(event, index, memo) {
 	const task = findTask(index)
 	task.memo = memo;
+
+	portAPI.apiPost({
+		type:"changeMemo",
+		user:user["pid"],
+		index:index,
+		memo:memo
+	})
 })
 
 ipc.on("saveDataTest", function(event) {
@@ -347,6 +392,11 @@ ipc.on("loadDataTest", function(event) {
 ipc.on("delete", function(event, index) {
 	// ipc.send("delete", index)
 	deleteTask(index);
+	portAPI.apiPost({
+		type:"delete",
+		user:user["pid"],
+		index:index
+	})
 })
 
 ipc.on("moveTask", function(event, targetIndex, newParentIndex) {
@@ -369,6 +419,13 @@ ipc.on("moveTask", function(event, targetIndex, newParentIndex) {
 	newParent.children.push(target.index);
 
 	console.log(newParent)
+
+	portAPI.apiPost({
+		type:"moveTask",
+		user:user["pid"],
+		targetIndex:targetIndex,
+		parentIndex:newParentIndex
+	})
 
 	event.returnValue = true;
 })
@@ -453,11 +510,83 @@ ipc.on("sync", function(event, type) {
 		google.authFlow();
 	}
 })
+ipc.on("port-login", function(event, userName, password) {
+	console.log("logging in!")
+	portAPI.apiGet({
+		type:"login",
+		user:userName,
+		password:password
+	}, function(data, response) {
+		console.log("str ='"+data+"'")
+		data = JSON.parse(data)
 
+		if(data["success"] === "true") {
+			user["pid"] = data["pid"];
+			var _tasks = data["tasks"]
+
+			console.log("tasks",tasks)
+			tasks = [];
+			console.log("_tasks",_tasks)
+
+// const _task = new Task(task.name, task.icon, task.index)
+// _task.parent = task.parent;
+// _task.memo = task.memo;
+// _task.children = task.children;
+
+			for(const index in _tasks) {
+				var _task = _tasks[index];
+				_task["children"] = [];
+				// _task["index"] = Number(_task["pid"]);
+				_task["index"] = Number(_task["localIndex"]);
+				
+				if(_task["parent"] == "null") {
+					_task["parent"] = null;
+					console.log("parent null")
+				} else {
+					_task["parent"] = Number(_task["parent"])
+				}
+
+				tasks.push(parseTask(_task))
+			}
+			for(const index in _tasks) {
+				var _task = _tasks[index];
+				if(_task["parent"] !== null) {
+					const parent = findTask(_task["parent"])
+
+					console.log(parent)
+					parent["children"].push(_task["index"])
+				}
+			}
+			console.log("tasks", tasks)
+			saveData();
+			loadData();
+
+			openMainWindow();
+		} else {
+			console.log("no!")
+		}
+	})
+})
+ipc.on("port-logout", function(event, pid) {
+	console.log("logging in!")
+	portAPI.apiGet({
+		type:"logout",
+		pid:pid
+	}, function(data, response) {
+		console.log("str ='"+data+"'")
+		data = JSON.parse(data)
+
+		if(data["success"] === "true") {
+			openLandingPage()
+		} else {
+			console.log("no!")
+		}
+	})
+})
 loadData();
 } else {
 	// console.log(require.main)
-	loadData();
+	// loadData();
 }
 
 // setFlags == means which ipc handlers
@@ -473,3 +602,6 @@ module.exports = function(){
 		parseNode: parseNode
 	}
 }
+
+// {"name":"뽀모도로","icon":"../Resources/glyphicons/png/glyphicons-1-glass.png","index":0,"memo":null,"children":[],"parent":null,"ppomos":[],"createdDate":"2016-04-17T18:05:13.969Z","deadLine":null}
+// "newTaskIndex":19,"ppomos":{"currentPpomo":null,"ppomoIndex":1,"ppomos":[{"index":0,"taskIndex":1,"state":1,"start":"2016-04-17T18:05:20.505Z","success":true}]
