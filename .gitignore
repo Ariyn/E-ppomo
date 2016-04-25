@@ -12,3 +12,4 @@ google-key
 src/node_modules/
 client_secret.json
 pure-layout-marketing/
+app.asar

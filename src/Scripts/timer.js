@@ -136,6 +136,7 @@ function fieldsTest() {
 	}
 
 	if(timer["maxMinute"] <= timer["minute"]) {
+		console.log("stop! before!")
 		stopTimer();
 	}
 
@@ -217,6 +218,7 @@ function stopTimer() {
 		.html("start")
 		.removeClass("ppomo-circle-center-pause")
 
+	console.log("stop!")
 	clearTimeout(nextTimeout)
 	continous = false;
 

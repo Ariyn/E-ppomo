@@ -45,8 +45,8 @@ function createNewTask(name, icon, parent) {
 	}
 	tasks.push(task);
 	newTaskIndex+=1;
-	console.log("newTaskIndex ", newTaskIndex)
-	console.log(task)
+	// console.log("newTaskIndex ", newTaskIndex)
+	// console.log(task)
 
 	return task
 }
@@ -60,7 +60,7 @@ function deleteTask(taskIndex) {
 
 	while(target.children.length !== 0) {
 	// for(const i in target.children) {
-		console.log("removing recursive "+target.children)
+		// console.log("removing recursive "+target.children)
 		deleteTask(target.children[0])
 	}
 
@@ -69,7 +69,7 @@ function deleteTask(taskIndex) {
 	// console.log(target.parent)
 	if(target.parent !== null) {
 		const parent = findTask(target.parent)
-		console.log("parent", parent, target.parent)
+		// console.log("parent", parent, target.parent)
 		popByValue(parent.children, taskIndex);
 
 		// const childIndex = parent.children.indexOf(taskIndex)
@@ -116,7 +116,7 @@ function moveTask(targetIndex, newParentIndex) {
 	const target = findTask(targetIndex);
 	const newParent = findTask(newParentIndex);
 
-	console.log("changing", target, newParent)
+	// console.log("changing", target, newParent)
 
 	if(target.parent !== null) {
 		const parent = findTask(target.parent);
@@ -126,7 +126,7 @@ function moveTask(targetIndex, newParentIndex) {
 	target.parent = newParent.index;
 	newParent.children.push(target.index);
 
-	console.log(newParent)
+	// console.log(newParent)
 
 	return true;
 }
@@ -152,8 +152,8 @@ function parseNode() {
 		}
 	}
 
-	console.log(lists)
-	console.log(tasks)
+	// console.log(lists)
+	// console.log(tasks)
 
 	var retVal = {
 		children:_parseNode(lists),
@@ -162,7 +162,7 @@ function parseNode() {
 		y0:0
 	}
 
-	console.log(retVal)
+	// console.log(retVal)
 
 	return retVal;
 }

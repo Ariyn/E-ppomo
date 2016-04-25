@@ -37,7 +37,7 @@ ipc.on("setUserData", function(event, user) {
 
 
 function clickHandler() {
-	const index = $(this).attr("taskindex");
+	const index = $(this).parent().attr("taskindex");
 	const task = getTask(index);
 
 	console.log("clicked", index)
@@ -65,7 +65,7 @@ $("img").on("dragstart", function(event) {
 	event.preventDefault();
 });
 
-$(".ppomoListContainer").click(clickHandler)
+// $(".ppomoListContainer").click(clickHandler)
 
 $("#newTask").click(function() {
 	addNewTask("new Task", "../Resources/glyphicons/png/glyphicons-1-glass.png");
@@ -129,7 +129,7 @@ $(document).ready(function() {
 
 	refresh();
 
-	$(".ppomoListContainer").first().click();
+	$(".ppomoListContainer>rect").first().click();
 	console.log("wokrs here")
 	refresh();
 })
@@ -158,7 +158,7 @@ function printPpomo() {
 	update(root = d3StyleData);
 
 
-	$(".ppomoListContainer")
+	$(".ppomoListContainer>rect")
 		.click(clickHandler)
 		.mouseover(function() {
 			console.log("over")
@@ -196,7 +196,7 @@ function addNewChildTask(taskName, iconPath, parent) {
 	console.log(newTask)
 	refresh()
 
-	$(".ppomoListContainer[taskIndex="+newTask.index+"]").click()
+	$(".ppomoListContainer[taskIndex="+newTask.index+"]>rect").click()
 	// addNewTaskHtml(newTask)
 }
 function addNewTask(taskName, iconPath) {
@@ -204,7 +204,7 @@ function addNewTask(taskName, iconPath) {
 	console.log(iconPath)
 	refresh()
 
-	$(".ppomoListContainer[taskIndex="+newTask.index+"]").click()
+	$(".ppomoListContainer[taskIndex="+newTask.index+"]>rect").click()
 	// addNewTaskHtml(newTask)
 }
 function addNewTaskHtml(newTask) {
@@ -223,7 +223,6 @@ function addNewTaskHtml(newTask) {
 
 	$("#ppomoContentList").append(
 		$(string)
-			.click(clickHandler)
 			.mouseover(function() {
 
 			})
@@ -255,7 +254,7 @@ function changeDetail() {
 	$("#ppomoIcon").attr("src", task.icon);
 	$("#memoTextArea").val(task.memo);
 
-	document.getElementById("ppomoDetailContent").scrollTop = 0;
+	document.getElementById("ppomoDetail").scrollTop = 0;
 
 	if(task.deatline) {
 		$("#deadLineUnSet")
@@ -412,7 +411,7 @@ $("#removeButton").click(function() {
 
 	if(selectedTask.parent != null) {
 		// const parent = ipc.send("getTask", parentIndex);
-		$(".ppomoListContainer[taskIndex='"+selectedTask.index+"']", selectedTask.parent).click();
+		$(".ppomoListContainer[taskIndex='"+selectedTask.index+"']>rect", selectedTask.parent).click();
 	}
 	console.log(selectedTask)
 	ipc.send("delete", index)

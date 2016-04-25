@@ -51,9 +51,9 @@ function apiPost(parameters, callback) {
 	 
 	client.post(url, args, function (data, response) {
 		// parsed response body as js object
-		console.log(data)
+		
 		data = data.toString();
-		console.log(data);
+		// console.log("port post", data)
 		// raw response
 		// console.log(response);
 		if(callback) 

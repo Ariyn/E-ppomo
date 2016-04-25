@@ -33,7 +33,7 @@ function openMainWindow() {
 		mainWindow.destroy()
 	}
 	mainWindow = new BrowserWindow({
-		width:600, height:660,
+		width:600, height:860,
 		icon:"./Resources/icon256.png"
 	});
 	//
@@ -56,7 +56,7 @@ function openLandingPage() {
 	}
 
 	mainWindow = new BrowserWindow({
-		width:430, height:660,
+		width:530, height:660,
 		icon:"./Resources/icon256.png",
 		// resizable:false
 	});
@@ -91,10 +91,10 @@ function parseFunction(task) {
 	const _task = new TaskManager.Task(task.name, task.icon, task.index, new Date(task.createdDate))
 	_task.parent = task.parent;
 	_task.memo = task.memo;
-	_task.children = task.children;
-	_task.ppomos = task.ppomos;
-	// console.log(_task)
-	// console.log(task)
+	if(task.children !== null && task.children !== undefined)
+		_task.children = task.children;
+	if(task.ppomos !== null && task.ppomos !== undefined)
+		_task.ppomos = task.ppomos;
 
 	// for(const _index in task.children) {
 	// 	console.log(_index)
@@ -127,7 +127,7 @@ function loadData() {
 
 	if (TaskManager.getTask().length === 0) {
 		// create loadedDAta to task class
-		
+
 		for(const _index in loadedData) {
 			TaskManager.getTask().push(parseFunction(loadedData[_index]))
 		}
@@ -191,7 +191,7 @@ app.on('window-all-closed', function() {
 
 ipc.on("getTasks", function(event, type) {
 	var retVal = null;
-	console.log("type", type)
+	// console.log("type", type)
 	if(type == "d3") {
 		retVal = TaskManager.parseNode()
 	} else if(type === undefined)
@@ -280,9 +280,10 @@ ipc.on("openTimer", function (event, _selectedTaskIndex) {
 
 	const data = PpomoManager.createNewPpomo(_selectedTaskIndex)
 
-	console.log("data", data)
+	// console.log("data", data)
+	// console.log(_selectedTaskIndex)
 	timerWindow.webContents.on("did-finish-load", function(evemt) {
-		console.log("data", data)
+		// console.log("data", data)
 		timerWindow.webContents.send("setTimer", data);
 	})
 })
@@ -300,14 +301,15 @@ ipc.on("endTimer", function(event, timer, success) {
 	// const runningTimer = findPpomodoro(timer.index)
 	const _task = TaskManager.findTask(PpomoManager.getCurrentPpomo()["taskIndex"]);
 	// TaskManager.findTask(runningTimer.index)
-	console.log(_task)
+	// console.log(_task)
 
 	PpomoManager.updateCurrentPpomo(timer)
 	const currentPpomo = PpomoManager.endCurrentPpomo(success)
 
+	// console.log(_task)
 	_task.ppomos.push(currentPpomo.index)
 
-	console.log(_task)
+	// console.log(_task)
 	mainWindow.webContents.send("refresh")
 })
 ipc.on("openVisualizer", function(event, task) {
@@ -319,7 +321,7 @@ ipc.on("openVisualizer", function(event, task) {
 
 
 ipc.on("sync", function(event, type) {
-	console.log(type)
+	// console.log(type)
 	if(type == "google-calendar") {
 		google.EventEmitter.once("authDone", function() {
 			const auth = google.getAuth();
@@ -331,16 +333,16 @@ ipc.on("sync", function(event, type) {
 			}, function(err, response) {
 				var hasPORT = false;
 				if (err) {
-					console.log('The API returned an error: ' + err);
+					// console.log('The API returned an error: ' + err);
 					return;
 				}
 				var calendars = response.items;
 				if (calendars.length === 0) {
-					console.log('No upcoming events found.');
+					// console.log('No upcoming events found.');
 				} else {
 					for (var i = 0; i < calendars.length; i++) {
 						var calendar = calendars[i];
-						console.log(calendar["id"], calendar["summary"])
+						// console.log(calendar["id"], calendar["summary"])
 						if("port" == calendar["summary"]) {
 							hasPORT = true;
 						}
@@ -350,7 +352,7 @@ ipc.on("sync", function(event, type) {
 						google.createPORTCalendar({
 								type:"default"
 							}, function(object) {
-							console.log(object["summary"]+" has been made.\n\tid="+object["id"]);
+							// console.log(object["summary"]+" has been made.\n\tid="+object["id"]);
 						})
 					} else {
 
@@ -362,19 +364,22 @@ ipc.on("sync", function(event, type) {
 	}
 })
 ipc.on("port-login", function(event, userName, password) {
-	console.log("logging in!")
+	// console.log("logging in!")
 	portAPI.apiGet({
 		type:"login",
 		user:userName,
 		password:password
 	}, function(data, response) {
-		console.log("str ='"+data+"'")
+		// console.log("str ='"+data+"'")
 		data = JSON.parse(data)
 
+		console.log(data)
 		if(data["success"] === "true") {
+			// console.log("success")
 			user["pid"] = data["pid"];
 			var _tasks = data["tasks"]
 			var tasks = []
+			var maxTaskIndex = 0;
 
 // const _task = new Task(task.name, task.icon, task.index)
 // _task.parent = task.parent;
@@ -386,13 +391,11 @@ ipc.on("port-login", function(event, userName, password) {
 				_task["children"] = [];
 				// _task["index"] = Number(_task["pid"]);
 				_task["index"] = Number(_task["localIndex"]);
-				
-				if(_task["parent"] == "null") {
-					_task["parent"] = null;
-					console.log("parent null")
-				} else {
-					_task["parent"] = Number(_task["parent"])
+				if(maxTaskIndex <= _task["index"]) {
+					maxTaskIndex = _task["index"]
 				}
+				if(_task["parent"] !== null)
+					_task["parent"] = Number(_task["parent"])
 
 				TaskManager.getTask().push(parseFunction(_task))
 			}
@@ -403,10 +406,11 @@ ipc.on("port-login", function(event, userName, password) {
 					const parent = TaskManager.findTask(_task["parent"])
 
 					// parent["children"].push(_task["index"])
-					console.log(parent)
+					// console.log(parent)
 				}
 			}
-			console.log("when done task looks like", tasks)
+			TaskManager.setTaskIndex(maxTaskIndex + 1);
+			// console.log("when done task looks like", tasks)
 			// TaskManager.setTask(tasks)
 			// for(const _index in tasks) {
 			// 	TaskManager.getTask().push(parseFunction(tasks[_index]))
@@ -415,19 +419,20 @@ ipc.on("port-login", function(event, userName, password) {
 			saveData();
 			loadData()
 			openMainWindow();
-			
+
 		} else {
-			console.log("no!")
+			// console.log("no!")
+			mainWindow.webContents.send("port-login", false)
 		}
 	})
 })
 ipc.on("port-logout", function(event, pid) {
-	console.log("logging in!")
+	// console.log("logging in!")
 	portAPI.apiGet({
 		type:"logout",
 		pid:pid
 	}, function(data, response) {
-		console.log("str ='"+data+"'")
+		// console.log("str ='"+data+"'")
 		TaskManager.clearTask()
 		openLandingPage()
 		// data = JSON.parse(data)
@@ -474,4 +479,3 @@ ipc.on("getPpomo", function(event, ppomoIndex) {
 	event.returnValue = PpomoManager.findPpomodoro(ppomoIndex).getSaveDatas();
 })
 // loadData();
-

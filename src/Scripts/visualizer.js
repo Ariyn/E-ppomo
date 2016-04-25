@@ -164,6 +164,7 @@ function update(source) {
 
 // Toggle children on click.
 function click(d) {
+	console.log("click")
 	if (d.children) {
 		d._children = d.children;
 		d.children = null;
@@ -179,9 +180,9 @@ function color(d, type) {
 	// #60B2E5
 	// #3182bd
 	if(type == "over") {
-		return d._children ? "#000" : d.children ? "#3ca555" : "#E34132";
+		return d._children ? "#3ca555" : d.children ? "#3ca555" : "#E34132";
 	} else {
-		return d._children ? "#000" : d.children ? "#97C1A1" : "#E04951";
+		return d._children ? "#3ca555" : d.children ? "#97C1A1" : "#E04951";
 	}
 }
 
