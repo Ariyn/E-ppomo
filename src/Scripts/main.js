@@ -1,9 +1,16 @@
-var margin = {top: 30, right: 20, bottom: 30, left: -20},
+var margin = {top: 30, right: 20, bottom: 80, left: -20},
 	width = 200,
 	// $(document).width() - margin.left - margin.right,
 	barHeight = 80,
 	barWidth = width * .8,
 	barMarginBottom = 10;
+
+const bubble = {
+	width:250, height : 170
+}
+const bubblePointer = {
+	width:38, height:28
+}
 
 var i = 0,
 	duration = 20,
@@ -17,6 +24,7 @@ var diagonal = d3.svg.diagonal()
 var svg = null;
 
 var selectedTask = null;
+var selectedPpomo = null;
 var testChangeDeadLine = false;
 
 var isMovingTask = false;
@@ -32,6 +40,7 @@ function clickHandler() {
 	const index = $(this).attr("taskindex");
 	const task = getTask(index);
 
+	console.log("clicked", index)
 	if(isMovingTask == false) {
 		if(selectedTask != null) {
 			$(".ppomoListContainer[taskindex="+selectedTask.index+"]")
@@ -39,14 +48,14 @@ function clickHandler() {
 		}
 		$(this).attr("selected", true);
 
-		console.log($(this))
+		// console.log($(this))
 
 		console.log(task)
-		console.log(index)
+		// console.log(index)
 
 		selectedTask = task;
 
-		changeDetail(task);
+		refresh()
 	} else {
 
 	}
@@ -94,7 +103,9 @@ $("#ppomoDetailHeader>h1").click(function() {
 				className = "ppomoListContainer"
 			else
 				className = "ppomoListContainerChild"
-			changeContainerName("."+className+"[taskIndex='"+selectedTask.index+"']", selectedTask)
+			// changeContainerName("."+className+"[taskIndex='"+selectedTask.index+"']", selectedTask)
+
+			refresh();
 		}
 	}
 	$("#taskNameInput")
@@ -116,12 +127,28 @@ $(document).ready(function() {
 		.attr("class", "mainG")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	clearPppomo();
-	printPpomo();
+	refresh();
+
 	$(".ppomoListContainer").first().click();
+	console.log("wokrs here")
+	refresh();
 })
 
-function clearPppomo() {
+function refresh() {
+	clearPpomo()
+	printPpomo()
+
+	clearDetail()
+	closePpomoInfoPanel();
+
+	if(selectedTask !== null) {
+		changeDetail();
+	}
+	// 	$(".ppomoListContainer[taskIndex="+selectedTask.index+"]").click();
+	// }
+}
+
+function clearPpomo() {
 	$("#ppomoContentList>svg>.mainG").empty();
 }
 
@@ -134,7 +161,7 @@ function printPpomo() {
 	$(".ppomoListContainer")
 		.click(clickHandler)
 		.mouseover(function() {
-
+			console.log("over")
 		});
 }
 
@@ -167,8 +194,7 @@ function _printPppomo(task) {
 function addNewChildTask(taskName, iconPath, parent) {
 	const newTask = ipc.sendSync("newChildTask", taskName, iconPath, parent)
 	console.log(newTask)
-	clearPppomo();
-	printPpomo();
+	refresh()
 
 	$(".ppomoListContainer[taskIndex="+newTask.index+"]").click()
 	// addNewTaskHtml(newTask)
@@ -176,8 +202,7 @@ function addNewChildTask(taskName, iconPath, parent) {
 function addNewTask(taskName, iconPath) {
 	const newTask = ipc.sendSync("newTask", taskName, iconPath)
 	console.log(iconPath)
-	clearPppomo();
-	printPpomo();
+	refresh()
 
 	$(".ppomoListContainer[taskIndex="+newTask.index+"]").click()
 	// addNewTaskHtml(newTask)
@@ -206,9 +231,25 @@ function addNewTaskHtml(newTask) {
 	);
 }
 
+function clearDetail() {
+	$("#ppomoDetailHeader>h1").html("");
+	$("#ppomoIcon").attr("src", "");
+	$("#memoTextArea").val("");
+
+	$("#deadLineUnSet")
+		.css("display","none")
+		.css("visibility","hidden")
+		$("#deadLineSet")
+			.css("display","none")
+			.css("visibility","hidden")
+
+	$("#ppomoSuccessCountContainer").empty();
+	console.log("here")
+}
+
 function changeDetail() {
 	const task = selectedTask;
-	console.log(task)
+	// console.log(task)
 
 	$("#ppomoDetailHeader>h1").html(task.name);
 	$("#ppomoIcon").attr("src", task.icon);
@@ -231,6 +272,85 @@ function changeDetail() {
 			.css("display","inline-block")
 			.css("visibility","visible")
 	}
+
+	// $("#ppomoSuccessCountSpan").html(task.ppomos.length)
+	console.log(task.ppomos)
+	for(const i in task.ppomos) {
+		const _ppomo = ipc.sendSync("getPpomo", task.ppomos[i]);
+		var iconUrl = "";
+
+		if(_ppomo.success)
+			iconUrl = '../Resources/icon256.png'
+		else
+			iconUrl = '../Resources/glyphicons/png/glyphicons-93-tint.png'
+
+		$("#ppomoSuccessCountContainer")
+			.append('<img src="'+iconUrl+'" class="ppomoIcon-small ppomoSuccessIcon" ppomoIndex="'+_ppomo.index+'">')
+	}
+	$(".ppomoSuccessIcon")
+		.click(openPpomoInfoPanel)
+}
+
+function openPpomoInfoPanel(event) {
+	if(selectedPpomo !== null) {
+		$("#selectedPpomoInfo")
+			.remove();
+	}
+
+	selectedPpomo = $(this).attr("ppomoIndex")
+
+	const offset = $(this).offset();
+	const position = $(this).position();
+	const size = {
+		width:$(this).outerWidth(),
+		height:$(this).outerHeight()
+	}
+
+	$("#ppomoSuccessCountContainer")
+		.append('<div id="selectedPpomoInfo" class="bubble"></div>')
+
+	console.log(offset.left - bubble["width"])
+
+	const left = position.left-bubble["width"]/2-1+size.width/2;
+	const top = position.top+bubblePointer["height"]+size.height;
+
+	// const left = 0
+	// const top = 0
+
+	$("#selectedPpomoInfo")
+		.css("display","none")
+		.css("left",left)
+		.css("top",top)
+		.blur(function() {
+			console.log("focus out")
+		})
+		.focusout(function() {
+			console.log("focus out")
+		})
+
+	$("#selectedPpomoInfo")
+		.append('<div id="closeButton"><img src="../Resources/glyphicons/png/glyphicons-208-remove.png"/></div>')
+
+
+	$("#closeButton")
+		.attr("class", "pull-right")
+		.click(function() {
+			closePpomoInfoPanel()
+		})
+		.css("cursor","pointer")
+		.css("margin-right","2px")
+
+
+	$( "#selectedPpomoInfo" )
+		.show()
+		// .show( "clip", {}, 500);
+}
+
+function closePpomoInfoPanel() {
+	console.log("close ppomo info panel")
+	selectedPpomoInfo = null;
+	$("#selectedPpomoInfo")
+		.remove();
 }
 
 // <div class="ppomoListContainer" taskName="testTask">
@@ -259,24 +379,7 @@ function getIcon(number) {
 	return "1-glass";
 }
 
-$("#changeDeadline").click(function() {
-	testChangeDeadLine = !testChangeDeadLine;
-	if(testChangeDeadLine) {
-		$("#deadLineUnSet")
-			.css("display","none")
-			.css("visibility","hidden")
-		$("#deadLineSet")
-			.css("display","inline-block")
-			.css("visibility","visible")
-	} else {
-		$("#deadLineSet")
-			.css("display","none")
-			.css("visibility","hidden")
-		$("#deadLineUnSet")
-			.css("display","inline-block")
-			.css("visibility","visible")
-	}
-})
+
 $("#memoTextArea").focusout(function(event) {
 	const memo = $(this).val();
 
@@ -314,11 +417,12 @@ $("#removeButton").click(function() {
 	console.log(selectedTask)
 	ipc.send("delete", index)
 
-	clearPppomo()
-	printPpomo()
+	refresh();
 })
 
 $("#moveButton").click(function() {
+	$("svg")
+		.css("z-index", 4)
 	$(".ppomoListContainer[selected!=selected]")
 		.css("background-color","#5C6C70")
 		.css("z-index",6)
@@ -338,8 +442,7 @@ $("#moveButton").click(function() {
 			ipc.sendSync("moveTask", selectedTask.index, index)
 
 			isMovingTask = false;
-			clearPppomo()
-			printPpomo()
+			refresh()
 
 			$(".detailCover")
 				.css("display","none")
@@ -366,7 +469,7 @@ $("#moveButton").click(function() {
 })
 
 $("#timerButton").click(function() {
-	ipc.send("openTimer", selectedTask)
+	ipc.send("openTimer", selectedTask.index)
 })
 $("#visualizer").click(function() {
 	ipc.send("openVisualizer", selectedTask)
@@ -381,4 +484,9 @@ $("#portLogin").click(function() {
 })
 $("#portLoginOut").click(function() {
 	ipc.send("port-logout", user["pid"])	
+})
+ipc.on("refresh", function(event) {
+	console.log("refresh", selectedTask)
+	selectedTask = getTask(selectedTask.index)
+	refresh();
 })

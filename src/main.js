@@ -9,48 +9,22 @@ const ipc = electron.ipcMain;
 const Tray = electron.Tray;
 const Menu = electron.Menu;
 const Path = require("path")
+const TaskManager = require("./NScripts/tasks");
+const PpomoManager = require("./NScripts/ppomodoro.js")
 
 console.log("running")
 // TODO: change windows to dictionary
 var mainWindow = null;
 var timerWindow = null;
 var visualWindow = null;
-var selectedTask = null;
-var runningTimer = null;
 
 var user = {};
 var ipcOnList = [];
 
 // TODO: 동기부여
 // API들 이용해 문가 할 수 있도록
-// TODO: change this to dictionary and make index as key.
-// assign new index to new tasks which doesn't conflict.
-var tasks = [];
-var newTaskIndex = 0;
 
 var trayApp = null;
-
-function createNewTask(name, icon, parent) {
-	const task = new Task(name, icon, newTaskIndex);
-	task.parent = parent;
-
-	// console.log(parent);
-	// console.log(task);
-	if(parent !== null){
-		var _parent= findTask(parent)
-		// if(_parent.parent !== null)
-		// 	_parent = findTask(_parent.parent)
-
-		// console.log(_parent);
-		_parent.children.push(task.index)
-		// console.log(task);
-	}
-	tasks.push(task);
-
-	newTaskIndex+=1;
-
-	return task
-}
 
 function openMainWindow() {
 
@@ -94,73 +68,15 @@ function openLandingPage() {
 	});
 }
 
-function deleteTask(taskIndex) {
-	const target = findTask(taskIndex);
-	// console.log(target)
-	if(target === null) {
-		return false;
-	}
-
-	while(target.children.length !== 0) {
-	// for(const i in target.children) {
-		console.log("removing recursive "+target.children)
-		deleteTask(target.children[0])
-	}
-
-	popTask(target.index)
-
-	// console.log(target.parent)
-	if(target.parent !== null) {
-		const parent = findTask(target.parent)
-		console.log("parent", parent, target.parent)
-		popByValue(parent.children, taskIndex);
-
-		// const childIndex = parent.children.indexOf(taskIndex)
-		// parent.children.splice(childIndex, 1)
-	}
-}
-function findTask(taskIndex) {
-	var retVal = null;
-
-	for(const i in tasks) {
-		const _task = tasks[i];
-		if(_task.index == taskIndex) {
-			retVal = _task;
-			break;
-		}
-	}
-
-	return retVal;
-}
-
-function popByValue(list, value) {
-	var retVal = [null];
-
-	const childIndex = list.indexOf(value)
-	if(childIndex != -1)
-		retVal = list.splice(childIndex, 1);
-
-	return retVal[0];
-}
-function popTask(taskIndex) {
-	var retVal = [null];
-
-	for(const i in tasks) {
-		if(tasks[i].index == taskIndex) {
-			retVal = tasks.splice(i, 1)
-			break;
-		}
-	}
-
-	return retVal[0];
-}
-
 function saveData(callback) {
-	console.log(newTaskIndex)
-	if(tasks !== null && newTaskIndex !== null)		
-		files.saveData("./tasks", tasks, newTaskIndex, runningTimer, callback);
-	// localStorage.saveData("tasks", tasks);
-	// localStorage.saveData("taskIndex", newTaskIndex);
+	// console.log(TaskManager.newTaskIndex)
+	// if(TaskManager.getTask !== null && TaskManager.getTaskIndex() !== null)
+	files.setDataPath("./tasks")
+	files.saveData({
+		tasks:TaskManager.getTask(),
+		newTaskIndex:TaskManager.getTaskIndex(),
+		ppomos:PpomoManager.getSaveDatas()
+	}, callback);
 }
 function saveDataPort() {
 	portAPI.apiPost({
@@ -171,11 +87,12 @@ function saveDataPort() {
 		timer:runningTimer
 	})
 }
-function parseTask(task) {
-	const _task = new Task(task.name, task.icon, task.index)
+function parseFunction(task) {
+	const _task = new TaskManager.Task(task.name, task.icon, task.index, new Date(task.createdDate))
 	_task.parent = task.parent;
 	_task.memo = task.memo;
 	_task.children = task.children;
+	_task.ppomos = task.ppomos;
 	// console.log(_task)
 	// console.log(task)
 
@@ -192,110 +109,53 @@ function loadData() {
 	var datas = files.loadData("./tasks")
 
 	if(datas.constructor === Array && datas.length === 0) {
-		const _taskd = createNewTask("뽀모도로", "../Resources/glyphicons/png/glyphicons-1-glass.png", null);
+		const _taskd = TaskManager.createNewTask("뽀모도로", "../Resources/glyphicons/png/glyphicons-1-glass.png", null);
 
 		saveData(loadData);
-		datas = files.loadData("./tasks")
+		// datas = files.loadData("./tasks")
+		return 0;
+	}
+
+	if(datas.ppomos !== null && datas.ppomos !== undefined) {
+		PpomoManager.setSavedDatas(datas.ppomos);
 	}
 
 	const loadedData = datas.tasks
+	TaskManager.setTaskIndex(datas.newTaskIndex)
+	if(TaskManager.getTaskIndex() === null)
+		TaskManager.setTaskIndex(0);
 
-	newTaskIndex = datas.newTaskIndex
-	runningTimer = datas.runningtimer
-
-	if(newTaskIndex === null)
-		newTaskIndex = 0;
-
-	if (tasks.length === 0) {
+	if (TaskManager.getTask().length === 0) {
 		// create loadedDAta to task class
+		
 		for(const _index in loadedData) {
-			tasks.push(parseTask(loadedData[_index]))
-		}
-	}
-}
-
-/*
-obj = {
-	children:[obj],
-	depth:0,
-	id:0,
-	name:"name",
-	x:0,
-	x0:0,
-	y:0,
-	y0:0
-}*/
-function parseNode() {
-	var lists = []
-
-	for(const i in tasks) {
-		if(tasks[i].parent === null) {
-			lists.push(tasks[i]["index"])
+			TaskManager.getTask().push(parseFunction(loadedData[_index]))
 		}
 	}
 
-	var retVal = {
-		children:_parseNode(lists),
-		name:"root",
-		x0:0,
-		y0:0
-	}
-
-	console.log(retVal)
-
-	return retVal;
-}
-function _parseNode(target) {
-	var lists = []
-
-	console.log("target", target, target.children)
-	for(const i in target) {
-		// const _target = target.children[i];
-		const _target = findTask(target[i]);
-
-		// console.log(target, target[i])
-		if(_target !== null) {
-			lists.push({
-				children:_parseNode(_target.children),
-				name : _target.name,
-				index: _target.index
-			})
-			console.log(_target)
-		}
-	}
-
-
-	console.log("lists", lists, "target", target)
-
-	if(lists.length === 0) {
-		return null;
-	} else {
-		return lists;
-	}
+	// console.log(TaskManager)
 }
 
-function Task(taskName, _icon, _index) {
-	var name = taskName;
-	var icon = _icon;
-	var index = _index;
-	var memo = null;
-	var children = [];
-	var parent = null;
-	var ppomos = [];
+// E34132 cherry tomato
+// E04951 cayenne
+// 97C1A1 hemlock
+// 9cf5a6 hemlock 2
+// 3ca555 comfrey
+// ff5e33 celosia orange
+// a6c2ba paloma
+// 87d4fa placod blue
+// 8f9cff violet tulip
+// ccba85 sand
+// ffdb00 freesia
+// https://atelierbram.github.io/c-tiles16/colorscheming/pantone-spring-2014-colortable.html
 
-	return {
-		name : name,
-		icon : icon,
-		index : index,
-		memo : memo,
-		children : children,
-		parent : parent,
-		ppomos : ppomos
-	};
+// 00A37F
+// http://color2u.cocolog-nifty.com/color4u/2014/02/pantone-tpx.html
+
+
+function taskSetDeadline(task, deadline) {
+	task.deadLine = deadline;
 }
-
-
-
 
 // MODULE: start
 if(require.main == module) {
@@ -333,19 +193,19 @@ ipc.on("getTasks", function(event, type) {
 	var retVal = null;
 	console.log("type", type)
 	if(type == "d3") {
-		retVal = parseNode()
+		retVal = TaskManager.parseNode()
 	} else if(type === undefined)
-		retVal = tasks;
+		retVal = TaskManager.getTask();
 
 	event.returnValue = retVal;
 });
 ipc.on("getTask", function(event, taskIndex) {
 	// const _task = new Task(taskName);
-	const retVal = findTask(taskIndex)
+	const retVal = TaskManager.findTask(taskIndex)
 	event.returnValue = retVal;
 });
 ipc.on("newTask", function(event, name, icon) {
-	var d = createNewTask(name, icon, null);
+	var d = TaskManager.createNewTask(name, icon, null);
 
 	portAPI.apiPost({
 		type:"newTask",
@@ -355,11 +215,11 @@ ipc.on("newTask", function(event, name, icon) {
 	event.returnValue = d;
 })
 ipc.on("newChildTask", function(event, name, icon, parent) {
-	event.returnValue = createNewTask(name, icon, parent);
+	event.returnValue = TaskManager.createNewTask(name, icon, parent);
 })
 
 ipc.on("changeName", function(event, index, name) {
-	const task = findTask(index)
+	const task = TaskManager.findTask(index)
 	task.name = name;
 	portAPI.apiPost({
 		type:"changeName",
@@ -369,7 +229,7 @@ ipc.on("changeName", function(event, index, name) {
 	})
 })
 ipc.on("changeMemo", function(event, index, memo) {
-	const task = findTask(index)
+	const task = TaskManager.findTask(index)
 	task.memo = memo;
 
 	portAPI.apiPost({
@@ -386,79 +246,69 @@ ipc.on("saveDataTest", function(event) {
 
 ipc.on("loadDataTest", function(event) {
 	loadData();
-	event.returnValue = tasks;
+	event.returnValue = TaskManager.getTask();
 })
 
 ipc.on("delete", function(event, index) {
 	// ipc.send("delete", index)
-	deleteTask(index);
 	portAPI.apiPost({
 		type:"delete",
 		user:user["pid"],
 		index:index
 	})
+	TaskManager.deleteTask(index);
 })
 
+
 ipc.on("moveTask", function(event, targetIndex, newParentIndex) {
-	const target = findTask(targetIndex);
-	const newParent = findTask(newParentIndex);
-
-	if(target.parent !== null) {
-		const parent = findTask(target.parent);
-
-		console.log("splicing")
-		const childIndex = parent.children.indexOf(targetIndex);
-		console.log(childIndex)
-		console.log(parent.children)
-
-		parent.children.splice(childIndex, 1)
-
-		console.log(parent, childIndex)
-	}
-	target.parent = newParent.index;
-	newParent.children.push(target.index);
-
-	console.log(newParent)
-
+	const retVal = TaskManager.moveTask(targetIndex, newParentIndex)
 	portAPI.apiPost({
 		type:"moveTask",
 		user:user["pid"],
 		targetIndex:targetIndex,
 		parentIndex:newParentIndex
 	})
-
-	event.returnValue = true;
+	event.returnValue = retVal;
 })
 
-ipc.on("openTimer", function (event, _selectedTask) {
-	selectedTask = _selectedTask;
+ipc.on("openTimer", function (event, _selectedTaskIndex) {
 	timerWindow = new BrowserWindow({
 		width:280, height:290, frame:false,
 		resizable:false, transparent:true
 	})
 	timerWindow.loadURL("file://"+__dirname+"/html/timer.html")
 
-	if(runningTimer) {
-		timerWindow.webContents.on("did-finish-load", function(evemt) {
-			timerWindow.webContents.send("setTimer", runningTimer);
-		})
-	}
+	const data = PpomoManager.createNewPpomo(_selectedTaskIndex)
+
+	console.log("data", data)
+	timerWindow.webContents.on("did-finish-load", function(evemt) {
+		console.log("data", data)
+		timerWindow.webContents.send("setTimer", data);
+	})
 })
 ipc.on("startTimer", function(event, timer) {
-	runningTimer = timer;
-	runningTimer.task = selectedTask;
+
 })
 ipc.on("closeTimer", function(event, timer) {
-	runningTimer = timer;
+	PpomoManager.updateCurrentPpomo(timer)
 	timerWindow.close()
 	timerWindow.destroy()
+
 	timerWindow = null;
 })
-ipc.on("endTimer", function(event, success) {
-	runningTimer.success = success;
-	console.log(runningTimer)
-	runningTimer.task.ppomos.push(runningTimer)
-	runningTimer = null;
+ipc.on("endTimer", function(event, timer, success) {
+	// const runningTimer = findPpomodoro(timer.index)
+	const _task = TaskManager.findTask(PpomoManager.getCurrentPpomo()["taskIndex"]);
+	// TaskManager.findTask(runningTimer.index)
+	console.log(_task)
+
+	PpomoManager.updateCurrentPpomo(timer)
+	const currentPpomo = PpomoManager.endCurrentPpomo(success)
+
+	_task.ppomos.push(currentPpomo.index)
+
+	console.log(_task)
+	mainWindow.webContents.send("refresh")
 })
 ipc.on("openVisualizer", function(event, task) {
 	visualWindow = new BrowserWindow({
@@ -466,6 +316,7 @@ ipc.on("openVisualizer", function(event, task) {
 	})
 	visualWindow.loadURL("file::/"+__dirname+"/html/taskVisualizer.html")
 })
+
 
 ipc.on("sync", function(event, type) {
 	console.log(type)
@@ -523,10 +374,7 @@ ipc.on("port-login", function(event, userName, password) {
 		if(data["success"] === "true") {
 			user["pid"] = data["pid"];
 			var _tasks = data["tasks"]
-
-			console.log("tasks",tasks)
-			tasks = [];
-			console.log("_tasks",_tasks)
+			var tasks = []
 
 // const _task = new Task(task.name, task.icon, task.index)
 // _task.parent = task.parent;
@@ -546,22 +394,28 @@ ipc.on("port-login", function(event, userName, password) {
 					_task["parent"] = Number(_task["parent"])
 				}
 
-				tasks.push(parseTask(_task))
+				TaskManager.getTask().push(parseFunction(_task))
 			}
 			for(const index in _tasks) {
 				var _task = _tasks[index];
 				if(_task["parent"] !== null) {
-					const parent = findTask(_task["parent"])
+					TaskManager.moveTask(_task["index"], _task["parent"])
+					const parent = TaskManager.findTask(_task["parent"])
 
+					// parent["children"].push(_task["index"])
 					console.log(parent)
-					parent["children"].push(_task["index"])
 				}
 			}
-			console.log("tasks", tasks)
-			saveData();
-			loadData();
+			console.log("when done task looks like", tasks)
+			// TaskManager.setTask(tasks)
+			// for(const _index in tasks) {
+			// 	TaskManager.getTask().push(parseFunction(tasks[_index]))
+			// }
 
+			saveData();
+			loadData()
 			openMainWindow();
+			
 		} else {
 			console.log("no!")
 		}
@@ -574,16 +428,18 @@ ipc.on("port-logout", function(event, pid) {
 		pid:pid
 	}, function(data, response) {
 		console.log("str ='"+data+"'")
-		data = JSON.parse(data)
+		TaskManager.clearTask()
+		openLandingPage()
+		// data = JSON.parse(data)
 
-		if(data["success"] === "true") {
-			openLandingPage()
-		} else {
-			console.log("no!")
-		}
+		// if(data["success"] === "true") {
+		// 	openLandingPage()
+		// } else {
+		// 	console.log("no!")
+		// }
 	})
 })
-loadData();
+// loadData();
 } else {
 	// console.log(require.main)
 	// loadData();
@@ -605,3 +461,17 @@ module.exports = function(){
 
 // {"name":"뽀모도로","icon":"../Resources/glyphicons/png/glyphicons-1-glass.png","index":0,"memo":null,"children":[],"parent":null,"ppomos":[],"createdDate":"2016-04-17T18:05:13.969Z","deadLine":null}
 // "newTaskIndex":19,"ppomos":{"currentPpomo":null,"ppomoIndex":1,"ppomos":[{"index":0,"taskIndex":1,"state":1,"start":"2016-04-17T18:05:20.505Z","success":true}]
+
+ipc.on("setDeadline", function(event, taskIndex, deadline) {
+	const task = TaskManager.findTask(taskIndex);
+	taskSetDeadline(task, deadline)
+})
+
+ipc.on("getCurrentPpomo", function(event) {
+	event.returnValue = PpomoManager.getCurrentPpomo().getSaveDatas();
+})
+ipc.on("getPpomo", function(event, ppomoIndex) {
+	event.returnValue = PpomoManager.findPpomodoro(ppomoIndex).getSaveDatas();
+})
+// loadData();
+

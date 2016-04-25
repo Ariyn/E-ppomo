@@ -6,9 +6,13 @@ html ,body, .full-height {
 	/*border:1px solid blue;*/
 }
 
+svg {
+	position:relative;
+}
+
 #blinder {
-	z-index: -1;
-	display:none;
+	z-index: 0;
+	display:block;
 	visibility:hidden;
 
 	position:absolute;
@@ -20,6 +24,13 @@ html ,body, .full-height {
 }
 .detailCover {
 	background-color:rgba(0,0,0,0.4);
+}
+#taskNameInput {
+	font-size: 41px;
+	width:80%;
+	display: inline;
+	padding-top:0px;
+	padding-bottom:0px;
 }
 #ppomoBlinder {
 	height:100%;
@@ -41,7 +52,7 @@ html ,body, .full-height {
 	overflow-y:hidden;
 }
 #ppomoListOuter {
-	height:553px;
+	height:100%;
 	padding-left:10px;
 	padding-right:0px;
 	/*width:100%;*/
@@ -62,6 +73,10 @@ html ,body, .full-height {
 }
 #ppomoListContainer {
 	width:100%;
+	height:100%;
+
+	margin-bottom:50px;
+	position: relative;
 }
 
 #ppomoContentFooter {
@@ -78,6 +93,7 @@ html ,body, .full-height {
 }
 #ppomoDetail {
 	height:100%;
+	/*margin-right:17px;*/
 }
 #ppomoDetailHeader {
 	margin-top:20px;
@@ -87,12 +103,25 @@ html ,body, .full-height {
 	display:inline;
 	width:100%;
 }
+#ppomoDetailContentOuter {
+	width:100%;
+	height:100%;
+	overflow:hidden;
+	/*padding-left:0px;*/
+	/*border:1px solid blue;*/
+}
 #ppomoDetailContent {
-	height:80%;
+	min-height:60%;
+	max-height:80%;
+	width:106%;
+
 	overflow-y:scroll;
 	overflow-x:hidden;
-	width:100%;
-	/*border:1px solid black;*/
+
+	padding-right:5px;
+	position:relative;
+
+	left:0;
 }
 
 #dDayContainer {
@@ -138,6 +167,22 @@ html ,body, .full-height {
 	/*width:99%;*/
 	margin-bottom: 10px;
 }
+#ppomoSuccessCountContainer {
+	min-height:41px;
+}
+
+#infoPanel {
+	position:absolute;
+	display:none;
+	visibility:hidden;
+
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+
+	z-index:-1;
+}
 
 .repeatContainer {
 	margin:auto 3px;
@@ -173,6 +218,14 @@ html ,body, .full-height {
 
 	margin-bottom:11px;
 }
+.ppomoIcon-medium {
+	width:60px;
+	height:60px;
+
+	border-radius:8px;
+
+	margin-bottom:11px;
+}
 .ppomoListContainer {
 	display:table;
 	position: relative;
@@ -181,11 +234,11 @@ html ,body, .full-height {
 	width:100%;
 	height:80px;
 
-	color:#473B41;
+	/*color:#473B41;*/
 	/*border:1px solid black;*/
 
 	/*margin-top:10px;*/
-	margin-bottom:10px;
+	margin-bottom:80px;
 	cursor:pointer;
 }
 .ppomoListContainerChild {
@@ -235,6 +288,44 @@ html ,body, .full-height {
 .ppomoListText {
 	cursor:default;
 }
-.ppomoListRect:hover {
-	background-color:#A1B2C2;
+.bubble {
+	position: absolute;
+	width: 250px;
+	height: 170px;
+	padding: 0px;
+	background: white;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	border: #7F7F7F solid 2px;
+	z-index:6;
+}
+
+.bubble:after {
+	content: '';
+	position: absolute;
+	border-style: solid;
+	border-width: 0 19px 25px;
+	border-color: white transparent;
+	display: block;
+	width: 0;
+	z-index: 7;
+	top: -25px;
+	left: 106px;
+}
+
+.bubble:before {
+	content: '';
+	position: absolute;
+	border-style: solid;
+	border-width: 0 20px 26px;
+	border-color: #7F7F7F transparent;
+	display: block;
+	width: 0;
+	z-index: 6;
+	top: -28px;
+	left: 105px;
+}
+.ppomoSuccessIcon {
+	cursor:pointer;
 }

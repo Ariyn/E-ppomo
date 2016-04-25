@@ -79,7 +79,8 @@ console.log(d3);
 var timer = {
 	"minute":0,
 	"second":0,
-	"startTime":null
+	"start":null,
+	"state":0
 }
 var continous = false;
 var nextTimeout = null;
@@ -152,7 +153,7 @@ field.append("text")
     .attr("class", "arc-text")
     .attr("xlink:href", function(d, i) { return "#arc-center-" + i; });
 
-tick();
+
 
 d3.select(self.frameElement).style("height", height + "px");
 
@@ -205,20 +206,24 @@ function fields() {
 }
 
 function fieldsTest() {
+	console.log("fieldTest")
 	timer["second"] = (timer["second"]+1)%60;
 	if(timer["second"] == 0) {
 		timer["minute"] += 1
 	}
 
 	if(25 <= timer["minute"]) {
-		alert("stop!");
-		ipc.send("endTimer", true)
+		ipc.send("endTimer", timer, true)
 		continous = false;
+
+		timer["second"] = 0;
+		timer["minute"] = 25;
 	}
 
 	timer["secRadius"] = timer["second"]/60;
 	timer["minRadius"] = timer["minute"]/25;
 
+	console.log(timer)
   return [
     {index: .6, text: timer["second"]+" senconds", value: timer["secRadius"]},
     {index: .3, text: timer["minute"]+" minutes", value: timer["minRadius"]}
@@ -245,7 +250,9 @@ $("body")
 		.css("left",140-25+$("svg").offset().left)
 		.css("top",140-25+$("svg").offset().top)
 		.click(function() {
-			timer["startTime"] = new Date();
+			if(timer["start"] === null)
+				timer["start"] = new Date();
+
 			continous = !continous;
 			if(continous) {
 				$(this)
@@ -253,12 +260,19 @@ $("body")
 					.addClass("ppomo-circle-center-pause")
 				ipc.send("startTimer", timer)
 				tick();
+				timer["state"] = 1;
 			} else {
 				clearTimeout(nextTimeout)
+
+				// DEBUG CODE START
+				timer["minute"] = 24
+				timer["second"] = 57
+				// DEBUG CODE END
 				$(this)
 					.html("start")
 					.removeClass("ppomo-circle-center-pause")
 				ipc.send("pauseTimer", timer)
+				timer["state"] = 2;
 			}
 		})
 )
@@ -270,16 +284,20 @@ $("body")
 
 ipc.on("setTimer", function(event, _timer) {
 	const now = new Date();
-	_timer["startTime"] = new Date(_timer["startTime"])
-	console.log( _timer["startTime"], now)
-	const diff = (now.getTime() - _timer["startTime"].getTime())/1000;
+	var diffSeconds = 0;
+	var diffMinutes = 0;
 
-	const diffSeconds = Math.floor(Math.abs(diff))%60;
-	const diffMinutes = Math.floor(Math.abs(diff)/60);
+	if(_timer["start"] !== null) {
+		_timer["start"] = new Date(_timer["start"])
 
-	console.log(diffSeconds, diffMinutes)
+		const diff = (now.getTime() - _timer["start"].getTime())/1000;
+
+		diffSeconds = Math.floor(Math.abs(diff))%60;
+		diffMinutes = Math.floor(Math.abs(diff)/60);
+	}
+
 	_timer["second"] = diffSeconds;
-	_timer["minutes"] = diffMinutes;
+	_timer["minute"] = diffMinutes;
 
 	timer = _timer
 

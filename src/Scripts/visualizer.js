@@ -1,14 +1,3 @@
-// obj = {
-// 	children:[obj],
-// 	depth:0,
-// 	id:0,
-// 	name:"name",
-// 	x:0,
-// 	x0:0,
-// 	y:0,
-// 	y0:0
-// }
-
 
 function getTasks() {
 	// d3.json("../Resources/flare.json", function(error, flare) {
@@ -26,13 +15,12 @@ function getTasks() {
 }
 
 function update(source) {
-	console.log(svg)
-	console.log("updating!!!!")
+	// console.log(svg)
 	// Compute the flattened node list. TODO use d3.layout.hierarchy.
-	console.log(root)
+	// console.log(root)
 	var nodes = tree.nodes(root)
 	nodes = nodes.splice(1, nodes.length);
-	console.log(nodes)
+	// console.log(nodes)
 
 	var height = Math.max(500, nodes.length * barHeight + margin.top + margin.bottom);
 
@@ -62,12 +50,14 @@ function update(source) {
 		})
 		.attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
 		.attr("taskindex", function(d) {
-			console.log(d)
+			// console.log(d)
 			return d.index;
 		})
 		.style("opacity", 1e-6)
 		.on("mouseover", function(d){
-			d3.select(this).select("rect").style("fill", "#A1B2C2")
+			d3.select(this).select("rect").style("fill", function(d) {
+				return color(d, "over")
+			})
 		})
 		.on("mouseout", function(d){
 			d3.select(this).select("rect").style("fill", color)
@@ -88,7 +78,7 @@ function update(source) {
 	nodeEnter.append("text")
 		.attr("dy", 3.5)
 		.attr("dx", 5.5)
-		.text(function(d) { return d.name; })
+		.text(function(d) { return d.index +" "+d.name; })
 		.attr("transform", "translate(20, 0)")
 		.attr("class", "ppomoListText")
 
@@ -184,11 +174,15 @@ function click(d) {
 	update(d);
 }
 
-function color(d) {
+function color(d, type) {
 	// #FD4481
 	// #60B2E5
 	// #3182bd
-	return d._children ? "#60B2E5" : d.children ? "#c6dbef" : "#fd8d3c";
+	if(type == "over") {
+		return d._children ? "#000" : d.children ? "#3ca555" : "#E34132";
+	} else {
+		return d._children ? "#000" : d.children ? "#97C1A1" : "#E04951";
+	}
 }
 
 $(document).ready(function() {

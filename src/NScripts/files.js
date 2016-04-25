@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require("fs");
+var path = "./tasks";
 
 function write(path, string, callback) {
 	fs.writeFileSync(path, string, 'utf8', function(err, data) {
@@ -13,6 +14,7 @@ function write(path, string, callback) {
 	        console.log('YES!');
 	    }
 
+	    
 		if(callback != null)
 			callback()
 	});
@@ -30,14 +32,10 @@ function read(path) {
 	return tasks;
 }
 
-function saveData(path, tasks, newTaskIndex, runningTimer, callback) {
-	const jsonData = JSON.stringify({
-		"tasks":tasks,
-		"newTaskIndex":newTaskIndex,
-		"runningTimer":runningTimer
-	});
 
-	console.log(newTaskIndex)
+function saveData(options, callback) {
+	const jsonData = JSON.stringify(options);
+
 	write(path, jsonData, callback);
 }
 
@@ -45,6 +43,9 @@ function saveData(path, tasks, newTaskIndex, runningTimer, callback) {
 module.exports = {
 	testWrite: function() {
 		write('./test.txt', "Hello, World!")
+	},
+	setDataPath:function(_path) {
+		path = _path;
 	},
 	saveData: saveData,
 	loadData: read
