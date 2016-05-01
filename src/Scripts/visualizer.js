@@ -37,6 +37,8 @@ function update(source) {
 		n.x = i * (barHeight+barMarginBottom);
 	});
 
+	console.log(nodes)
+
 	// Update the nodes…
 	var node = svg.selectAll("g.node")
 		.data(nodes, function(d) { return d.id || (d.id = ++i); });
@@ -164,7 +166,7 @@ function update(source) {
 
 // Toggle children on click.
 function click(d) {
-	console.log("click")
+	console.log("click", d)
 	if (d.children) {
 		d._children = d.children;
 		d.children = null;
@@ -172,6 +174,7 @@ function click(d) {
 		d.children = d._children;
 		d._children = null;
 	}
+	console.log("click", d)
 	update(d);
 }
 

@@ -252,7 +252,7 @@ ipc.on("loadDataTest", function(event) {
 ipc.on("delete", function(event, index) {
 	// ipc.send("delete", index)
 	portAPI.apiPost({
-		type:"delete",
+		type:"deleteTask",
 		user:user["pid"],
 		index:index
 	})
@@ -269,6 +269,17 @@ ipc.on("moveTask", function(event, targetIndex, newParentIndex) {
 		parentIndex:newParentIndex
 	})
 	event.returnValue = retVal;
+})
+
+ipc.on("doneTask", function(event, targetIndex) {
+	
+	doneLists = TaskManager.finishTask(index);
+	console.log(doneLists)
+	// portAPI.apiPost({
+	// 	type:"finishTask",
+	// 	user:user["pid"],
+	// 	indexes:doneLists
+	// })
 })
 
 ipc.on("openTimer", function (event, _selectedTaskIndex) {

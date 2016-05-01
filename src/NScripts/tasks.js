@@ -76,6 +76,29 @@ function deleteTask(taskIndex) {
 		// parent.children.splice(childIndex, 1)
 	}
 }
+function finishTask(taskIndex) {
+	const target = findTask(taskIndex)
+	if(target === null) {
+		return false;
+	}
+
+	lists = []
+	while(target.children.length !== 0) {
+	// for(const i in target.children) {
+		// console.log("removing recursive "+target.children)
+		lists.concat(finishTask(target.children[0]))
+	}
+
+	popTask(target.index)
+
+	if(target.parent !== null) {
+		const parent = findTask(target.parent)
+		popByValue(parent.children, taskIndex);
+	}
+
+	return lists
+}
+
 function findTask(taskIndex) {
 	var retVal = null;
 

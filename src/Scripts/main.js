@@ -383,27 +383,29 @@ $("#memoTextArea").focusout(function(event) {
 	const memo = $(this).val();
 
 	selectedTask.memo = memo;
-
-	ipc.send("changeMemo", selectedTask.index, memo);
-}).change(function(event) {
-	const memo = $(this).val();
-
-	selectedTask.memo = memo;
-	console.log(memo)
-
-
-	ipc.send("changeMemo", selectedTask.index, memo);
-}).keyup(function(event) {
-	const memo = $(this).val();
-
-	selectedTask.memo = memo;
-	console.log(memo)
-
-	ipc.send("changeMemo", selectedTask.index, memo);
+	if(memo !== undefined && memo !== null)
+		ipc.send("changeMemo", selectedTask.index, memo);
 })
+// .change(function(event) {
+// 	const memo = $(this).val();
+
+// 	selectedTask.memo = memo;
+// 	console.log(memo)
+
+
+// 	ipc.send("changeMemo", selectedTask.index, memo);
+// }).keyup(function(event) {
+// 	const memo = $(this).val();
+
+// 	selectedTask.memo = memo;
+// 	console.log(memo)
+
+// 	ipc.send("changeMemo", selectedTask.index, memo);
+// })
 
 $("#completeButton").click(function() {
-	console.log("done!")
+	console.log("done!", selectedTask)
+	ipc.send("doneTask", selectedTask.index)
 })
 
 $("#removeButton").click(function() {
