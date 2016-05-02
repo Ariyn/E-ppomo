@@ -16,20 +16,12 @@ var i = 0,
 	duration = 20,
 	root;
 
-var tree = d3.layout.tree()
-	.nodeSize([0, 20]);
-
-var diagonal = d3.svg.diagonal()
-	.projection(function(d) { return [d.y, d.x]; });
-var svg = null;
-
 var selectedTask = null;
 var selectedPpomo = null;
 var testChangeDeadLine = false;
 
 var isMovingTask = false;
 var user = {};
-
 ipc.on("setUserData", function(event, user) {
 	user = user;
 	console.log(user)
@@ -37,7 +29,7 @@ ipc.on("setUserData", function(event, user) {
 
 
 function clickHandler() {
-	const index = $(this).parent().attr("taskindex");
+	const index = $(this).attr("taskindex");
 	const task = getTask(index);
 
 	console.log("clicked", index)
@@ -95,9 +87,9 @@ $("#ppomoDetailHeader>h1").click(function() {
 			selectedTask.name = name;
 
 			ipc.send("changeName", selectedTask.index, name);
+			// var $scope = angular.element($("#ppomoContentList")).scope();
 
-			console.log(selectedTask);
-			console.log(oldName);
+			// $scope.tasks.changeName(selectedTask.index, name)
 
 			if(selectedTask.parent == null)
 				className = "ppomoListContainer"
@@ -121,21 +113,36 @@ $("#ppomoDetailHeader>h1").click(function() {
 })
 
 $(document).ready(function() {
-	svg = d3.select("#ppomoContentList").append("svg")
-		.attr("width", width + margin.left + margin.right+40)
-		.append("g")
-		.attr("class", "mainG")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	(function($scope) {
+		$scope.abort = function() {
+
+			$("#myModal").modal("hide")
+		}
+		$scope.save = function() {
+			var deadLineDate = new Date($scope.pickedYear, $scope.pickedMonth-1, $scope.pickedDate+1)
+
+			console.log(deadLineDate, deadLineDate.getTime())
+			ipc.send("setDeadLine", selectedTask.index, deadLineDate.getTime()/1000)
+			console.log(deadLineDate.getTime())
+			$scope.abort()
+		}
+	})(angular.element($("#deadline")).scope())
+
+	$("#ppomoListOuter").css("height", $("#ppomoDetail").css("height"))
+	
+	var $scope = angular.element($("#ppomoContentList")).scope();
+	$scope.reDrawTree()
 
 	refresh();
+	printPpomo()
 
-	$(".ppomoListContainer>rect").first().click();
+	$(".ppomoListContainer").children()[0].click()
 	console.log("wokrs here")
 	refresh();
 })
 
 function refresh() {
-	clearPpomo()
+	// clearPpomo()
 	printPpomo()
 
 	clearDetail()
@@ -144,21 +151,32 @@ function refresh() {
 	if(selectedTask !== null) {
 		changeDetail();
 	}
-	// 	$(".ppomoListContainer[taskIndex="+selectedTask.index+"]").click();
+		// $(".ppomoListContainer[taskIndex="+selectedTask.index+"]").click();
 	// }
 }
 
 function clearPpomo() {
-	$("#ppomoContentList>svg>.mainG").empty();
+	$(".tree").empty();
 }
 
 function printPpomo() {
-	const d3StyleData = ipc.sendSync("getTasks", "d3")
-	console.log("d3StyleData", d3StyleData)
-	update(root = d3StyleData);
+	const angTreeData = ipc.sendSync("getTasks", "angularTree")
+
+	var $scope = angular.element($("#ppomoContentList")).scope();
+	var tasks = $scope.tasks;
+
+	tasks = angTreeData;
+	console.log(angTreeData)
+
+	$scope.$apply(function() {
+		$scope.tasks = tasks;
+	})
+
+	$("#ppomoContentList").css("height", $(".tree")[0].scrollHeight+20)
+	// update(root = d3StyleData);
 
 
-	$(".ppomoListContainer>rect")
+	$(".ng-binding")
 		.click(clickHandler)
 		.mouseover(function() {
 			console.log("over")
@@ -191,14 +209,6 @@ function _printPppomo(task) {
 	}
 }
 
-function addNewChildTask(taskName, iconPath, parent) {
-	const newTask = ipc.sendSync("newChildTask", taskName, iconPath, parent)
-	console.log(newTask)
-	refresh()
-
-	$(".ppomoListContainer[taskIndex="+newTask.index+"]>rect").click()
-	// addNewTaskHtml(newTask)
-}
 function addNewTask(taskName, iconPath) {
 	const newTask = ipc.sendSync("newTask", taskName, iconPath)
 	console.log(iconPath)
@@ -249,10 +259,20 @@ function clearDetail() {
 function changeDetail() {
 	const task = selectedTask;
 	// console.log(task)
+	var deadLine = "";
 
 	$("#ppomoDetailHeader>h1").html(task.name);
 	$("#ppomoIcon").attr("src", task.icon);
 	$("#memoTextArea").val(task.memo);
+
+	if(task.deadLine !== undefined && task.deadLine !== null) {
+		var date = new Date(task.deadLine)
+		// console.log(date)
+
+		deadLine = date.getFullYear()+"년 "+(date.getMonth()+1)+"월 "+(date.getDate()-1)+"일 까지";
+	}
+
+	$("#TaskDeadLineSpan").html(deadLine)
 
 	document.getElementById("ppomoDetail").scrollTop = 0;
 
@@ -365,6 +385,9 @@ function changeContainerName(target, task) {
 
 function getTask(taskIndex) {
 	const tasks = ipc.sendSync("getTask", taskIndex);
+	if(tasks.deadLine)
+		tasks.deadLine = tasks.deadLine*1000;
+	
 	console.log(tasks)
 	return tasks;
 }
@@ -485,6 +508,17 @@ $("#portLogin").click(function() {
 })
 $("#portLoginOut").click(function() {
 	ipc.send("port-logout", user["pid"])	
+})
+$("#openDatePicker").click(function() {
+	var $deadLineScope = angular.element($("#deadline")).scope()
+
+	$deadLineScope.$apply(function() {
+		console.log("deadline is ", selectedTask.deadLine)
+		$deadLineScope.init(selectedTask.deadLine)
+		$deadLineScope.change()
+	})
+
+	$('#myModal').modal("show")
 })
 ipc.on("refresh", function(event) {
 	console.log("refresh", selectedTask)

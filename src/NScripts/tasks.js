@@ -166,7 +166,7 @@ obj = {
 	y:0,
 	y0:0
 }*/
-function parseNode() {
+function _d3ParseNode() {
 	var lists = []
 
 	for(var i in tasks) {
@@ -189,6 +189,50 @@ function parseNode() {
 
 	return retVal;
 }
+function _angularParseNode() {
+	var lists = [];
+	for(var i in tasks) {
+		if(tasks[i].parent === null) {
+			lists.push(tasks[i].index)
+		}
+	}
+	var _parse = function(target) {
+		var lists = []
+
+		// console.log("target", target, target.children)
+		for(var i in target) {
+			// var _target = target.children[i];
+			var _target = findTask(target[i]);
+			// console.log(_target, target[i], i)
+			if(_target !== null) {
+				lists.push({
+					children:_parse(_target.children),
+					taskName : _target.name,
+					taskIndex: _target.index,
+					memo:_target.memo,
+					icon : _target.icon,
+					ppomos : _target.ppomos,
+					createdDate : _target.createdDate,
+					deadLine : _target.deadLine
+				})
+				// console.log(_target)
+			}
+		}
+
+
+		// console.log("lists", lists, "target", target)
+
+		if(lists.length === 0) {
+			return null;
+		} else {
+			return lists;
+		}
+	}
+	var retVal = _parse(lists)
+
+	return retVal;
+}
+
 function _parseNode(target) {
 	var lists = []
 
@@ -203,6 +247,7 @@ function _parseNode(target) {
 				name : _target.name,
 				index: _target.index
 			})
+
 			// console.log(_target)
 		}
 	}
@@ -238,6 +283,9 @@ module.exports = {
 	},
 	deleteTask : deleteTask,
 	findTask : findTask,
-	parseNode : parseNode,
+	parseNode : function(type) {
+		if(type == "d3") return _d3ParseNode()
+		else if(type == "angularTree") return _angularParseNode()
+	},
 	moveTask : moveTask
 }

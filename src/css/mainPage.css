@@ -52,11 +52,9 @@ svg {
 	overflow-y:hidden;
 }
 #ppomoListOuter {
-	height:100%;
 	padding-left:10px;
 	padding-right:0px;
 	/*width:100%;*/
-	overflow:hidden;
 }
 
 #ppomoList {
@@ -65,7 +63,7 @@ svg {
 	/*601 - 48 = */
 	width:100%;
 	height:100%;
-	/*right:-17px;*/
+	right:-17px;
 	overflow-y:scroll;
 }
 #ppomoContentHeader {
@@ -229,16 +227,8 @@ svg {
 .ppomoListContainer {
 	display:table;
 	position: relative;
-	background-color:#8EA7AD;
+	background-color:#fbfbfb;
 
-	width:100%;
-	height:80px;
-
-	/*color:#473B41;*/
-	/*border:1px solid black;*/
-
-	/*margin-top:10px;*/
-	margin-bottom:80px;
 	cursor:pointer;
 }
 .ppomoListContainerChild {

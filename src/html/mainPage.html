@@ -5,25 +5,32 @@
 		<title>ppomodoro</title>
 
 		<script type="text/javascript" src="../Libraries/jquery-2.2.2.min.js"></script>
+		<script type="text/javascript" src="../Libraries/angular.min.js"></script>
 		<script src="../Libraries/d3.v3.min.js"></script>
 
 		<script >
 			window.$ = window.jQuery = window.jquery = require('../Libraries/jquery-2.2.2.min');
 			window.ipc = require('electron').ipcRenderer;
 			window.d3 = require('../Libraries/d3.v3.min.js');
+			var Application = angular.module("port", []);
 		</script>
 
 		<script src="../Libraries/jquery-ui.1.11.4.js"></script>
-		<script src="../Scripts/visualizer.js"></script>
+		<script src="../Scripts/visualizer-angular.js"></script>
+		<script src="../Scripts/deadline-angular.js"></script>
+
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
 		<link rel="stylesheet" href="../css/jquery-ui.1.11.4.min.css">
 		<link rel="stylesheet" href="../css/bootstrap.readable.css">
-
+		<link rel="stylesheet" href="../css/visualizer-angular.css">
+		<link rel="stylesheet" href="../css/deadline-angular.css">
 		<link rel="stylesheet" href="../css/mainPage.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
 	</head>
 
-	<body>
-		<div class="container full-height">
+	<body ng-app="port">
+		<div class="container full-heihgt">
 			<div class="row full-height">
 				<div id="ppomoHeader">
 					<button id="newTask" class="btn btn-primary">
@@ -45,11 +52,12 @@
 						saveData
 					</button> -->
 				</div>
-				<div id="ppomoListOuter" class="col-sm-4 col-xs-5">
+				<div id="ppomoListOuter" class="full-height col-sm-4 col-xs-5">
 					<div id="ppomoList">
 						<div id="ppomoContentHeader"></div>
-
-						<div id="ppomoContentList" class="dropzone">
+						
+						<div id="ppomoContentList" class="full-height" ng-controller="tasks" tree>
+							<div task-tree tree-data="tasks" class="tree"></div>
 						</div>
 						<div id="ppomoContentFooter"></div>
 					</div>
@@ -66,42 +74,19 @@
 							<!-- <span id="ppomoSuccessCountSpan">0</span>번 뽀모도로에 성공함 -->
 						</div>
 
-						<div id="ppomoNotiContainer" class="detailContainers">
-							기본 알림 없음
+						<div id="ppomoRepeatContainer" class="detailContainers container">
+							<span id="TaskDeadLineSpan"></span>
 						</div>
 
-						<div id="ppomoRepeatContainer" class="detailContainers container">
-							<div>반복</div>
-							<!-- , Mon, Tue, Wed, Thu, Fri, Sat -->
-							<div class="repeatContainer">
-								<div>Sun</div>
-								<div>0</div>
-							</div>
-							<div class="repeatContainer">
-								<div>Mon</div>
-								<div>0</div>
-							</div>
-							<div class="repeatContainer">
-								<div>Tue</div>
-								<div>0</div>
-							</div>
-							<div class="repeatContainer">
-								<div>Wed</div>
-								<div>0</div>
-							</div>
-							<div class="repeatContainer">
-								<div>Thu</div>
-								<div>0</div>
-							</div>
-							<div id="ppomoMemoContainer" class="detailContainers">
-								<textarea id="memoTextArea" name="memo" rows="8" cols="40"></textarea>
-							</div>
+						<div id="ppomoMemoContainer" class="detailContainers">
+							<textarea id="memoTextArea" name="memo" rows="8" cols="40"></textarea>
+						</div>
 
-							<div id="ppomoDeleteContainer" class="detailContainers row">
-								<button type="button" id="completeButton" class="ppomoBTN btn btn-success col-xs-12">완료</button>
-								<button type="button" id="moveButton" class="ppomoBTN btn  col-xs-12">위치 이동</button>
-								<button type="button" id="removeButton" class="ppomoBTN btn btn-danger col-xs-12">삭제</button>
-							</div>
+						<div id="ppomoDeleteContainer" class="detailContainers row">
+							<button type="button" id="completeButton" class="ppomoBTN btn btn-success col-xs-12">완료</button>
+							<button type="button" id="moveButton" class="ppomoBTN btn col-xs-12">위치 이동</button>
+							<button type="button" id="openDatePicker" class="ppomoBTN btn btn-info col-xs-12">마감일 설정</button>
+							<button type="button" id="removeButton" class="ppomoBTN btn btn-danger col-xs-12">삭제</button>
 						</div>
 						<div id="ppomoDetailFooter">
 
@@ -116,6 +101,15 @@
 			<div id="detailBlinder" class="detailCover col-sm-8 col-xs-7"></div>
 		</div>
 		<div id="infoPanel"></div>
+		<div id="myModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div id="deadline" ng-controller="calendarCtrl">
+						<div calendar></div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<script src="../Scripts/main.js" charset="utf-8"></script>
 	</body>
 </html>

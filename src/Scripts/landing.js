@@ -1,5 +1,8 @@
 $("#portLogin").click(function() {
 	$('#myModal').modal("show")
+	$("#id").show(function() {
+		this.focus()
+	})
 	// ipc.send("port-login", "hmu5092", "pw4port")
 })
 $("#loginButton").click(function() {

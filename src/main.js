@@ -63,6 +63,9 @@ function openLandingPage() {
 	// mainPage.html
 	mainWindow.loadURL("file://"+__dirname+"/html/landing.html")
 
+	// mainWindow.loadURL("file://"+__dirname+"/html/deadline.html")
+
+
 	mainWindow.on('closed', function() {
 		mainWindow = null;
 	});
@@ -152,11 +155,6 @@ function loadData() {
 // 00A37F
 // http://color2u.cocolog-nifty.com/color4u/2014/02/pantone-tpx.html
 
-
-function taskSetDeadline(task, deadline) {
-	task.deadLine = deadline;
-}
-
 // MODULE: start
 if(require.main == module) {
 console.log("direct")
@@ -192,10 +190,10 @@ app.on('window-all-closed', function() {
 ipc.on("getTasks", function(event, type) {
 	var retVal = null;
 	// console.log("type", type)
-	if(type == "d3") {
-		retVal = TaskManager.parseNode()
-	} else if(type === undefined)
+	if(type === undefined)
 		retVal = TaskManager.getTask();
+	else
+		retVal = TaskManager.parseNode(type)
 
 	event.returnValue = retVal;
 });
@@ -374,6 +372,18 @@ ipc.on("sync", function(event, type) {
 		google.authFlow();
 	}
 })
+ipc.on("setDeadLine", function(event, taskIndex, deadLine) {
+	const task = TaskManager.findTask(taskIndex);
+	task.deadLine = deadLine;
+
+	console.log(deadLine)
+	portAPI.apiPost({
+		type:"setDeadLine",
+		user:user["pid"],
+		taskIndex:task.index,
+		deadLine:deadLine
+	})
+})
 ipc.on("port-login", function(event, userName, password) {
 	// console.log("logging in!")
 	portAPI.apiGet({
@@ -485,11 +495,6 @@ module.exports = function(){
 
 // {"name":"뽀모도로","icon":"../Resources/glyphicons/png/glyphicons-1-glass.png","index":0,"memo":null,"children":[],"parent":null,"ppomos":[],"createdDate":"2016-04-17T18:05:13.969Z","deadLine":null}
 // "newTaskIndex":19,"ppomos":{"currentPpomo":null,"ppomoIndex":1,"ppomos":[{"index":0,"taskIndex":1,"state":1,"start":"2016-04-17T18:05:20.505Z","success":true}]
-
-ipc.on("setDeadline", function(event, taskIndex, deadline) {
-	const task = TaskManager.findTask(taskIndex);
-	taskSetDeadline(task, deadline)
-})
 
 ipc.on("getCurrentPpomo", function(event) {
 	event.returnValue = PpomoManager.getCurrentPpomo().getSaveDatas();

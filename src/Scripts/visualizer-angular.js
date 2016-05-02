@@ -1,8 +1,10 @@
-var visualizer = angular.module("visualizer", []);
-visualizer.controller("tasks", ['$scope', function($scope) {
+Application.controller("tasks", ['$scope', function($scope) {
 	$scope.testText = "this is sample text";
 	$scope.tasks = [];
 
+	$scope.setTasks = function(tasks) {
+		
+	}
 	$scope.findTask = function(index) {
 		for(var i in $scope.tasks) {
 			var _task = $scope.tasks[i];
@@ -16,21 +18,21 @@ visualizer.controller("tasks", ['$scope', function($scope) {
 			taskIndex:0
 		};
 	}
+	$scope.changeName = function(index, name) {
+
+	}
 }])
 
-visualizer.directive('taskTree', function($compile) {
+Application.directive('taskTree', function($compile) {
 	return {
 		restrict: 'A', //Element
 		link: function (scope, element, attrs) {
-			console.log(attrs)
+			// console.log(attrs)
 			scope.reDrawTree = function() {
 				var data = scope[attrs.treeData]
-				// console.log("here", data)
+				console.log("too slow")
 				if(data !== undefined) {
-					for(var i in data) {
-
-					}
-					var treeElement = '<ul><li ng-repeat="node in ' + attrs.treeData + '" task-index=0><span><i class="icon-leaf"></i> {{node.taskName}}</span><div tree-element tree="node"></li></ul>'
+					var treeElement = '<ul id="TaskTree"><li ng-repeat="node in ' + attrs.treeData + '" task-index=0><span class="ppomoListContainer" taskindex="{{node.taskIndex}}"><i class="fa fa-{{node.nodeIcon}}" aria-hidden="true"></i> {{node.taskName}}</span><div tree-element tree="node"></li></ul>'
 
 					var template = angular.element(treeElement);
 					var linkFunction = $compile(template);
@@ -43,14 +45,14 @@ visualizer.directive('taskTree', function($compile) {
 	}
 })
 
-visualizer.directive('treeElement', function($compile) {
+Application.directive('treeElement', function($compile) {
 	return {
 		restrict:'A',
 		link:function(scope, element, attrs) {
-			console.log("here", attrs.tree)
+			// console.log("here", attrs.tree)
 			scope.tree = scope.node;
-
-			var treeElement = '<ul><li ng-repeat="node in tree.children" task-index={{node.taskIndex}}><span><i class="icon-leaf"></i> {{node.taskName}}</span><div tree-element></li></ul>'
+			// console.log(scope.tree)
+			var treeElement = '<ul><li ng-repeat="node in tree.children" task-index={{node.taskIndex}}><span class="ppomoListContainer" taskindex="{{node.taskIndex}}"><i class="fa fa-{{node.nodeIcon}}" aria-hidden="true"></i> {{node.taskName}}</span><div tree-element></li></ul>'
 
 			var template = angular.element(treeElement);
 			var linkFunction = $compile(template);
