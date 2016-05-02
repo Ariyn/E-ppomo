@@ -1,0 +1,37 @@
+<ul id="treeVisualizer" class="tree">
+<li ng-repeat="element in ' + attrs.treeData + '" node-id={{element.' + attrs.elementId + '}}>
+{{node.' + attrs.nodeName + '}}
+<tree-element tree="node" node-id=' + attrs.nodeId + ' node-name=' + attrs.nodeName + ' node-state=' + attrs.nodeState + '></tree-element>
+</li>
+</ul>
+
+<ul ' + visibility + '>
+<li ng-repeat="node in tree.children" node-id={{node.' + attrs.nodeId + '}} ng-class="node.className">
+{{node.' + attrs.nodeName + '}}
+<tree-element tree="node" node-id=' + attrs.nodeId + ' node-name=' + attrs.nodeName + ' node-state=' + attrs.nodeState + '></tree-element>
+</li>
+</ul>'
+
+<ul>
+	<li>
+		<span><i class="icon-minus-sign"></i> Child</span> <a href="">Goes somewhere</a>
+		<ul>
+			<li>
+				<span><i class="icon-leaf"></i> Grand Child</span> <a href="">Goes somewhere</a>
+			</li>
+		</ul>
+	</li>
+	<li>
+		<span><i class="icon-leaf"></i> Grand Child</span> <a href="">Goes somewhere</a>
+	</li>
+</ul>
+
+
+
+tree-element =
+<ul>
+	<li>
+		<span><i class="icon-leaf"></i> Grand Child</span> <a href="">Goes somewhere</a>
+		
+	</li>
+</ul>

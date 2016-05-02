@@ -1,0 +1,7 @@
+<ul ng-show="visibility">
+    <li ng-repeat="node in tree.children" node-id={{node.' + attrs.nodeId + '}} ng-class="node.className">  
+        {{node.attrs.nodeName}}
+        <tree-element tree="node" node-id=' + attrs.nodeId + ' node-name=' + attrs.nodeName + ' node-state=' + attrs.nodeState + '>
+        </tree-element>
+    </li>
+</ul>

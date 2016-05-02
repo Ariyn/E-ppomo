@@ -31,7 +31,7 @@ function Task(taskName, _icon, _index, _createdDate) {
 }
 
 function createNewTask(name, icon, parent) {
-	const task = new Task(name, icon, newTaskIndex);
+	var task = new Task(name, icon, newTaskIndex);
 	task.parent = parent;
 
 	if(parent !== null){
@@ -52,14 +52,14 @@ function createNewTask(name, icon, parent) {
 }
 
 function deleteTask(taskIndex) {
-	const target = findTask(taskIndex);
+	var target = findTask(taskIndex);
 	// console.log(target)
 	if(target === null) {
 		return false;
 	}
 
 	while(target.children.length !== 0) {
-	// for(const i in target.children) {
+	// for(var i in target.children) {
 		// console.log("removing recursive "+target.children)
 		deleteTask(target.children[0])
 	}
@@ -68,23 +68,23 @@ function deleteTask(taskIndex) {
 
 	// console.log(target.parent)
 	if(target.parent !== null) {
-		const parent = findTask(target.parent)
+		var parent = findTask(target.parent)
 		// console.log("parent", parent, target.parent)
 		popByValue(parent.children, taskIndex);
 
-		// const childIndex = parent.children.indexOf(taskIndex)
+		// var childIndex = parent.children.indexOf(taskIndex)
 		// parent.children.splice(childIndex, 1)
 	}
 }
 function finishTask(taskIndex) {
-	const target = findTask(taskIndex)
+	var target = findTask(taskIndex)
 	if(target === null) {
 		return false;
 	}
 
 	lists = []
 	while(target.children.length !== 0) {
-	// for(const i in target.children) {
+	// for(var i in target.children) {
 		// console.log("removing recursive "+target.children)
 		lists.concat(finishTask(target.children[0]))
 	}
@@ -92,7 +92,7 @@ function finishTask(taskIndex) {
 	popTask(target.index)
 
 	if(target.parent !== null) {
-		const parent = findTask(target.parent)
+		var parent = findTask(target.parent)
 		popByValue(parent.children, taskIndex);
 	}
 
@@ -102,8 +102,8 @@ function finishTask(taskIndex) {
 function findTask(taskIndex) {
 	var retVal = null;
 
-	for(const i in tasks) {
-		const _task = tasks[i];
+	for(var i in tasks) {
+		var _task = tasks[i];
 		if(_task.index == taskIndex) {
 			retVal = _task;
 			break;
@@ -116,7 +116,7 @@ function findTask(taskIndex) {
 function popByValue(list, value) {
 	var retVal = [null];
 
-	const childIndex = list.indexOf(value)
+	var childIndex = list.indexOf(value)
 	if(childIndex != -1)
 		retVal = list.splice(childIndex, 1);
 
@@ -125,7 +125,7 @@ function popByValue(list, value) {
 function popTask(taskIndex) {
 	var retVal = [null];
 
-	for(const i in tasks) {
+	for(var i in tasks) {
 		if(tasks[i].index == taskIndex) {
 			retVal = tasks.splice(i, 1)
 			break;
@@ -136,13 +136,13 @@ function popTask(taskIndex) {
 }
 
 function moveTask(targetIndex, newParentIndex) {
-	const target = findTask(targetIndex);
-	const newParent = findTask(newParentIndex);
+	var target = findTask(targetIndex);
+	var newParent = findTask(newParentIndex);
 
 	// console.log("changing", target, newParent)
 
 	if(target.parent !== null) {
-		const parent = findTask(target.parent);
+		var parent = findTask(target.parent);
 		popByValue(parent.children, target.index)
 	}
 
@@ -169,7 +169,7 @@ obj = {
 function parseNode() {
 	var lists = []
 
-	for(const i in tasks) {
+	for(var i in tasks) {
 		if(tasks[i].parent === null) {
 			lists.push(tasks[i].index)
 		}
@@ -193,9 +193,9 @@ function _parseNode(target) {
 	var lists = []
 
 	// console.log("target", target, target.children)
-	for(const i in target) {
-		// const _target = target.children[i];
-		const _target = findTask(target[i]);
+	for(var i in target) {
+		// var _target = target.children[i];
+		var _target = findTask(target[i]);
 		// console.log(_target, target[i], i)
 		if(_target !== null) {
 			lists.push({

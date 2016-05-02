@@ -382,7 +382,15 @@ ipc.on("port-login", function(event, userName, password) {
 		password:password
 	}, function(data, response) {
 		// console.log("str ='"+data+"'")
-		data = JSON.parse(data)
+		try{
+			data = JSON.parse(data)
+		} catch(err) {
+			console.log(err)
+			data = {
+				success:false,
+				msg:"Server Error"
+			}
+		}
 
 		console.log(data)
 		if(data["success"] === "true") {
@@ -433,7 +441,7 @@ ipc.on("port-login", function(event, userName, password) {
 
 		} else {
 			// console.log("no!")
-			mainWindow.webContents.send("port-login", false)
+			mainWindow.webContents.send("port-login", false, data["msg"])
 		}
 	})
 })
