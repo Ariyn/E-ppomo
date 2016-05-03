@@ -4,6 +4,7 @@
 	<title>team organizer</title>
 
 	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+	<link rel="stylesheet" href="../css/bootstrap.readable.css">
 	<style>
 		#headText {
 			width:100%;
@@ -20,9 +21,79 @@
 			-webkit-justify-content: center;
 					justify-content: center;
 		}
-		.users {
-			
+		.nameHolder {
+			width:auto!important;
 		}
+		.users {
+			width:105px;
+			height:105px;
+
+			display:inline-block;
+
+			margin-left:10px;
+		}
+		.users #imgContainer {
+			vertical-align:middle;
+		}
+		.users #userProfile {
+			width:80px;
+			height:80px;
+
+			border-radius: 40px;
+		}
+		.users #nameContainer {
+			vertical-align:middle;
+			width:100%;
+			font-size:1em;
+			text-align: center;
+		}
+		.users #userName {
+
+		}
+
+		.pickUser {
+			margin-top:50px;
+		}
+
+		.pickUser #imgContainer {
+			/*display:block;*/
+			height:auto;
+		}
+		.pickUser #userProfile {
+			width:120px;
+			height:120px;
+
+			border-radius: 125px;
+		}
+		.pickUser #nameContainer {
+			width:100%;
+			text-align:center;
+			font-size:1.4em;
+		}
+		.pickUser #nameContainer #userId {
+			color:gray;
+		}
+		.pickUser .infoContainer {
+			width:100%;
+			text-align:center;
+		}
+		.pickUser #buttonContainer {
+			margin-top:15px;
+		}
+
+		.addUsers {
+			display:fixed;
+			position:absolute;
+			
+			/*border:1px solid black;*/
+			width:100%;
+			height:105px;
+			left:0px;
+			bottom:0px;
+
+			overflow-x:scroll;
+		}
+
 	</style>
 	<script type="text/javascript" src="../Libraries/angular.loader.js"></script>
 
@@ -36,15 +107,195 @@
 						<label>Find User to Add</label>
 					</div>
 					<div class="pure-control-group centerForm">
-						<label class="nameHolder" for="email">Email</label>
-						<input id="email" type="email" placeholder="Email">
+						<input id="email" type="email" placeholder="Email / Id">
 					</div>
 
-					<div class="centerForm users">
-						
+					<div class="centerForm pickUser col-xs-4 col-md-4 col-xs-ofset-4 col-md-offset-4">
+						<div>
+							<div id="imgContainer" class="centerForm">
+								<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+							</div>
+
+							<div id="nameContainer">
+								<span id="userName">ariyn</span>
+								<span id="userId">@1234</span>
+							</div>
+							
+							<div id="orgContainer" class="infoContainer">
+								<span id="userOrganization">changwon univ. CE</span>
+							</div>
+
+							<div id="produceContainer" class="infoContainer">
+								<span id="userProduce">hi! I'm ariyn. I'm developping port!</span>
+							</div>
+
+							<div id="buttonContainer" class="centerForm">
+								<button class="btn btn-primary">Add</button>
+							</div>
+						</div>
 					</div>
 				</fieldset>
 			</form>
+		</div>
+
+		<div class="addUsers">
+			<div class="userList centerForm">
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+					<div class="users">
+						<div id="imgContainer" class="centerForm">
+							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+						</div>
+
+						<div id="nameContainer">
+							<span id="userName">ariyn</span>
+						</div>
+					</div>
+			</div>
 		</div>
 	</div>
 </body>
