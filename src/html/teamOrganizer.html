@@ -5,7 +5,11 @@
 
 	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
 	<link rel="stylesheet" href="../css/bootstrap.readable.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
 	<style>
+		#header {
+			margin-top:50px;	
+		}
 		#headText {
 			width:100%;
 			text-align:center;
@@ -26,16 +30,22 @@
 		}
 		.users {
 			width:105px;
-			height:105px;
+			height:140px;
 
 			display:inline-block;
-
+			position:relative;
+	
+			bottom:0px;
 			margin-left:10px;
+			margin-bottom:0px;
+
+			cursor:pointer;
 		}
 		.users #imgContainer {
-			vertical-align:middle;
+			margin-top:10px;
+			
 		}
-		.users #userProfile {
+		.users #userPhoto {
 			width:80px;
 			height:80px;
 
@@ -50,16 +60,24 @@
 		.users #userName {
 
 		}
+		.users #deleteIcon {
+			position:absolute;
+			right:5px;
+			margin-top:0px;
+
+			cursor:pointer;
+		}
 
 		.pickUser {
 			margin-top:50px;
+			width:100%;
 		}
 
 		.pickUser #imgContainer {
 			/*display:block;*/
 			height:auto;
 		}
-		.pickUser #userProfile {
+		.pickUser #userPhoto {
 			width:120px;
 			height:120px;
 
@@ -80,6 +98,10 @@
 		.pickUser #buttonContainer {
 			margin-top:15px;
 		}
+		.pickUser #userProfile {
+			width:20em;
+			word-wrap: break-word;
+		}
 
 		.addUsers {
 			display:fixed;
@@ -87,49 +109,179 @@
 			
 			/*border:1px solid black;*/
 			width:100%;
-			height:105px;
+			height:140px;
 			left:0px;
 			bottom:0px;
 
 			overflow-x:scroll;
+			overflow-y:hidden;
+		}
+
+		#dupUser {
+			position: absolute;
+			width:100%;
+			z-index:4;
 		}
 
 	</style>
-	<script type="text/javascript" src="../Libraries/angular.loader.js"></script>
+	<script type="text/javascript" src="../Libraries/jquery-2.2.2.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="../Libraries/angular.min.js"></script>
+
+	<script>
+		var Application = angular.module("port", []);
+	</script>
+
+	<script>
+		Application.controller("teamViewerCtrl",['$scope', function($scope) {
+			$scope.sampleText = "this is sample"
+
+			$scope.count = 0;
+			$scope.searchingText = "";
+			$scope.addedUsers= []
+			$scope.users = [];
+
+			$scope.update = function() {
+				for(var i in $scope.users) {
+					var user = $scope.users[i];
+
+					if(user.email == $scope.searchingText) {
+						$scope.selectedUser = user;
+						break;
+					}
+				}
+			}
+			$scope.addUser = function() {
+				if($scope.selectedUser) {
+					if($scope.addedUsers.indexOf($scope.selectedUser) === 0) {
+						$scope.duplicatedUser = $scope.selectedUser;
+						setTimeout(function() {
+							console.log("here")
+							$scope.$apply(function() {
+								$scope.duplicatedUser = null;
+							})
+						}, 2000)
+					} else {
+						$scope.addedUsers.push($scope.selectedUser)
+						$scope.selectedUser = null;
+
+						$scope.searchingText = "";
+					}
+				}
+			}
+			$scope.mouseenter = function(target) {
+				var index = $scope.addedUsers.indexOf(target)
+				$scope.addedUsers[index]["hover"] = true;
+			}
+			$scope.mouseleave = function(target) {
+				var index = $scope.addedUsers.indexOf(target)
+				$scope.addedUsers[index]["hover"] = false;
+			}
+			$scope.removeUser = function(target) {
+				var index = $scope.addedUsers.indexOf(target)
+				target["hover"] = false;
+				$scope.addedUsers.splice(index, 1)
+			}
+
+			$scope.click = function(user) {
+				console.log(user)
+			}
+		}]
+)	</script>
+
+	<script>
+		$(document).ready(function() {
+			var $scope = angular.element($("#teamOrganizer")).scope();
+			console.log($scope)
+			
+			$scope.$apply(function() {
+				$scope.users = [{
+					name:"sample1",
+					email:"aaaa@gmail.com",
+					id:"@1234",
+					photo:"https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg",
+					profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+					organization:"org 1"
+				}, {
+					name:"sample2",
+					email:"bbbb@gmail.com",
+					id:"@1235",
+					photo:"https://38.media.tumblr.com/4f056d83f92201d892e5987dce138735/tumblr_nay4px643e1tss4lfo1_500.gif",
+					profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+					organization:"org 2"
+				}, {
+					name:"sample3",
+					email:"cccc@gmail.com",
+					id:"@1236",
+					photo:"http://www.dogdrip.net/files/attach/images/78/060/088/056/c01ace0295d49a96764150376a9e067a.jpg",
+					profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+					organization:"org 2"
+				}, {
+					name:"sample4",
+					email:"dddd@gmail.com",
+					id:"@1237",
+					photo:"http://static.zerochan.net/Tsukushi.full.1123403.jpg",
+					profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+					organization:"org 2"
+				}]
+
+				// $scope.selectedUser = $scope.users[0]
+
+				$scope.addedUsers.push($scope.users[0])
+				$scope.addedUsers.push($scope.users[1])
+			})
+		})
+	</script>
 
 </head>
-<body>
-	<div id="teamOrganizer">
+<body ng-app="port">
+
+	<ul id="contextMenu" class="dropdown-menu" role="menu" style="display:block" >
+		<li><a tabindex="-1" href="#">Action</a></li>
+		<li><a tabindex="-1" href="#">Another action</a></li>
+		<li><a tabindex="-1" href="#">Something else here</a></li>
+		<li class="divider"></li>
+		<li><a tabindex="-1" href="#">Separated link</a></li>
+	</ul>
+
+	<div id="teamOrganizer" ng-controller="teamViewerCtrl">
+		<div ng-show="duplicatedUser">
+			<div id="dupUser" class="alert alert-warning" role="alert">
+				<strong>Already In!</strong>
+				<span>{{duplicatedUser.name}} is already in list. please recheck.</span>
+			</div>
+		</div>
 		<div id="searchPart">
 			<form class="pure-form pure-form-aligned">
 				<fieldset>
-					<div id="headText">
-						<label>Find User to Add</label>
+					<div id="header">
+						<div id="headText">
+							<label>Find User to Add</label>
+						</div>
+						<div class="pure-control-group centerForm">
+							<input id="email" type="email" placeholder="Email / Id" ng-model="searchingText" ng-change="update()" ng-model-options="{debounce: 750}"/>
+						</div>
 					</div>
-					<div class="pure-control-group centerForm">
-						<input id="email" type="email" placeholder="Email / Id">
-					</div>
-
-					<div class="centerForm pickUser col-xs-4 col-md-4 col-xs-ofset-4 col-md-offset-4">
+					<div class="centerForm pickUser" ng-show="selectedUser">
 						<div>
 							<div id="imgContainer" class="centerForm">
-								<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+								<img src="{{selectedUser.photo}}" alt="" id="userPhoto">
 							</div>
 
 							<div id="nameContainer">
-								<span id="userName">ariyn</span>
-								<span id="userId">@1234</span>
+								<span id="userName">{{selectedUser.name}}</span>
+								<span id="userId">{{selectedUser.id}}</span>
 							</div>
 							
 							<div id="orgContainer" class="infoContainer">
-								<span id="userOrganization">changwon univ. CE</span>
+								<span id="userOrganization">{{selectedUser.organization}}</span>
 							</div>
 
 							<div id="produceContainer" class="infoContainer">
-								<span id="userProduce">hi! I'm ariyn. I'm developping port!</span>
+								<div id="userProfile">{{selectedUser.profile}}</div>
 							</div>
 
-							<div id="buttonContainer" class="centerForm">
+							<div id="buttonContainer" class="centerForm" ng-click="addUser()">
 								<button class="btn btn-primary">Add</button>
 							</div>
 						</div>
@@ -140,159 +292,14 @@
 
 		<div class="addUsers">
 			<div class="userList centerForm">
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
+					<div class="users" ng-repeat="user in addedUsers" ng-mouseenter="mouseenter(user)" ng-mouseleave="mouseleave(user)" ng-click="click(user)">
+<!-- 						<i id="deleteIcon" class="fa fa-ellipsis-h fa-3x" aria-hidden="true" ng-show="user.hover" ng-click="removeUser(user)"></i>
+ -->						<div id="imgContainer" class="centerForm">
+							<img src="{{user.photo}}" alt="" id="userPhoto">
 						</div>
 
 						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
-						</div>
-					</div>
-					<div class="users">
-						<div id="imgContainer" class="centerForm">
-							<img src="https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg" alt="" id="userProfile">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">ariyn</span>
+							<span id="userName">{{user.name}}</span>
 						</div>
 					</div>
 			</div>
