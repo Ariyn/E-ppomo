@@ -6,124 +6,8 @@
 	<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
 	<link rel="stylesheet" href="../css/bootstrap.readable.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
-	<style>
-		#header {
-			margin-top:50px;	
-		}
-		#headText {
-			width:100%;
-			text-align:center;
-		}
+	<link rel="stylesheet" href="../css/teamOrganizor.css">
 
-		.centerForm {
-			display: -webkit-flex;
-			display:         flex;
-
-			-webkit-align-items: center;
-					align-items: center;
-
-			-webkit-justify-content: center;
-					justify-content: center;
-		}
-		.nameHolder {
-			width:auto!important;
-		}
-		.users {
-			width:105px;
-			height:140px;
-
-			display:inline-block;
-			position:relative;
-	
-			bottom:0px;
-			margin-left:10px;
-			margin-bottom:0px;
-
-			cursor:pointer;
-		}
-		.users #imgContainer {
-			margin-top:10px;
-			
-		}
-		.users #userPhoto {
-			width:80px;
-			height:80px;
-
-			border-radius: 40px;
-		}
-		.users #nameContainer {
-			vertical-align:middle;
-			width:100%;
-			font-size:1em;
-			text-align: center;
-		}
-		.users #userName {
-
-		}
-		.users #deleteIcon {
-			position:absolute;
-			right:5px;
-			margin-top:0px;
-
-			cursor:pointer;
-		}
-
-		.pickUser {
-			margin-top:50px;
-			width:100%;
-		}
-
-		.pickUser #imgContainer {
-			/*display:block;*/
-			height:auto;
-		}
-		.pickUser #userPhoto {
-			width:120px;
-			height:120px;
-
-			border-radius: 125px;
-		}
-		.pickUser #nameContainer {
-			width:100%;
-			text-align:center;
-			font-size:1.4em;
-		}
-		.pickUser #nameContainer #userId {
-			color:gray;
-		}
-		.pickUser .infoContainer {
-			width:100%;
-			text-align:center;
-		}
-		.pickUser #buttonContainer {
-			margin-top:15px;
-		}
-		.pickUser #userProfile {
-			width:20em;
-			word-wrap: break-word;
-		}
-
-		.addUsers {
-			display:fixed;
-			position:absolute;
-			
-			/*border:1px solid black;*/
-			width:100%;
-			height:140px;
-			left:0px;
-			bottom:0px;
-
-			overflow-x:scroll;
-			overflow-y:hidden;
-		}
-
-		#dupUser {
-			position: absolute;
-			width:100%;
-			z-index:4;
-		}
-
-	</style>
 	<script type="text/javascript" src="../Libraries/jquery-2.2.2.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
 	<script type="text/javascript" src="../Libraries/angular.min.js"></script>
@@ -183,11 +67,19 @@
 				$scope.addedUsers.splice(index, 1)
 			}
 
-			$scope.click = function(user) {
-				console.log(user)
+			$scope.click = function($event, user) {
+				var position = $($event.currentTarget).offset()
+				// position["top"],
+				// position["left"]
+				$scope.contextMenuData = {
+					top:0,
+					left:0
+				}
+				console.log(position)
 			}
 		}]
-)	</script>
+	)
+	</script>
 
 	<script>
 		$(document).ready(function() {
@@ -235,15 +127,6 @@
 
 </head>
 <body ng-app="port">
-
-	<ul id="contextMenu" class="dropdown-menu" role="menu" style="display:block" >
-		<li><a tabindex="-1" href="#">Action</a></li>
-		<li><a tabindex="-1" href="#">Another action</a></li>
-		<li><a tabindex="-1" href="#">Something else here</a></li>
-		<li class="divider"></li>
-		<li><a tabindex="-1" href="#">Separated link</a></li>
-	</ul>
-
 	<div id="teamOrganizer" ng-controller="teamViewerCtrl">
 		<div ng-show="duplicatedUser">
 			<div id="dupUser" class="alert alert-warning" role="alert">
@@ -292,7 +175,7 @@
 
 		<div class="addUsers">
 			<div class="userList centerForm">
-					<div class="users" ng-repeat="user in addedUsers" ng-mouseenter="mouseenter(user)" ng-mouseleave="mouseleave(user)" ng-click="click(user)">
+					<div class="users" ng-repeat="user in addedUsers" ng-mouseenter="mouseenter(user)" ng-mouseleave="mouseleave(user)" ng-click="click($event, user)">
 <!-- 						<i id="deleteIcon" class="fa fa-ellipsis-h fa-3x" aria-hidden="true" ng-show="user.hover" ng-click="removeUser(user)"></i>
  -->						<div id="imgContainer" class="centerForm">
 							<img src="{{user.photo}}" alt="" id="userPhoto">
@@ -303,6 +186,16 @@
 						</div>
 					</div>
 			</div>
+		</div>
+
+		<div id="contextMenu" ng-show="contextMenuData" style="left:{{contextMenuData.left}} top:{{contextMenuData.top}}">
+			<ul class="dropdown-menu" role="menu">
+				<li><a tabindex="-1" href="#">Action</a></li>
+				<li><a tabindex="-1" href="#">Another action</a></li>
+				<li><a tabindex="-1" href="#">Something else here</a></li>
+				<li class="divider"></li>
+				<li><a tabindex="-1" href="#">Separated link</a></li>
+			</ul>
 		</div>
 	</div>
 </body>
