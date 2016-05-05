@@ -1,6 +1,6 @@
 $("#portLogin").click(function() {
 	$('#myModal')
-		.on('show.bs.modal', function () {
+		.on('shown.bs.modal', function () {
 			$("#idInput").focus()
 			console.log("shown!")
 		})

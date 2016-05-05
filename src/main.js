@@ -95,20 +95,17 @@ function parseFunction(task) {
 	_task.parent = task.parent;
 	_task.memo = task.memo;
 
-	console.log("task children", task, task.children)
+	// console.log("task children", task, task.children)
 	if(task.children !== null && task.children !== undefined)
 		_task.children = task.children;
 	if(task.ppomos !== null && task.ppomos !== undefined)
 		_task.ppomos = task.ppomos;
 
-	if(task.deadline)
-		_task.deadLine = task.deadline;
 
-	// for(const _index in task.children) {
-	// 	console.log(_index)
-	// 	console.log(task.children[_index])
-	// 	_task.children.push(parseFunction(task.children[_index]))
-	// }
+	if(task.deadline) {
+		_task.deadLine = task.deadline;
+		console.log(_task.deadLine, typeof _task.deadLine, _task.name)
+	}
 
 	return _task;
 }
@@ -253,31 +250,18 @@ ipc.on("loadDataTest", function(event) {
 })
 
 ipc.on("delete", function(event, index) {
-	ipc.send("delete", index)
+	// ipc.send("delete", index)
 
 	portAPI.apiPost({
 		type:"deleteTask",
 		user:user["pid"],
 		index:index
+	}, function(data, response) {
+		console.log(data)
 	})
 
 	TaskManager.deleteTask(index);
 })
-
-ipc.on("setDeadLine", function(event, index, deadLine) {
-	portAPI.apiPost({
-		type:"setDeadline",
-		user:user["pid"],
-		index:index,
-		deadline:Math.floor((new Date(deadLine*1000)).getTime()/1000)
-	})
-
-	TaskManager.findTask(index).deadLine = deadLine;
-})
-// ipc.send("setDeadline", deadLine)
-// elif _type == "setDeadline":
-// sql = "UPDATE tasks SET deadline=FROM_UNIXTIME('%s') WHERE localIndex='%s' AND user='%s';" %(form["deadline"].value, form["index"].value, user)
-
 
 ipc.on("moveTask", function(event, targetIndex, newParentIndex) {
 	const retVal = TaskManager.moveTask(targetIndex, newParentIndex)
@@ -293,7 +277,7 @@ ipc.on("moveTask", function(event, targetIndex, newParentIndex) {
 ipc.on("doneTask", function(event, targetIndex) {
 	
 	doneLists = TaskManager.finishTask(index);
-	console.log(doneLists)
+	// console.log(doneLists)
 	// portAPI.apiPost({
 	// 	type:"finishTask",
 	// 	user:user["pid"],
@@ -393,18 +377,23 @@ ipc.on("sync", function(event, type) {
 		google.authFlow();
 	}
 })
-ipc.on("setDeadLine", function(event, taskIndex, deadLine) {
-	const task = TaskManager.findTask(taskIndex);
-	task.deadLine = deadLine;
 
-	console.log(deadLine)
+ipc.on("setDeadLine", function(event, index, deadLine) {
+	console.log("setting deadline", new Date(deadLine))
 	portAPI.apiPost({
 		type:"setDeadLine",
 		user:user["pid"],
-		taskIndex:task.index,
-		deadLine:deadLine
+		taskIndex:index,
+		deadLine:Math.floor((new Date(deadLine)).getTime()/1000)
+	}, function(data, response) {
+		console.log(data)
 	})
+
+	TaskManager.findTask(index).deadLine = deadLine;
 })
+// ipc.send("setDeadline", deadLine)
+// elif _type == "setDeadline":
+// sql = "UPDATE tasks SET deadline=FROM_UNIXTIME('%s') WHERE localIndex='%s' AND user='%s';" %(form["deadline"].value, form["index"].value, user)
 ipc.on("port-login", function(event, userName, password) {
 	// console.log("logging in!")
 	portAPI.apiGet({
@@ -423,7 +412,7 @@ ipc.on("port-login", function(event, userName, password) {
 			}
 		}
 
-		console.log(data)
+		// console.log(data)
 		if(data["success"] === "true") {
 			// console.log("success")
 			user["pid"] = data["pid"];

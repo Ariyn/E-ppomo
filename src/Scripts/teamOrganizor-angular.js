@@ -62,6 +62,9 @@ Application.controller("teamViewerCtrl",['$scope', function($scope) {
 		$scope.contextMenuData = position
 		console.log(position)
 	}
+	$scope.abort = function() {
+		
+	}
 }])
 
 Application.directive('teamOrganizor', function() {
@@ -69,5 +72,20 @@ Application.directive('teamOrganizor', function() {
 		restrict: 'A',
 		replace:true,
 		templateUrl:"../Componenets/teamOrganizor.html"
+	}
+})
+
+Application.directive("teammatesViewer", function() {
+	return {
+		restrict:"A",
+		// require:"teamViewerCtrl",
+		scope:{
+			"addedUsers":"="
+		},
+		link:function(scope, element, attrs) {
+			element.bind("click", function() {
+				console.log(scope)
+			})
+		}
 	}
 })

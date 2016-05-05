@@ -115,18 +115,33 @@ $("#ppomoDetailHeader>h1").click(function() {
 $(document).ready(function() {
 	(function($scope) {
 		$scope.abort = function() {
-
 			$("#myModal").modal("hide")
+			// refresh()
+
+			$scope.showCalendar = false;
+			clearDetail()
+			closePpomoInfoPanel();
+			changeDetail();
 		}
+
 		$scope.save = function() {
 			var deadLineDate = new Date($scope.pickedYear, $scope.pickedMonth-1, $scope.pickedDate+1)
 
-			console.log(deadLineDate, deadLineDate.getTime())
-			ipc.send("setDeadLine", selectedTask.index, deadLineDate.getTime()/1000)
-			console.log(deadLineDate.getTime())
+			selectedTask.deadLine = deadLineDate;
+			ipc.send("setDeadLine", selectedTask.index, deadLineDate.getTime())
+
 			$scope.abort()
 		}
-	})(angular.element($("#deadline")).scope())
+	})(angular.element($("#deadline")).scope());
+
+	(function($scope) {
+		$scope.abort = function() {
+			// $("#myModal").modal("hide")
+			console.log("abort")
+			$scope.showTeamTool = false;
+			console.log($scope.addedUsers);
+		}
+	})(angular.element($("#teamOrganizer")).scope());
 
 	$("#ppomoListOuter").css("height", $("#ppomoDetail").css("height"))
 	
@@ -267,7 +282,7 @@ function changeDetail() {
 
 	if(task.deadLine !== undefined && task.deadLine !== null) {
 		var date = new Date(task.deadLine)
-		// console.log(date)
+		console.log(date, task)
 
 		deadLine = date.getFullYear()+"년 "+(date.getMonth()+1)+"월 "+(date.getDate()-1)+"일 까지";
 	}
@@ -385,8 +400,8 @@ function changeContainerName(target, task) {
 
 function getTask(taskIndex) {
 	const tasks = ipc.sendSync("getTask", taskIndex);
-	if(tasks.deadLine)
-		tasks.deadLine = tasks.deadLine*1000;
+	// if(tasks.deadLine)
+	// 	tasks.deadLine = tasks.deadLine*1000;
 	
 	console.log(tasks)
 	return tasks;
@@ -519,15 +534,7 @@ $("#openDatePicker").click(function() {
 	})
 
 	$('#myModal')
-	.on('hidden.bs.modal', function () {
-		var deadLine =  new Date($deadLineScope.pickedYear, $deadLineScope.pickedMonth, $deadLineScope.pickedDate)
-
-		console.log(deadLine)
-		// elif _type == "setDeadline":
-		// 	sql = "UPDATE tasks SET deadline=FROM_UNIXTIME('%s') WHERE localIndex='%s' AND user='%s';" %(form["deadline"].value, form["index"].value, user)
-		ipc.send("setDeadline", selectedTask.index, deadLine)
-	})
-	.modal("show")
+		.modal("show")
 })
 $("#openTeamOrganizor").click(function() {
 	var $deadLineScope = angular.element($("#teamOrganizer")).scope()
@@ -566,10 +573,6 @@ $("#openTeamOrganizor").click(function() {
 	})
 
 	$('#myModal')
-		// .css("height", "500px")
-		.on('hidden.bs.modal', function () {
-			console.log($deadLineScope.addedUsers);
-		})
 		.modal("show")
 
 
