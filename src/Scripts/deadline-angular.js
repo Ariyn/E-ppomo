@@ -15,6 +15,8 @@ Application.controller("calendarCtrl", ['$scope', function($scope) {
 	$scope.originalSetDate = null;
 	$scope.originalSetMonth = null;
 	$scope.originalSetYear = null;
+
+	$scope.showCalendar = false;
 	
 	$scope.calendar = [];
 	

@@ -1,8 +1,10 @@
 $("#portLogin").click(function() {
-	$('#myModal').modal("show")
-	$("#id").show(function() {
-		this.focus()
-	})
+	$('#myModal')
+		.on('show.bs.modal', function () {
+			$("#idInput").focus()
+			console.log("shown!")
+		})
+		.modal("show")
 	// ipc.send("port-login", "hmu5092", "pw4port")
 })
 $("#loginButton").click(function() {
@@ -15,7 +17,7 @@ $("input").keypress(function(e) {
 })
 
 function login() {
-	var id = $("#id").val();
+	var id = $("#idInput").val();
 	var password = $("#password").val()
 
 	// console.log(id, password)

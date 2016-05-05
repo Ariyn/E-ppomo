@@ -18,6 +18,8 @@
 		<script src="../Libraries/jquery-ui.1.11.4.js"></script>
 		<script src="../Scripts/visualizer-angular.js"></script>
 		<script src="../Scripts/deadline-angular.js"></script>
+		<script src="../Scripts/teamOrganizor-angular.js"></script>
+		
 
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
@@ -27,6 +29,7 @@
 		<link rel="stylesheet" href="../css/deadline-angular.css">
 		<link rel="stylesheet" href="../css/mainPage.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+		<link rel="stylesheet" href="../css/teamOrganizor.css">
 	</head>
 
 	<body ng-app="port">
@@ -85,7 +88,9 @@
 						<div id="ppomoDeleteContainer" class="detailContainers row">
 							<button type="button" id="completeButton" class="ppomoBTN btn btn-success col-xs-12">완료</button>
 							<button type="button" id="moveButton" class="ppomoBTN btn col-xs-12">위치 이동</button>
-							<button type="button" id="openDatePicker" class="ppomoBTN btn btn-info col-xs-12">마감일 설정</button>
+							<button type="button" id="openDatePicker" class="ppomoBTN btn btn-info col-xs-12"
+							>마감일 설정</button>
+							<button type="button" id="openTeamOrganizor" class="ppomoBTN btn btn-fbe200 col-xs-12">팀원 설정</button>
 							<button type="button" id="removeButton" class="ppomoBTN btn btn-danger col-xs-12">삭제</button>
 						</div>
 						<div id="ppomoDetailFooter">
@@ -104,8 +109,11 @@
 		<div id="myModal" class="modal fade" role="dialog">
 			<div class="modal-dialog">
 				<div class="modal-content">
-					<div id="deadline" ng-controller="calendarCtrl">
+					<div id="deadline" ng-controller="calendarCtrl" ng-show="showCalendar">
 						<div calendar></div>
+					</div>
+					<div id="teamOrganizer" ng-controller="teamViewerCtrl" ng-show="showTeamTool">
+						<div team-organizor></div>
 					</div>
 				</div>
 			</div>

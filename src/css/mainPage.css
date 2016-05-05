@@ -319,3 +319,7 @@ svg {
 .ppomoSuccessIcon {
 	cursor:pointer;
 }
+
+#openTeamOrganizor {
+	background-color:#fbe200;
+}

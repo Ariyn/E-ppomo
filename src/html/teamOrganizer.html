@@ -17,68 +17,6 @@
 	</script>
 
 	<script>
-		Application.controller("teamViewerCtrl",['$scope', function($scope) {
-			$scope.sampleText = "this is sample"
-
-			$scope.count = 0;
-			$scope.searchingText = "";
-			$scope.addedUsers= []
-			$scope.users = [];
-
-			$scope.update = function() {
-				for(var i in $scope.users) {
-					var user = $scope.users[i];
-
-					if(user.email == $scope.searchingText) {
-						$scope.selectedUser = user;
-						break;
-					}
-				}
-			}
-			$scope.addUser = function() {
-				if($scope.selectedUser) {
-					if($scope.addedUsers.indexOf($scope.selectedUser) === 0) {
-						$scope.duplicatedUser = $scope.selectedUser;
-						setTimeout(function() {
-							console.log("here")
-							$scope.$apply(function() {
-								$scope.duplicatedUser = null;
-							})
-						}, 2000)
-					} else {
-						$scope.addedUsers.push($scope.selectedUser)
-						$scope.selectedUser = null;
-
-						$scope.searchingText = "";
-					}
-				}
-			}
-			$scope.mouseenter = function(target) {
-				var index = $scope.addedUsers.indexOf(target)
-				$scope.addedUsers[index]["hover"] = true;
-			}
-			$scope.mouseleave = function(target) {
-				var index = $scope.addedUsers.indexOf(target)
-				$scope.addedUsers[index]["hover"] = false;
-			}
-			$scope.removeUser = function(target) {
-				var index = $scope.addedUsers.indexOf(target)
-				target["hover"] = false;
-				$scope.addedUsers.splice(index, 1)
-			}
-
-			$scope.click = function($event, user) {
-				var position = $($event.currentTarget).offset()
-				// position["top"],
-				// position["left"]
-				$scope.contextMenuData = {
-					top:0,
-					left:0
-				}
-				console.log(position)
-			}
-		}]
-	)
 	</script>
 
 	<script>
@@ -128,67 +66,7 @@
 </head>
 <body ng-app="port">
 	<div id="teamOrganizer" ng-controller="teamViewerCtrl">
-		<div ng-show="duplicatedUser">
-			<div id="dupUser" class="alert alert-warning" role="alert">
-				<strong>Already In!</strong>
-				<span>{{duplicatedUser.name}} is already in list. please recheck.</span>
-			</div>
-		</div>
-		<div id="searchPart">
-			<form class="pure-form pure-form-aligned">
-				<fieldset>
-					<div id="header">
-						<div id="headText">
-							<label>Find User to Add</label>
-						</div>
-						<div class="pure-control-group centerForm">
-							<input id="email" type="email" placeholder="Email / Id" ng-model="searchingText" ng-change="update()" ng-model-options="{debounce: 750}"/>
-						</div>
-					</div>
-					<div class="centerForm pickUser" ng-show="selectedUser">
-						<div>
-							<div id="imgContainer" class="centerForm">
-								<img src="{{selectedUser.photo}}" alt="" id="userPhoto">
-							</div>
-
-							<div id="nameContainer">
-								<span id="userName">{{selectedUser.name}}</span>
-								<span id="userId">{{selectedUser.id}}</span>
-							</div>
-							
-							<div id="orgContainer" class="infoContainer">
-								<span id="userOrganization">{{selectedUser.organization}}</span>
-							</div>
-
-							<div id="produceContainer" class="infoContainer">
-								<div id="userProfile">{{selectedUser.profile}}</div>
-							</div>
-
-							<div id="buttonContainer" class="centerForm" ng-click="addUser()">
-								<button class="btn btn-primary">Add</button>
-							</div>
-						</div>
-					</div>
-				</fieldset>
-			</form>
-		</div>
-
-		<div class="addUsers">
-			<div class="userList centerForm">
-					<div class="users" ng-repeat="user in addedUsers" ng-mouseenter="mouseenter(user)" ng-mouseleave="mouseleave(user)" ng-click="click($event, user)">
-<!-- 						<i id="deleteIcon" class="fa fa-ellipsis-h fa-3x" aria-hidden="true" ng-show="user.hover" ng-click="removeUser(user)"></i>
- -->						<div id="imgContainer" class="centerForm">
-							<img src="{{user.photo}}" alt="" id="userPhoto">
-						</div>
-
-						<div id="nameContainer">
-							<span id="userName">{{user.name}}</span>
-						</div>
-					</div>
-			</div>
-		</div>
-
-		<div id="contextMenu" ng-show="contextMenuData" style="left:{{contextMenuData.left}} top:{{contextMenuData.top}}">
+		<!-- <div id="contextMenu" ng-show="contextMenuData" ng-style="contextMenuData">
 			<ul class="dropdown-menu" role="menu">
 				<li><a tabindex="-1" href="#">Action</a></li>
 				<li><a tabindex="-1" href="#">Another action</a></li>
@@ -196,7 +74,7 @@
 				<li class="divider"></li>
 				<li><a tabindex="-1" href="#">Separated link</a></li>
 			</ul>
-		</div>
+		</div> -->
 	</div>
 </body>
 </html>

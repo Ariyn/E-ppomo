@@ -1,5 +1,8 @@
+#teamOrganizorComponent {
+	min-height:700px;
+}
 #contextMenu {
-	position: absolute;
+	position: fixed;
 	display:block;
 	z-index: 5;
 }
@@ -13,7 +16,7 @@
 }
 
 #header {
-	margin-top:50px;	
+	margin-top:10px;
 }
 #headText {
 	width:100%;

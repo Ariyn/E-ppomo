@@ -94,10 +94,15 @@ function parseFunction(task) {
 	const _task = new TaskManager.Task(task.name, task.icon, task.index, new Date(task.createdDate))
 	_task.parent = task.parent;
 	_task.memo = task.memo;
+
+	console.log("task children", task, task.children)
 	if(task.children !== null && task.children !== undefined)
 		_task.children = task.children;
 	if(task.ppomos !== null && task.ppomos !== undefined)
 		_task.ppomos = task.ppomos;
+
+	if(task.deadline)
+		_task.deadLine = task.deadline;
 
 	// for(const _index in task.children) {
 	// 	console.log(_index)
@@ -248,14 +253,30 @@ ipc.on("loadDataTest", function(event) {
 })
 
 ipc.on("delete", function(event, index) {
-	// ipc.send("delete", index)
+	ipc.send("delete", index)
+
 	portAPI.apiPost({
 		type:"deleteTask",
 		user:user["pid"],
 		index:index
 	})
+
 	TaskManager.deleteTask(index);
 })
+
+ipc.on("setDeadLine", function(event, index, deadLine) {
+	portAPI.apiPost({
+		type:"setDeadline",
+		user:user["pid"],
+		index:index,
+		deadline:Math.floor((new Date(deadLine*1000)).getTime()/1000)
+	})
+
+	TaskManager.findTask(index).deadLine = deadLine;
+})
+// ipc.send("setDeadline", deadLine)
+// elif _type == "setDeadline":
+// sql = "UPDATE tasks SET deadline=FROM_UNIXTIME('%s') WHERE localIndex='%s' AND user='%s';" %(form["deadline"].value, form["index"].value, user)
 
 
 ipc.on("moveTask", function(event, targetIndex, newParentIndex) {
@@ -407,7 +428,6 @@ ipc.on("port-login", function(event, userName, password) {
 			// console.log("success")
 			user["pid"] = data["pid"];
 			var _tasks = data["tasks"]
-			var tasks = []
 			var maxTaskIndex = 0;
 
 // const _task = new Task(task.name, task.icon, task.index)
@@ -441,9 +461,6 @@ ipc.on("port-login", function(event, userName, password) {
 			TaskManager.setTaskIndex(maxTaskIndex + 1);
 			// console.log("when done task looks like", tasks)
 			// TaskManager.setTask(tasks)
-			// for(const _index in tasks) {
-			// 	TaskManager.getTask().push(parseFunction(tasks[_index]))
-			// }
 
 			saveData();
 			loadData()

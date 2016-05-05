@@ -438,7 +438,7 @@ $("#removeButton").click(function() {
 		// const parent = ipc.send("getTask", parentIndex);
 		$(".ppomoListContainer[taskIndex='"+selectedTask.index+"']>rect", selectedTask.parent).click();
 	}
-	console.log(selectedTask)
+
 	ipc.send("delete", index)
 
 	refresh();
@@ -513,12 +513,66 @@ $("#openDatePicker").click(function() {
 	var $deadLineScope = angular.element($("#deadline")).scope()
 
 	$deadLineScope.$apply(function() {
-		console.log("deadline is ", selectedTask.deadLine)
+		$deadLineScope.showCalendar = true;
 		$deadLineScope.init(selectedTask.deadLine)
 		$deadLineScope.change()
 	})
 
-	$('#myModal').modal("show")
+	$('#myModal')
+	.on('hidden.bs.modal', function () {
+		var deadLine =  new Date($deadLineScope.pickedYear, $deadLineScope.pickedMonth, $deadLineScope.pickedDate)
+
+		console.log(deadLine)
+		// elif _type == "setDeadline":
+		// 	sql = "UPDATE tasks SET deadline=FROM_UNIXTIME('%s') WHERE localIndex='%s' AND user='%s';" %(form["deadline"].value, form["index"].value, user)
+		ipc.send("setDeadline", selectedTask.index, deadLine)
+	})
+	.modal("show")
+})
+$("#openTeamOrganizor").click(function() {
+	var $deadLineScope = angular.element($("#teamOrganizer")).scope()
+
+	$deadLineScope.$apply(function() {
+		$deadLineScope.showTeamTool = true;
+		$deadLineScope.users = [{
+			name:"sample1",
+			email:"aaaa@gmail.com",
+			id:"@1234",
+			photo:"https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg",
+			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+			organization:"org 1"
+		}, {
+			name:"sample2",
+			email:"bbbb@gmail.com",
+			id:"@1235",
+			photo:"https://38.media.tumblr.com/4f056d83f92201d892e5987dce138735/tumblr_nay4px643e1tss4lfo1_500.gif",
+			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+			organization:"org 2"
+		}, {
+			name:"sample3",
+			email:"cccc@gmail.com",
+			id:"@1236",
+			photo:"http://www.dogdrip.net/files/attach/images/78/060/088/056/c01ace0295d49a96764150376a9e067a.jpg",
+			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+			organization:"org 2"
+		}, {
+			name:"sample4",
+			email:"dddd@gmail.com",
+			id:"@1237",
+			photo:"http://static.zerochan.net/Tsukushi.full.1123403.jpg",
+			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+			organization:"org 2"
+		}]
+	})
+
+	$('#myModal')
+		// .css("height", "500px")
+		.on('hidden.bs.modal', function () {
+			console.log($deadLineScope.addedUsers);
+		})
+		.modal("show")
+
+
 })
 ipc.on("refresh", function(event) {
 	console.log("refresh", selectedTask)
