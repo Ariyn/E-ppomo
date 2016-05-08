@@ -379,13 +379,25 @@ ipc.on("sync", function(event, type) {
 	}
 })
 
-// ipc.send("addUsers", $scope.data.addedUsers)
-ipc.on("addUsers", function(event, users) {
-	if(teamMate != users) {
-		teamMate = users;
+// ipc.send("addUsers", $scope.data.addedUsers[selectedTask.index], selectedTask.index)
+ipc.on("addUsers", function(event, users, index) {
+	console.log(users, index)
+	var userList = []
+	for(var i in users) {
+		var teammate = users[i];
+		
+		userList.push(teammate["index"])
 	}
 
-	console.log(teamMate)
+	portAPI.apiPost({
+		type:"addUserTask",
+		user:user["pid"],
+		taskIndex:index,
+		users:userList
+	}, function(data, response) {
+		console.log(data)
+	})
+	
 })
 
 ipc.on("setDeadLine", function(event, index, deadLine) {
@@ -442,14 +454,17 @@ ipc.on("port-login", function(event, userName, password) {
 				if(maxTaskIndex <= _task["index"]) {
 					maxTaskIndex = _task["index"]
 				}
-				if(_task["parent"] !== null)
+				if(_task["parent"] !== null && _task["parent"] !== "null")
 					_task["parent"] = Number(_task["parent"])
+				else
+					_task["parent"] = null
 
 				TaskManager.getTask().push(parseFunction(_task))
 			}
 			for(const index in _tasks) {
 				var _task = _tasks[index];
 				if(_task["parent"] !== null) {
+					console.log(_task)
 					TaskManager.moveTask(_task["index"], _task["parent"])
 					const parent = TaskManager.findTask(_task["parent"])
 

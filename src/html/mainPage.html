@@ -37,6 +37,7 @@
 			<div class="row full-height">
 				<div id="ppomoHeader">
 					<ul class="nav nav-tabs">
+						<li><a id="addNewPomo" href="#">+</a></li>
 						<li><a href="#">Home</a></li>
 						<li class="active"><a href="#">PORT</a></li>
 						<li><a href="#">Menu 2</a></li>
@@ -72,7 +73,7 @@
 						<div id="ppomoTeammateContainer" class="detailContainers">
 							<div id="temamates" ng-controller="TeamController2">
 								<div class="userList centerForm">
-									<div class="users user-small" ng-repeat="user in data.addedUsers">
+									<div class="users user-small" ng-repeat="user in data.addedUsers[data.selectedTask]">
 										<i id="deleteIcon" class="fa fa-times fa-3x" aria-hidden="true" ng-show="user.hover" ng-click="removeUser(user)"></i>
 										<div id="imgContainer" class="centerForm">
 											<img src="{{user.photo}}" alt="" id="userPhoto">

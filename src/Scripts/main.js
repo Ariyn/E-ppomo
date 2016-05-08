@@ -59,7 +59,7 @@ $("img").on("dragstart", function(event) {
 
 // $(".ppomoListContainer").click(clickHandler)
 
-$("#newTask").click(function() {
+$("#addNewPomo").click(function() {
 	addNewTask("new Task", "../Resources/glyphicons/png/glyphicons-1-glass.png");
 })
 $("#newChildTask").click(function() {
@@ -140,8 +140,14 @@ $(document).ready(function() {
 			console.log("abort")
 			$scope.data.showTeamTool = false;
 			console.log("$scope.data", $scope.data.addedUsers)
-			if($scope.data.addedUsers)
-				ipc.send("addUsers", $scope.data.addedUsers)
+
+			if($scope.data.addedUsers[$scope.data.selectedTask]) {
+				ipc.send("addUsers", $scope.data.addedUsers[$scope.data.selectedTask], $scope.data.selectedTask)
+			}
+		}
+
+		$scope.showCheck = function() {
+			
 		}
 	})(angular.element($("#teamOrganizer")).scope());
 
@@ -275,7 +281,10 @@ function clearDetail() {
 
 function changeDetail() {
 	const task = selectedTask;
-	// console.log(task)
+	console.log(task)
+
+	angular.element($("#teamOrganizer")).scope().data.selectedTask = task.index
+
 	var deadLine = "";
 
 	$("#ppomoDetailHeader>h1").html(task.name);
@@ -549,28 +558,32 @@ $("#openTeamOrganizor").click(function() {
 			id:"@1234",
 			photo:"https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg",
 			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-			organization:"org 1"
+			organization:"org 1",
+			index:10,
 		}, {
 			name:"sample2",
 			email:"bbbb@gmail.com",
 			id:"@1235",
 			photo:"https://38.media.tumblr.com/4f056d83f92201d892e5987dce138735/tumblr_nay4px643e1tss4lfo1_500.gif",
 			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-			organization:"org 2"
+			organization:"org 2",
+			index:11,
 		}, {
 			name:"sample3",
 			email:"cccc@gmail.com",
 			id:"@1236",
 			photo:"http://www.dogdrip.net/files/attach/images/78/060/088/056/c01ace0295d49a96764150376a9e067a.jpg",
 			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-			organization:"org 2"
+			organization:"org 2",
+			index:12,
 		}, {
 			name:"sample4",
 			email:"dddd@gmail.com",
 			id:"@1237",
 			photo:"http://static.zerochan.net/Tsukushi.full.1123403.jpg",
 			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-			organization:"org 2"
+			organization:"org 2",
+			index:13,
 		}]
 		// $scope.data.addedUsers.push($scope.data.users[0])
 	})

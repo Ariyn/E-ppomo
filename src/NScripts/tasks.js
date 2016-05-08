@@ -139,9 +139,9 @@ function moveTask(targetIndex, newParentIndex) {
 	var target = findTask(targetIndex);
 	var newParent = findTask(newParentIndex);
 
-	// console.log("changing", target, newParent)
+	console.log("changing", target, newParent)
 
-	if(target.parent !== null) {
+	if(target.parent && target.parent != NaN) {
 		var parent = findTask(target.parent);
 		popByValue(parent.children, target.index)
 	}

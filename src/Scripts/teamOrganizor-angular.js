@@ -5,7 +5,7 @@ Application.factory("teamData", function() {
 
 	$scope.count = 0;
 	$scope.searchingText = "";
-	$scope.addedUsers= []
+	$scope.addedUsers= {}
 	$scope.users = [];
 
 	return $scope;
@@ -53,7 +53,13 @@ Application.controller("TeamController", function($scope, teamData) {
 
 	$scope.addUser = function() {
 		if($scope.data.selectedUser) {
-			if($scope.data.addedUsers.indexOf($scope.data.selectedUser) === 0) {
+			console.log($scope.data.addedUsers)
+			if(!$scope.data.addedUsers[$scope.data.selectedTask]) {
+				$scope.data.addedUsers[$scope.data.selectedTask] = []
+				console.log($scope.data.addedUsers)
+			}
+
+			if($scope.data.addedUsers[$scope.data.selectedTask].indexOf($scope.data.selectedUser) != -1) {
 				$scope.data.duplicatedUser = $scope.data.selectedUser;
 				setTimeout(function() {
 					console.log("here")
@@ -62,7 +68,7 @@ Application.controller("TeamController", function($scope, teamData) {
 					})
 				}, 2000)
 			} else {
-				$scope.data.addedUsers.push($scope.data.selectedUser)
+				$scope.data.addedUsers[$scope.data.selectedTask].push($scope.data.selectedUser)
 				$scope.data.selectedUser = null;
 
 				$scope.data.searchingText = "";
@@ -71,19 +77,19 @@ Application.controller("TeamController", function($scope, teamData) {
 	}
 
 	$scope.mouseenter = function(target) {
-		var index = $scope.data.addedUsers.indexOf(target)
-		$scope.data.addedUsers[index]["hover"] = true;
+		var index = $scope.data.addedUsers[$scope.data.selectedTask].indexOf(target)
+		$scope.data.addedUsers[$scope.data.selectedTask][index]["hover"] = true;
 	}
 
 	$scope.mouseleave = function(target) {
-		var index = $scope.data.addedUsers.indexOf(target)
-		$scope.data.addedUsers[index]["hover"] = false;
+		var index = $scope.data.addedUsers[$scope.data.selectedTask].indexOf(target)
+		$scope.data.addedUsers[$scope.data.selectedTask][index]["hover"] = false;
 	}
 
 	$scope.removeUser = function(target) {
-		var index = $scope.data.addedUsers.indexOf(target)
+		var index = $scope.data.addedUsers[$scope.data.selectedTask].indexOf(target)
 		target["hover"] = false;
-		$scope.data.addedUsers.splice(index, 1)
+		$scope.data.addedUsers[$scope.data.selectedTask].splice(index, 1)
 	}
 
 	$scope.click = function($event, user) {
@@ -93,6 +99,9 @@ Application.controller("TeamController", function($scope, teamData) {
 		console.log(position)
 	}
 	$scope.abort = function() {
+		
+	}
+	$scope.showCheck = function() {
 		
 	}
 })

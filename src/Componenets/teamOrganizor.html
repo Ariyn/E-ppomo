@@ -49,7 +49,7 @@
 
 	<div class="addUsers">
 		<div class="userList centerForm">
-				<div class="users" ng-repeat="user in data.addedUsers" ng-mouseenter="mouseenter(user)" ng-mouseleave="mouseleave(user)" ng-click="click($event, user)">
+				<div class="users" ng-repeat="user in data.addedUsers[data.selectedTask]" ng-mouseenter="mouseenter(user)" ng-mouseleave="mouseleave(user)" ng-click="click($event, user)">
 					<i id="deleteIcon" class="fa fa-times fa-3x" aria-hidden="true" ng-show="user.hover" ng-click="removeUser(user)"></i>
 					<div id="imgContainer" class="centerForm">
 						<img src="{{user.photo}}" alt="" id="userPhoto">

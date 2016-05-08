@@ -5,7 +5,7 @@ $("#portLogin").click(function() {
 			console.log("shown!")
 		})
 		.modal("show")
-	// ipc.send("port-login", "hmu5092", "pw4port")
+	ipc.send("port-login", "hmu5092", "pw4port")
 })
 $("#loginButton").click(function() {
 	login()
