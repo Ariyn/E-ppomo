@@ -50,7 +50,7 @@
 	cursor:pointer;
 }
 .users #imgContainer {
-	margin-top:10px;
+	/*margin-top:10px;*/
 	
 }
 .users #userPhoto {
@@ -69,6 +69,46 @@
 
 }
 .users #deleteIcon {
+	position:absolute;
+	right:5px;
+	margin-top:0px;
+
+	cursor:pointer;
+}
+
+.user-small {
+	width:40px;
+	height:4px;
+
+	display:inline-block;
+	position:relative;
+
+	bottom:0px;
+	margin-left:10px;
+	margin-bottom:0px;
+
+	cursor:pointer;
+}
+.user-small #imgContainer {
+	/*margin-top:10px;*/
+	
+}
+.user-small #userPhoto {
+	width:40px;
+	height:40px;
+
+	border-radius: 20px;
+}
+.user-small #nameContainer {
+	vertical-align:middle;
+	width:100%;
+	font-size:1em;
+	text-align: center;
+}
+.user-small #userName {
+
+}
+.user-small #deleteIcon {
 	position:absolute;
 	right:5px;
 	margin-top:0px;

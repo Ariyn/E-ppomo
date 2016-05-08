@@ -1,8 +1,8 @@
 <div id="teamOrganizorComponent">
-	<div ng-show="duplicatedUser">
+	<div ng-show="data.duplicatedUser">
 		<div id="dupUser" class="alert alert-warning" role="alert">
 			<strong>Already In!</strong>
-			<span>{{duplicatedUser.name}} is already in list. please recheck.</span>
+			<span>{{data.duplicatedUser.name}} is already in list. please recheck.</span>
 		</div>
 	</div>
 	<div id="searchPart">
@@ -16,26 +16,26 @@
 			<fieldset>
 				<div id="header">
 					<div class="pure-control-group centerForm">
-						<input id="email" type="email" placeholder="Email / Id" ng-model="searchingText" ng-change="update()" ng-model-options="{debounce: 750}"/>
+						<input id="email" type="email" placeholder="Email / Id" ng-model="data.searchingText" ng-change="update()" ng-model-options="{debounce: 750}"/>
 					</div>
 				</div>
-				<div class="centerForm pickUser" ng-show="selectedUser">
+				<div class="centerForm pickUser" ng-show="data.selectedUser">
 					<div>
 						<div id="imgContainer" class="centerForm">
-							<img src="{{selectedUser.photo}}" alt="" id="userPhoto">
+							<img src="{{data.selectedUser.photo}}" alt="" id="userPhoto">
 						</div>
 
 						<div id="nameContainer">
-							<span id="userName">{{selectedUser.name}}</span>
-							<span id="userId">{{selectedUser.id}}</span>
+							<span id="userName">{{data.selectedUser.name}}</span>
+							<span id="userId">{{data.selectedUser.id}}</span>
 						</div>
 						
 						<div id="orgContainer" class="infoContainer">
-							<span id="userOrganization">{{selectedUser.organization}}</span>
+							<span id="userOrganization">{{data.selectedUser.organization}}</span>
 						</div>
 
 						<div id="produceContainer" class="infoContainer">
-							<div id="userProfile">{{selectedUser.profile}}</div>
+							<div id="userProfile">{{data.selectedUser.profile}}</div>
 						</div>
 
 						<div id="buttonContainer" class="centerForm" ng-click="addUser()">
@@ -49,7 +49,7 @@
 
 	<div class="addUsers">
 		<div class="userList centerForm">
-				<div class="users" ng-repeat="user in addedUsers" ng-mouseenter="mouseenter(user)" ng-mouseleave="mouseleave(user)" ng-click="click($event, user)">
+				<div class="users" ng-repeat="user in data.addedUsers" ng-mouseenter="mouseenter(user)" ng-mouseleave="mouseleave(user)" ng-click="click($event, user)">
 					<i id="deleteIcon" class="fa fa-times fa-3x" aria-hidden="true" ng-show="user.hover" ng-click="removeUser(user)"></i>
 					<div id="imgContainer" class="centerForm">
 						<img src="{{user.photo}}" alt="" id="userPhoto">

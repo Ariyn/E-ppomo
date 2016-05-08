@@ -138,8 +138,10 @@ $(document).ready(function() {
 		$scope.abort = function() {
 			// $("#myModal").modal("hide")
 			console.log("abort")
-			$scope.showTeamTool = false;
-			console.log($scope.addedUsers);
+			$scope.data.showTeamTool = false;
+			console.log("$scope.data", $scope.data.addedUsers)
+			if($scope.data.addedUsers)
+				ipc.send("addUsers", $scope.data.addedUsers)
 		}
 	})(angular.element($("#teamOrganizer")).scope());
 
@@ -537,11 +539,11 @@ $("#openDatePicker").click(function() {
 		.modal("show")
 })
 $("#openTeamOrganizor").click(function() {
-	var $deadLineScope = angular.element($("#teamOrganizer")).scope()
+	var $scope = angular.element($("#teamOrganizer")).scope()
 
-	$deadLineScope.$apply(function() {
-		$deadLineScope.showTeamTool = true;
-		$deadLineScope.users = [{
+	$scope.$apply(function() {
+		$scope.data.showTeamTool = true;
+		$scope.data.users = [{
 			name:"sample1",
 			email:"aaaa@gmail.com",
 			id:"@1234",
@@ -570,6 +572,7 @@ $("#openTeamOrganizor").click(function() {
 			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
 			organization:"org 2"
 		}]
+		// $scope.data.addedUsers.push($scope.data.users[0])
 	})
 
 	$('#myModal')

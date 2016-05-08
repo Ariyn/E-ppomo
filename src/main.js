@@ -18,6 +18,7 @@ var mainWindow = null;
 var timerWindow = null;
 var visualWindow = null;
 
+var teamMate = [];
 var user = {};
 var ipcOnList = [];
 
@@ -376,6 +377,15 @@ ipc.on("sync", function(event, type) {
 		})
 		google.authFlow();
 	}
+})
+
+// ipc.send("addUsers", $scope.data.addedUsers)
+ipc.on("addUsers", function(event, users) {
+	if(teamMate != users) {
+		teamMate = users;
+	}
+
+	console.log(teamMate)
 })
 
 ipc.on("setDeadLine", function(event, index, deadLine) {

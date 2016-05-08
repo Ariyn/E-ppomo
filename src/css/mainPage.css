@@ -190,7 +190,7 @@ svg {
 }
 
 .detailContainers {
-	margin-top:30px;
+	margin-top:10px;
 }
 
 #memoTextArea {
@@ -322,4 +322,8 @@ svg {
 
 #openTeamOrganizor {
 	background-color:#fbe200;
+}
+
+#temamates {
+	height:40px;
 }

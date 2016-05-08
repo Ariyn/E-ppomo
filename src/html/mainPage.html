@@ -36,24 +36,12 @@
 		<div class="container full-heihgt">
 			<div class="row full-height">
 				<div id="ppomoHeader">
-					<button id="newTask" class="btn btn-primary">
-						new task
-					</button>
-					<!-- <button id="changeDeadline" class="btn btn-primary">
-						changeDeadline
-					</button> -->
-					<button id="timerButton" class="btn btn-primary">
-						timer
-					</button>
-					<button id="portLoginOut" class="btn btn-primary">
-						logout
-					</button>
-					<!-- <button id="loadData" class="btn btn-primary">
-						loadData
-					</button>
-					<button id="saveData" class="btn btn-primary">
-						saveData
-					</button> -->
+					<ul class="nav nav-tabs">
+						<li><a href="#">Home</a></li>
+						<li class="active"><a href="#">PORT</a></li>
+						<li><a href="#">Menu 2</a></li>
+						<li><a href="#">Menu 3</a></li>
+					</ul>
 				</div>
 				<div id="ppomoListOuter" class="full-height col-sm-4 col-xs-5">
 					<div id="ppomoList">
@@ -82,8 +70,15 @@
 						</div>
 
 						<div id="ppomoTeammateContainer" class="detailContainers">
-							<div id="temamates">
-							
+							<div id="temamates" ng-controller="TeamController2">
+								<div class="userList centerForm">
+									<div class="users user-small" ng-repeat="user in data.addedUsers">
+										<i id="deleteIcon" class="fa fa-times fa-3x" aria-hidden="true" ng-show="user.hover" ng-click="removeUser(user)"></i>
+										<div id="imgContainer" class="centerForm">
+											<img src="{{user.photo}}" alt="" id="userPhoto">
+										</div>
+									</div>
+							</div>
 							</div>
 						</div>
 
@@ -118,7 +113,7 @@
 					<div id="deadline" ng-controller="calendarCtrl" ng-show="showCalendar">
 						<div calendar></div>
 					</div>
-					<div id="teamOrganizer" ng-controller="teamViewerCtrl" ng-show="showTeamTool">
+					<div id="teamOrganizer" ng-controller="TeamController" ng-show="data.showTeamTool">
 						<div team-organizor></div>
 					</div>
 				</div>

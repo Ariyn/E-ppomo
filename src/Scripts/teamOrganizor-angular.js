@@ -1,4 +1,6 @@
-Application.controller("teamViewerCtrl",['$scope', function($scope) {
+Application.factory("teamData", function() {
+	var $scope = {};
+
 	$scope.sampleText = "this is sample"
 
 	$scope.count = 0;
@@ -6,66 +8,8 @@ Application.controller("teamViewerCtrl",['$scope', function($scope) {
 	$scope.addedUsers= []
 	$scope.users = [];
 
-	$scope.update = function() {
-		if($scope.searchingText === "") {
-			$scope.selectedUser = null;
-		}
-		for(var i in $scope.users) {
-			var user = $scope.users[i];
-
-			if(user.email == $scope.searchingText) {
-				$scope.selectedUser = user;
-				break;
-			}
-		}
-	}
-
-	$scope.addUser = function() {
-		if($scope.selectedUser) {
-			if($scope.addedUsers.indexOf($scope.selectedUser) === 0) {
-				$scope.duplicatedUser = $scope.selectedUser;
-				setTimeout(function() {
-					console.log("here")
-					$scope.$apply(function() {
-						$scope.duplicatedUser = null;
-					})
-				}, 2000)
-			} else {
-				$scope.addedUsers.push($scope.selectedUser)
-				$scope.selectedUser = null;
-
-				$scope.searchingText = "";
-			}
-		}
-	}
-
-	$scope.mouseenter = function(target) {
-		var index = $scope.addedUsers.indexOf(target)
-		$scope.addedUsers[index]["hover"] = true;
-	}
-
-	$scope.mouseleave = function(target) {
-		var index = $scope.addedUsers.indexOf(target)
-		$scope.addedUsers[index]["hover"] = false;
-	}
-
-	$scope.removeUser = function(target) {
-		var index = $scope.addedUsers.indexOf(target)
-		target["hover"] = false;
-		$scope.addedUsers.splice(index, 1)
-	}
-
-	$scope.click = function($event, user) {
-		var position = $($event.currentTarget).offset()
-		// position["top"],
-		// position["left"]
-		$scope.contextMenuData = position
-		console.log(position)
-	}
-	$scope.abort = function() {
-		
-	}
-}])
+	return $scope;
+})
 
 Application.directive('teamOrganizor', function() {
 	return {
@@ -88,4 +32,71 @@ Application.directive("teammatesViewer", function() {
 			})
 		}
 	}
+})
+
+Application.controller("TeamController", function($scope, teamData) {
+	$scope.data = teamData;
+	console.log(teamData)
+	$scope.update = function() {
+		if($scope.data.searchingText === "") {
+			$scope.data.selectedUser = null;
+		}
+		for(var i in $scope.data.users) {
+			var user = $scope.data.users[i];
+
+			if(user.email == $scope.data.searchingText) {
+				$scope.data.selectedUser = user;
+				break;
+			}
+		}
+	}
+
+	$scope.addUser = function() {
+		if($scope.data.selectedUser) {
+			if($scope.data.addedUsers.indexOf($scope.data.selectedUser) === 0) {
+				$scope.data.duplicatedUser = $scope.data.selectedUser;
+				setTimeout(function() {
+					console.log("here")
+					$scope.$apply(function() {
+						$scope.data.duplicatedUser = null;
+					})
+				}, 2000)
+			} else {
+				$scope.data.addedUsers.push($scope.data.selectedUser)
+				$scope.data.selectedUser = null;
+
+				$scope.data.searchingText = "";
+			}
+		}
+	}
+
+	$scope.mouseenter = function(target) {
+		var index = $scope.data.addedUsers.indexOf(target)
+		$scope.data.addedUsers[index]["hover"] = true;
+	}
+
+	$scope.mouseleave = function(target) {
+		var index = $scope.data.addedUsers.indexOf(target)
+		$scope.data.addedUsers[index]["hover"] = false;
+	}
+
+	$scope.removeUser = function(target) {
+		var index = $scope.data.addedUsers.indexOf(target)
+		target["hover"] = false;
+		$scope.data.addedUsers.splice(index, 1)
+	}
+
+	$scope.click = function($event, user) {
+		var position = $($event.currentTarget).offset()
+
+		$scope.data.contextMenuData = position
+		console.log(position)
+	}
+	$scope.abort = function() {
+		
+	}
+})
+
+Application.controller("TeamController2", function($scope, teamData) {
+	$scope.data = teamData;
 })
