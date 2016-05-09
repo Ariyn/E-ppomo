@@ -19,6 +19,7 @@
 		<script src="../Scripts/visualizer-angular.js"></script>
 		<script src="../Scripts/deadline-angular.js"></script>
 		<script src="../Scripts/teamOrganizor-angular.js"></script>
+		<script src="../Scripts/menu-angular.js"></script>
 		
 
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
@@ -35,13 +36,10 @@
 	<body ng-app="port">
 		<div class="container full-heihgt">
 			<div class="row full-height">
-				<div id="ppomoHeader">
+				<div id="ppomoHeader" ng-controller="menuCtrl">
 					<ul class="nav nav-tabs">
 						<li><a id="addNewPomo" href="#">+</a></li>
-						<li><a href="#">Home</a></li>
-						<li class="active"><a href="#">PORT</a></li>
-						<li><a href="#">Menu 2</a></li>
-						<li><a href="#">Menu 3</a></li>
+						<li ng-repeat="task in taskLists" ng-click="clickHeader(task)" ng-class="{'active':task == selected}"><a  href="#">{{task}}</a></li>
 					</ul>
 				</div>
 				<div id="ppomoListOuter" class="full-height col-sm-4 col-xs-5">

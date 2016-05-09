@@ -199,7 +199,7 @@ function printPpomo() {
 	// update(root = d3StyleData);
 
 
-	$(".ng-binding")
+	$("#TaskTree .ng-binding")
 		.click(clickHandler)
 		.mouseover(function() {
 			console.log("over")
