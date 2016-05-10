@@ -22,14 +22,24 @@ var testChangeDeadLine = false;
 
 var isMovingTask = false;
 var user = {};
-ipc.on("setUserData", function(event, user) {
+var tabIndex = -1;
+var sharedData = null
+var otherData = null
+var users = null
+
+ipc.on("setUserData", function(event, user, _sharedData, _otherData, _users) {
 	user = user;
+	sharedData = _sharedData;
+	otherData = _otherData;
+	users = _users;
+
+	console.log("here")
 	console.log(user)
 })
 
 
-function clickHandler() {
-	const index = $(this).attr("taskindex");
+function clickHandler(index) {
+	// const index = $(this).attr("taskindex");
 	const task = getTask(index);
 
 	console.log("clicked", index)
@@ -151,6 +161,27 @@ $(document).ready(function() {
 		}
 	})(angular.element($("#teamOrganizer")).scope());
 
+	(function($scope) {
+		$scope.clickCallback = function(index) {
+			tabIndex = index;
+			// refresh()
+			printPpomo();
+		}
+	})(angular.element($("#ppomoHeader")).scope());
+
+	(function($scope) {
+		$scope.clickHandler = function(index) {
+			clickHandler(index)
+		}
+		$scope.$watch("tasks", function(){
+			console.log("task changed")
+			setTimeout(function() {
+				$("#ppomoContentList")
+					.css("height", $(".tree")[0].scrollHeight+20)
+			}, 100)
+		})
+	})(angular.element($("#ppomoContentList")).scope());
+
 	$("#ppomoListOuter").css("height", $("#ppomoDetail").css("height"))
 	
 	var $scope = angular.element($("#ppomoContentList")).scope();
@@ -186,24 +217,51 @@ function printPpomo() {
 	const angTreeData = ipc.sendSync("getTasks", "angularTree")
 
 	var $scope = angular.element($("#ppomoContentList")).scope();
-	var tasks = $scope.tasks;
+	var tasks = null;
 
-	tasks = angTreeData;
-	console.log(angTreeData)
+	if(tabIndex ==-1) {
+			tasks = angTreeData;	
+	} else {
+		for(var i in angTreeData) {
+			if(angTreeData[i]["taskIndex"] == tabIndex) {
+				tasks = [angTreeData[i]]
+				break;
+			}
+		}
+	}
 
-	$scope.$apply(function() {
-		$scope.tasks = tasks;
-	})
+	console.log(tabIndex)
+	if ($scope.$$phase == '$apply' || $scope.$$phase == '$digest' ) {
+		$scope.tasks = tasks
+	} else {
+		$scope.$apply(function() {
+			$scope.tasks = tasks;
+		})
+	}
 
-	$("#ppomoContentList").css("height", $(".tree")[0].scrollHeight+20)
+	console.log("here")
+	$headerScope = angular.element($("#ppomoHeader")).scope()
+	if ($headerScope.$$phase == '$apply' || $scope.$$phase == '$digest' ) {
+		$headerScope.rawTasks = angTreeData;
+		$headerScope.parsing()
+	} else {
+		$headerScope.$apply(function() {
+			$headerScope.rawTasks = angTreeData;
+			$headerScope.parsing()
+		})
+	}
+
+
+	// $("#ppomoContentList")
+	// 	.css("height", $(".tree")[0].scrollHeight+20)
 	// update(root = d3StyleData);
 
-
-	$("#TaskTree .ng-binding")
-		.click(clickHandler)
-		.mouseover(function() {
-			console.log("over")
-		});
+	console.log("here")
+	// $("#TaskTree span")
+	// 	.click(clickHandler)
+	// 	.mouseover(function() {
+	// 		console.log("over")
+	// 	});
 }
 
 function printPpomo2() {
@@ -553,45 +611,76 @@ $("#openTeamOrganizor").click(function() {
 	$scope.$apply(function() {
 		$scope.data.showTeamTool = true;
 		$scope.data.users = [{
-			name:"sample1",
-			email:"aaaa@gmail.com",
+			name:"sampel 2",
+			email:"sample2@gmail.com",
 			id:"@1234",
-			photo:"https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg",
-			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-			organization:"org 1",
-			index:10,
+			photo:"http://cdn-4.nikon-cdn.com/en_INC/o/oLrTCTTuzYdOceunJwHWLeCyRmU/Photography/S3500_sample-photo_03.jpg",
+			profile:"smaple Message",
+			organization:"CWNU CE",
+			index:7,
 		}, {
-			name:"sample2",
-			email:"bbbb@gmail.com",
-			id:"@1235",
-			photo:"https://38.media.tumblr.com/4f056d83f92201d892e5987dce138735/tumblr_nay4px643e1tss4lfo1_500.gif",
-			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-			organization:"org 2",
-			index:11,
+			name:"sampel 3",
+			email:"sample3@gmail.com",
+			id:"@2231",
+			photo:"http://www.onemansanthology.com/images/camera/eagle-close-up.jpg",
+			profile:"this is a sample text",
+			organization:"CWNU CE",
+			index:8,
 		}, {
-			name:"sample3",
-			email:"cccc@gmail.com",
-			id:"@1236",
-			photo:"http://www.dogdrip.net/files/attach/images/78/060/088/056/c01ace0295d49a96764150376a9e067a.jpg",
-			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit, Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-			organization:"org 2",
-			index:12,
-		}, {
-			name:"sample4",
-			email:"dddd@gmail.com",
-			id:"@1237",
-			photo:"http://static.zerochan.net/Tsukushi.full.1123403.jpg",
-			profile:"Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-			organization:"org 2",
-			index:13,
+			name:"sampel 4",
+			email:"sample4@naver.com",
+			id:"@2148",
+			photo:"http://www.bestmanspeechestoasts.com/wp-content/themes/thesis/rotator/sample-4.jpg",
+			profile:"this is a sample text",
+			organization:"CWNU CE",
+			index:9,
 		}]
+
+
+		if(user.pid == "7") {
+			$scope.data.addedUsers[{
+				name:"sampel 1",
+				email:"sample1@gmail.com",
+				id:"@1111",
+				photo:"http://cdn-4.nikon-cdn.com/en_INC/o/oLrTCTTuzYdOceunJwHWLeCyRmU/Photography/S3500_sample-photo_03.jpg",
+				profile:"smaple Message",
+				organization:"CWNU CE",
+				index:7,
+			}]	
+		}
+		
+		console.log(sharedData, selectedTask)
+		// for(var i in sharedData) {
+		// 	if(sharedData[i].task == selectedTask.index) {
+		// 		console.log("same!")
+		// 		console.log(users)
+		// 		var _user = [];
+
+		// 		for(var e in users) {
+		// 			if(Number(users[e].pid) == Number(sharedData.to)) {
+		// 				_user.push({
+		// 					email:users[e]["email"],
+		// 					id:users[e]["nickname"],
+		// 					photo:"https://cdn3.iconfinder.com/data/icons/rcons-user-action/32/boy-512.png",
+		// 					index:users[e]["pid"],
+		// 					profile:"smaple Message"
+		// 				})
+		// 			}
+		// 		}
+
+		// 		console.log($scope.data.addedUsers)
+		// 		$scope.data.addedUsers[selectedTask.index] = _user
+		// 		console.log($scope.data.addedUsers)
+		// 	}
+		// }
+
+
+		// https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg
 		// $scope.data.addedUsers.push($scope.data.users[0])
 	})
 
 	$('#myModal')
 		.modal("show")
-
-
 })
 ipc.on("refresh", function(event) {
 	console.log("refresh", selectedTask)

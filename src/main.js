@@ -22,13 +22,16 @@ var teamMate = [];
 var user = {};
 var ipcOnList = [];
 
+
+var sharedData = null
+var otherData = null
+var users = null
 // TODO: 동기부여
 // API들 이용해 문가 할 수 있도록
 
 var trayApp = null;
 
 function openMainWindow() {
-
 	if(mainWindow != null) {
 		mainWindow.hide()
 		mainWindow.destroy()
@@ -41,7 +44,7 @@ function openMainWindow() {
 	mainWindow.loadURL("file://"+__dirname+"/html/mainPage.html")
 
 	mainWindow.webContents.on("did-finish-load", function() {
-		mainWindow.webContents.send("setUserData", user)
+		mainWindow.webContents.send("setUserData", user, sharedData, otherData, users)
 	})
 	mainWindow.on('closed', function() {
 		saveData();
@@ -82,6 +85,7 @@ function saveData(callback) {
 		ppomos:PpomoManager.getSaveDatas()
 	}, callback);
 }
+
 function saveDataPort() {
 	portAPI.apiPost({
 		type:"saveData",
@@ -91,6 +95,7 @@ function saveDataPort() {
 		timer:runningTimer
 	})
 }
+
 function parseFunction(task) {
 	const _task = new TaskManager.Task(task.name, task.icon, task.index, new Date(task.createdDate))
 	_task.parent = task.parent;
@@ -277,13 +282,15 @@ ipc.on("moveTask", function(event, targetIndex, newParentIndex) {
 
 ipc.on("doneTask", function(event, targetIndex) {
 	
-	doneLists = TaskManager.finishTask(index);
-	// console.log(doneLists)
-	// portAPI.apiPost({
-	// 	type:"finishTask",
-	// 	user:user["pid"],
-	// 	indexes:doneLists
-	// })
+	task = TaskManager.findTask(targetIndex);
+	task.finish = 1;
+
+	console.log(task)
+	portAPI.apiPost({
+		type:"finishTask",
+		user:user["pid"],
+		indexes:task
+	})
 })
 
 ipc.on("openTimer", function (event, _selectedTaskIndex) {
@@ -440,7 +447,11 @@ ipc.on("port-login", function(event, userName, password) {
 			user["pid"] = data["pid"];
 			var _tasks = data["tasks"]
 			var maxTaskIndex = 0;
+			sharedData = data["sharedData"]
+			otherData = data["otherData"]
+			users = data["users"]
 
+			console.log(_tasks)
 // const _task = new Task(task.name, task.icon, task.index)
 // _task.parent = task.parent;
 // _task.memo = task.memo;

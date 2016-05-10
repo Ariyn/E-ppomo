@@ -39,7 +39,7 @@
 				<div id="ppomoHeader" ng-controller="menuCtrl">
 					<ul class="nav nav-tabs">
 						<li><a id="addNewPomo" href="#">+</a></li>
-						<li ng-repeat="task in taskLists" ng-click="clickHeader(task)" ng-class="{'active':task == selected}"><a  href="#">{{task}}</a></li>
+						<li ng-repeat="task in taskLists track by $index" ng-click="clickHeader(task)" ng-class="{'active':task.taskName == selected}"><a  href="#">{{task.taskName}}</a></li>
 					</ul>
 				</div>
 				<div id="ppomoListOuter" class="full-height col-sm-4 col-xs-5">
@@ -55,7 +55,7 @@
 
 				<div id="ppomoDetail" class="col-sm-8 col-xs-7">
 					<div id="ppomoDetailHeader" class="noDrag">
-						<span><img src="../Resources/glyphicons/png/glyphicons-6-car.png" alt="" class="ppomoIcon-small" id="ppomoIcon"></span>
+						<!-- <span><img src="../Resources/glyphicons/png/glyphicons-6-car.png" alt="" class="ppomoIcon-small" id="ppomoIcon"></span> -->
 						<h1>뽀모도로!</h1>
 						<input type="hidden" id="taskNameInput"></input>
 					</div>
@@ -82,10 +82,11 @@
 						</div>
 
 						<div id="ppomoMemoContainer" class="detailContainers">
-							<textarea id="memoTextArea" name="memo" rows="8" cols="40"></textarea>
+							<textarea id="memoTextArea" name="memo" rows="4" cols="40"></textarea>
 						</div>
 
 						<div id="ppomoDeleteContainer" class="detailContainers row">
+							<button type="button" id="timerButton" class="ppomoBTN btn btn-ppomo col-xs-12">뽀모도로 시작</button>
 							<button type="button" id="completeButton" class="ppomoBTN btn btn-success col-xs-12">완료</button>
 							<button type="button" id="moveButton" class="ppomoBTN btn col-xs-12">위치 이동</button>
 							<button type="button" id="openDatePicker" class="ppomoBTN btn btn-info col-xs-12"
@@ -113,6 +114,7 @@
 						<div calendar></div>
 					</div>
 					<div id="teamOrganizer" ng-controller="TeamController" ng-show="data.showTeamTool">
+						{{showTeamTool}}
 						<div team-organizor></div>
 					</div>
 				</div>
