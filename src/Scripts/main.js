@@ -27,11 +27,63 @@ var sharedData = null
 var otherData = null
 var users = null
 
+function focusOutFunc(event) {
+	if(event.type == "keypress" && event.keyCode == 13) {
+		console.log(event)
+		$(this).focusout()
+	} else if(event.type != "keypress"){
+		var name = $(this).attr("type","hidden").val();
+
+		if(name == "") {
+			name = $("#ppomoDetailHeader>h1").html();
+		}
+
+		$("#ppomoDetailHeader>h1")
+			.css("display","inline")
+			.css("visibility","visible")
+			.html(name);
+
+		selectedTask.name = name;
+
+		ipc.send("changeName", selectedTask.index, name);
+		// var $scope = angular.element($("#ppomoContentList")).scope();
+
+		// $scope.tasks.changeName(selectedTask.index, name)
+
+		if(selectedTask.parent == null)
+			className = "ppomoListContainer"
+		else
+			className = "ppomoListContainerChild"
+		// changeContainerName("."+className+"[taskIndex='"+selectedTask.index+"']", selectedTask)
+
+		refresh();
+	}
+}
+
 ipc.on("setUserData", function(event, user, _sharedData, _otherData, _users) {
 	user = user;
-	sharedData = _sharedData;
+	// sharedData = _sharedData;
+	sharedData = {}
+	for(var i in _sharedData) {
+		var _data = _sharedData[i];
+		if(_data["from"] == user["pid"]) {
+			if(!sharedData[_data["task"]]) {
+				sharedData[_data["task"]] = []
+			}
+
+			for(var e in _users) {
+				if(_users[e]["pid"] == _data["to"])
+					sharedData[_data["task"]].push(_users[e])
+			}
+		}
+	}
+
 	otherData = _otherData;
 	users = _users;
+
+	for(var i in users) {
+		users[i]["account"] = "@"+users[i]["account"] 
+	}
 
 	console.log("here")
 	console.log(user)
@@ -78,44 +130,12 @@ $("#newChildTask").click(function() {
 
 $("#ppomoDetailHeader>h1").click(function() {
 	const oldName = selectedTask.name;
-	const focusOutFunc = function(event) {
-		if(event.type == "keypress" && event.keyCode == 13) {
-			console.log(event)
-			$(this).focusout()
-		} else if(event.type != "keypress"){
-			var name = $(this).attr("type","hidden").val();
-
-			if(name == "") {
-				name = $("#ppomoDetailHeader>h1").html();
-			}
-
-			$("#ppomoDetailHeader>h1")
-				.css("display","inline")
-				.css("visibility","visible")
-				.html(name);
-
-			selectedTask.name = name;
-
-			ipc.send("changeName", selectedTask.index, name);
-			// var $scope = angular.element($("#ppomoContentList")).scope();
-
-			// $scope.tasks.changeName(selectedTask.index, name)
-
-			if(selectedTask.parent == null)
-				className = "ppomoListContainer"
-			else
-				className = "ppomoListContainerChild"
-			// changeContainerName("."+className+"[taskIndex='"+selectedTask.index+"']", selectedTask)
-
-			refresh();
-		}
-	}
+	
 	$("#taskNameInput")
 		.attr("type", "text")
 		.val(oldName)
 		.focus()
-		.focusout(focusOutFunc)
-		.keypress(focusOutFunc)
+		
 
 	$(this)
 		.css("display","none")
@@ -149,9 +169,10 @@ $(document).ready(function() {
 			// $("#myModal").modal("hide")
 			console.log("abort")
 			$scope.data.showTeamTool = false;
-			console.log("$scope.data", $scope.data.addedUsers)
+			console.log("$scope.data", $scope.data)
 
-			if($scope.data.addedUsers[$scope.data.selectedTask]) {
+
+			if($scope.data.addedUsers[$scope.data.selectedTask] && $scope.data.originalMember[$scope.data.selectedTask] != $scope.data.addedUsers[$scope.data.selectedTask]) {
 				ipc.send("addUsers", $scope.data.addedUsers[$scope.data.selectedTask], $scope.data.selectedTask)
 			}
 		}
@@ -183,6 +204,10 @@ $(document).ready(function() {
 	})(angular.element($("#ppomoContentList")).scope());
 
 	$("#ppomoListOuter").css("height", $("#ppomoDetail").css("height"))
+
+	$("#taskNameInput")
+		.focusout(focusOutFunc)
+		.keypress(focusOutFunc)
 	
 	var $scope = angular.element($("#ppomoContentList")).scope();
 	$scope.reDrawTree()
@@ -354,6 +379,15 @@ function changeDetail() {
 		console.log(date, task)
 
 		deadLine = date.getFullYear()+"년 "+(date.getMonth()+1)+"월 "+(date.getDate()-1)+"일 까지";
+	}
+
+	var $scope = angular.element($("#teamOrganizer")).scope()
+	if ($scope.$$phase == '$apply' || $scope.$$phase == '$digest' ) {
+		$scope.data.addedUsers = sharedData;
+	} else {
+		$scope.$apply(function() {
+			$scope.data.addedUsers = sharedData;
+		})
 	}
 
 	$("#TaskDeadLineSpan").html(deadLine)
@@ -610,73 +644,11 @@ $("#openTeamOrganizor").click(function() {
 
 	$scope.$apply(function() {
 		$scope.data.showTeamTool = true;
-		$scope.data.users = [{
-			name:"sampel 2",
-			email:"sample2@gmail.com",
-			id:"@1234",
-			photo:"http://cdn-4.nikon-cdn.com/en_INC/o/oLrTCTTuzYdOceunJwHWLeCyRmU/Photography/S3500_sample-photo_03.jpg",
-			profile:"smaple Message",
-			organization:"CWNU CE",
-			index:7,
-		}, {
-			name:"sampel 3",
-			email:"sample3@gmail.com",
-			id:"@2231",
-			photo:"http://www.onemansanthology.com/images/camera/eagle-close-up.jpg",
-			profile:"this is a sample text",
-			organization:"CWNU CE",
-			index:8,
-		}, {
-			name:"sampel 4",
-			email:"sample4@naver.com",
-			id:"@2148",
-			photo:"http://www.bestmanspeechestoasts.com/wp-content/themes/thesis/rotator/sample-4.jpg",
-			profile:"this is a sample text",
-			organization:"CWNU CE",
-			index:9,
-		}]
+		$scope.data.users = users;
+		// var copiedObject = jQuery.extend({},originalObject);
+		$scope.data.originalMember = jQuery.extend({},$scope.data.addedUsers)
 
-
-		if(user.pid == "7") {
-			$scope.data.addedUsers[{
-				name:"sampel 1",
-				email:"sample1@gmail.com",
-				id:"@1111",
-				photo:"http://cdn-4.nikon-cdn.com/en_INC/o/oLrTCTTuzYdOceunJwHWLeCyRmU/Photography/S3500_sample-photo_03.jpg",
-				profile:"smaple Message",
-				organization:"CWNU CE",
-				index:7,
-			}]	
-		}
-		
 		console.log(sharedData, selectedTask)
-		// for(var i in sharedData) {
-		// 	if(sharedData[i].task == selectedTask.index) {
-		// 		console.log("same!")
-		// 		console.log(users)
-		// 		var _user = [];
-
-		// 		for(var e in users) {
-		// 			if(Number(users[e].pid) == Number(sharedData.to)) {
-		// 				_user.push({
-		// 					email:users[e]["email"],
-		// 					id:users[e]["nickname"],
-		// 					photo:"https://cdn3.iconfinder.com/data/icons/rcons-user-action/32/boy-512.png",
-		// 					index:users[e]["pid"],
-		// 					profile:"smaple Message"
-		// 				})
-		// 			}
-		// 		}
-
-		// 		console.log($scope.data.addedUsers)
-		// 		$scope.data.addedUsers[selectedTask.index] = _user
-		// 		console.log($scope.data.addedUsers)
-		// 	}
-		// }
-
-
-		// https://s-media-cache-ak0.pinimg.com/736x/cb/67/43/cb6743319382e74e80cf9b9b1ef551cf.jpg
-		// $scope.data.addedUsers.push($scope.data.users[0])
 	})
 
 	$('#myModal')

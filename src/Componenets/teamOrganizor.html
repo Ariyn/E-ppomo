@@ -2,7 +2,7 @@
 	<div ng-show="data.duplicatedUser">
 		<div id="dupUser" class="alert alert-warning" role="alert">
 			<strong>Already In!</strong>
-			<span>{{data.duplicatedUser.name}} is already in list. please recheck.</span>
+			<span>{{data.duplicatedUser.nickname}} is already in list. please recheck.</span>
 		</div>
 	</div>
 	<div id="searchPart">
@@ -26,8 +26,8 @@
 						</div>
 
 						<div id="nameContainer">
-							<span id="userName">{{data.selectedUser.name}}</span>
-							<span id="userId">{{data.selectedUser.id}}</span>
+							<span id="userName">{{data.selectedUser.nickname}}</span>
+							<span id="userId">{{data.selectedUser.account}}</span>
 						</div>
 						
 						<div id="orgContainer" class="infoContainer">
@@ -56,7 +56,7 @@
 					</div>
 
 					<div id="nameContainer">
-						<span id="userName">{{user.name}}</span>
+						<span id="userName">{{user.nickname}}</span>
 					</div>
 				</div>
 		</div>

@@ -392,16 +392,22 @@ ipc.on("addUsers", function(event, users, index) {
 	var userList = []
 	for(var i in users) {
 		var teammate = users[i];
-		
-		userList.push(teammate["index"])
+		userList.push(teammate["pid"])
+	}
+
+	var _task = TaskManager.findTask(index)
+	while(_task.parent !== null) {
+		_task = TaskManager.findTask(_task.parent)
 	}
 
 	portAPI.apiPost({
 		type:"addUserTask",
 		user:user["pid"],
 		taskIndex:index,
-		users:userList
+		users:userList,
+		parent:_task.index
 	}, function(data, response) {
+		console.log("done")
 		console.log(data)
 	})
 	
